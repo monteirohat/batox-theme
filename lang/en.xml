@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- English: the default names, always included -->
+<theme>
+  <formatVersion>7</formatVersion>
+  <variables>
+    <viewHome>Home</viewHome>
+    <viewLibrary>Library</viewLibrary>
+    <subsetAccent>Accent color</subsetAccent>
+    <accentBlue>Blue</accentBlue>
+    <accentPurple>Purple</accentPurple>
+    <accentTeal>Teal</accentTeal>
+    <accentRed>Red</accentRed>
+    <accentGray>Gray</accentGray>
+    <subsetMotion>Animations</subsetMotion>
+    <on>On</on>
+    <off>Off</off>
+  </variables>
+</theme>

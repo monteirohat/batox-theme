@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  batox-theme: a dark EmulationStation theme for Batocera, in the style of a console's home screen.
+  https://github.com/monteirohat/batox-theme - see docs/ARCHITECTURE.md
+-->
+<theme defaultView="Home">
+  <formatVersion>7</formatVersion>
+
+  <!-- Design tokens: the only place colors, sizes and timings are set -->
+  <include>./_inc/variables.xml</include>
+
+  <!-- Names shown in Batocera's menus; English is always included as the default -->
+  <include>./lang/en.xml</include>
+  <include lang="pt_BR">./lang/pt_BR.xml</include>
+  <include lang="br">./lang/pt_BR.xml</include>
+
+  <!-- Options in Main menu > User interface settings > Theme configuration -->
+  <subset name="accent" displayName="${subsetAccent}">
+    <include name="blue" displayName="${accentBlue}">./subsets/accent/blue.xml</include>
+    <include name="purple" displayName="${accentPurple}">./subsets/accent/purple.xml</include>
+    <include name="teal" displayName="${accentTeal}">./subsets/accent/teal.xml</include>
+    <include name="red" displayName="${accentRed}">./subsets/accent/red.xml</include>
+    <include name="gray" displayName="${accentGray}">./subsets/accent/gray.xml</include>
+  </subset>
+  <subset name="motion" displayName="${subsetMotion}">
+    <include name="on" displayName="${on}">./subsets/motion/on.xml</include>
+    <include name="off" displayName="${off}">./subsets/motion/off.xml</include>
+  </subset>
+
+  <!-- Views -->
+  <include>./views/screen.xml</include>
+  <include>./views/system.xml</include>
+  <include>./views/common.xml</include>
+  <include>./views/home.xml</include>
+  <include>./views/library.xml</include>
+  <include>./views/detailed.xml</include>
+</theme>

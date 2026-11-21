@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Design tokens (docs/ARCHITECTURE.md#design-tokens). Views use these variables only: never literal
+  colors, sizes or timings. Accent and motion subsets override some of them.
+  Positions and sizes are fractions of the screen; font sizes are fractions of its height.
+-->
+<theme>
+  <formatVersion>7</formatVersion>
+  <variables>
+    <!-- Screen conditions, usable in if="" -->
+    <wideScreen>${screen.ratio} == "16/9" || ${screen.ratio} == "16/10" || ${screen.ratio} == "21/9"</wideScreen>
+
+    <!-- Colors -->
+    <bgTop>0B1A33</bgTop>
+    <bgBottom>04080F</bgBottom>
+    <surface>14233DE6</surface>
+    <accent>3B8CFF</accent>
+    <accentGlow>3B8CFF80</accentGlow>
+    <textPrimary>FFFFFFFF</textPrimary>
+    <textSecondary>A9B7CCFF</textSecondary>
+    <textMuted>6B7A90FF</textMuted>
+    <scrim>000000A0</scrim>
+    <transparent>00000000</transparent>
+
+    <!-- Type sizes -->
+    <fontTitle>0.040</fontTitle>
+    <fontTile>0.026</fontTile>
+    <fontBody>0.021</fontBody>
+    <fontMeta>0.019</fontMeta>
+    <fontClock>0.021</fontClock>
+
+    <!-- Layout: top bar, tile row, details area, help bar -->
+    <marginX>0.06</marginX>
+    <contentWidth>0.88</contentWidth>
+    <topBarY>0.03</topBarY>
+    <titleY>0.22</titleY>
+    <rowY>0.30</rowY>
+    <rowHeight>0.26</rowHeight>
+    <tileWidth>0.105</tileWidth>
+    <tileHeight>0.187</tileHeight>
+    <selectedScale>1.45</selectedScale>
+    <detailsY>0.62</detailsY>
+    <descriptionY>0.67</descriptionY>
+    <descriptionHeight>0.22</descriptionHeight>
+
+    <!-- Motion, in milliseconds (the motion subset sets them; these are its "on" values) -->
+    <motionSelect>200</motionSelect>
+    <motionFade>300</motionFade>
+  </variables>
+</theme>

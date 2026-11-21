@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Home of systems: one row of system tiles; the selected one grows. -->
+<theme>
+  <formatVersion>7</formatVersion>
+  <view name="system">
+    <image name="background" extra="true">
+      <pos>0 0</pos>
+      <origin>0 0</origin>
+      <size>1 1</size>
+      <path>${themePath}/_inc/backgrounds/waves.png</path>
+      <zIndex>0</zIndex>
+    </image>
+    <carousel name="systemcarousel">
+      <type>horizontal</type>
+      <pos>0 ${rowY}</pos>
+      <size>1 ${rowHeight}</size>
+      <logoSize>${tileWidth} ${tileHeight}</logoSize>
+      <logoScale>${selectedScale}</logoScale>
+      <maxLogoCount>8</maxLogoCount>
+      <color>${transparent}</color>
+      <zIndex>20</zIndex>
+    </carousel>
+    <text name="systemInfo">
+      <pos>${marginX} 0.60</pos>
+      <size>${contentWidth} 0.05</size>
+      <alignment>left</alignment>
+      <color>${textSecondary}</color>
+      <backgroundColor>${transparent}</backgroundColor>
+      <fontSize>${fontBody}</fontSize>
+    </text>
+  </view>
+</theme>

@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Library: every game at once, several rows of smaller tiles; details in a side panel. -->
+<theme>
+  <formatVersion>7</formatVersion>
+  <customView name="Library" inherits="grid" displayName="${viewLibrary}">
+    <imagegrid name="gamegrid">
+      <pos>${marginX} 0.12</pos>
+      <size>0.58 0.80</size>
+      <autoLayout>6 4</autoLayout>
+      <margin>0.008 0.012</margin>
+      <zIndex>20</zIndex>
+    </imagegrid>
+    <text name="md_name">
+      <pos>0.66 0.12</pos>
+      <size>0.28 0.10</size>
+    </text>
+    <text name="md_developer">
+      <pos>0.66 0.23</pos>
+      <size>0.28 0.04</size>
+    </text>
+    <datetime name="md_releasedate">
+      <pos>0.66 0.27</pos>
+      <size>0.13 0.04</size>
+    </datetime>
+    <text name="md_genre">
+      <pos>0.80 0.27</pos>
+      <size>0.14 0.04</size>
+    </text>
+    <text name="md_players">
+      <pos>0.66 0.31</pos>
+      <size>0.13 0.04</size>
+    </text>
+    <rating name="md_rating">
+      <pos>0.80 0.315</pos>
+      <size>0.10 0.03</size>
+    </rating>
+    <text name="md_description">
+      <pos>0.66 0.37</pos>
+      <size>0.28 0.52</size>
+    </text>
+  </customView>
+</theme>

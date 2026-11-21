@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Accent color: teal -->
+<theme>
+  <formatVersion>7</formatVersion>
+  <variables>
+    <accent>14B8A6</accent>
+    <accentGlow>14B8A680</accentGlow>
+  </variables>
+</theme>

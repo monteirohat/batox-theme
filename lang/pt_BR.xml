@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Brazilian Portuguese -->
+<theme>
+  <formatVersion>7</formatVersion>
+  <variables lang="pt_BR">
+    <viewHome>Início</viewHome>
+    <viewLibrary>Biblioteca</viewLibrary>
+    <subsetAccent>Cor de destaque</subsetAccent>
+    <accentBlue>Azul</accentBlue>
+    <accentPurple>Roxo</accentPurple>
+    <accentTeal>Verde-azulado</accentTeal>
+    <accentRed>Vermelho</accentRed>
+    <accentGray>Cinza</accentGray>
+    <subsetMotion>Animações</subsetMotion>
+    <on>Ligadas</on>
+    <off>Desligadas</off>
+  </variables>
+</theme>

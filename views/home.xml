@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Home: the theme's main game view. One row of game tiles scrolling sideways; the details area
+  (views/common.xml) shows the selected game. Milestone 2 adds the tile template (rounded frame,
+  glow, name under the selected tile) and its animations.
+-->
+<theme>
+  <formatVersion>7</formatVersion>
+  <customView name="Home" inherits="grid" displayName="${viewHome}">
+    <imagegrid name="gamegrid">
+      <pos>${marginX} ${rowY}</pos>
+      <size>${contentWidth} ${rowHeight}</size>
+      <autoLayout>7 1</autoLayout>
+      <scrollDirection>horizontal</scrollDirection>
+      <centerSelection>partial</centerSelection>
+      <margin>0.008 0.010</margin>
+      <zIndex>20</zIndex>
+    </imagegrid>
+  </customView>
+</theme>

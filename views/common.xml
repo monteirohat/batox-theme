@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Shared by every game view (Home and Library inherit grid): the background, the selected game's
+  art behind a scrim, and the details area under the tile row.
+-->
+<theme>
+  <formatVersion>7</formatVersion>
+  <view name="basic, detailed, grid">
+    <image name="background" extra="true">
+      <pos>0 0</pos>
+      <origin>0 0</origin>
+      <size>1 1</size>
+      <path>${themePath}/_inc/backgrounds/waves.png</path>
+      <zIndex>0</zIndex>
+    </image>
+    <image name="md_fanart">
+      <pos>0 0</pos>
+      <origin>0 0</origin>
+      <size>1 1</size>
+      <zIndex>1</zIndex>
+    </image>
+    <image name="artScrim" extra="true">
+      <pos>0 0</pos>
+      <origin>0 0</origin>
+      <size>1 1</size>
+      <path>${themePath}/_inc/frames/white.png</path>
+      <color>${scrim}</color>
+      <zIndex>2</zIndex>
+    </image>
+
+    <text name="md_name">
+      <pos>${marginX} ${titleY}</pos>
+      <size>${contentWidth} 0.06</size>
+      <alignment>left</alignment>
+      <color>${textPrimary}</color>
+      <fontSize>${fontTitle}</fontSize>
+      <zIndex>30</zIndex>
+    </text>
+    <text name="md_developer">
+      <pos>${marginX} ${detailsY}</pos>
+      <size>0.25 0.04</size>
+      <color>${textSecondary}</color>
+      <fontSize>${fontMeta}</fontSize>
+      <zIndex>30</zIndex>
+    </text>
+    <datetime name="md_releasedate">
+      <pos>0.32 ${detailsY}</pos>
+      <size>0.08 0.04</size>
+      <color>${textSecondary}</color>
+      <fontSize>${fontMeta}</fontSize>
+      <zIndex>30</zIndex>
+    </datetime>
+    <text name="md_genre">
+      <pos>0.41 ${detailsY}</pos>
+      <size>0.20 0.04</size>
+      <color>${textSecondary}</color>
+      <fontSize>${fontMeta}</fontSize>
+      <zIndex>30</zIndex>
+    </text>
+    <text name="md_players">
+      <pos>0.62 ${detailsY}</pos>
+      <size>0.10 0.04</size>
+      <color>${textSecondary}</color>
+      <fontSize>${fontMeta}</fontSize>
+      <zIndex>30</zIndex>
+    </text>
+    <rating name="md_rating">
+      <pos>0.73 ${detailsY}</pos>
+      <size>0.10 0.03</size>
+      <color>${accent}</color>
+      <zIndex>30</zIndex>
+    </rating>
+    <text name="md_description">
+      <pos>${marginX} ${descriptionY}</pos>
+      <size>${contentWidth} ${descriptionHeight}</size>
+      <color>${textSecondary}</color>
+      <fontSize>${fontBody}</fontSize>
+      <zIndex>30</zIndex>
+    </text>
+  </view>
+</theme>

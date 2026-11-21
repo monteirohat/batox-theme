@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Animations on (durations in milliseconds; 0 turns them off) -->
+<theme>
+  <formatVersion>7</formatVersion>
+  <variables>
+    <motionSelect>200</motionSelect>
+    <motionFade>300</motionFade>
+  </variables>
+</theme>
