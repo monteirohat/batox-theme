@@ -89,7 +89,8 @@ Learned on the console (Batocera 43.1); each one cost a round of screenshots:
   selected one so it doesn't cover them, and `logoAlignment` top keeps every tile's top on the
   row, so the selected one grows down and to the right.
 - **`systemInfoDelay`** (the carousel's) is how long the engine waits before showing
-  `systemInfo`; 0 shows the number of games together with the name.
+  `systemInfo`, its own line of games. The home hides that line and shows `{system:total}` in
+  the selected tile's strip instead, which has no delay.
 - **No date.** Themes get no current date: `{global:clock}` is the "show clock" setting ("YES"),
   the `<clock>` element shows the time only (`%H:%M`, or `%I:%M %p` with the 12-hour option)
   and ignores `<format>`, and the date format in the engine is the screensaver's.
@@ -117,6 +118,17 @@ Learned on the console (Batocera 43.1); each one cost a round of screenshots:
   the list being a variable of names separated by spaces. It works in a `<path>`, a `<visible>`,
   an `<opacity>` and a shader's `_binding`, and a condition may sit in another's "else"
   (`a ? 1 : b ? 2 : 3`).
+- **Keys belong to the engine.** A theme can't react to a key or add a second place to move
+  to: on the system view, left and right change the system, and down and up jump to the next
+  group of systems when Batocera's "Quick system select" is on, else do nothing.
+- **A delayed element on the system view.** Each system has its own copy of the view's
+  elements, and an element's `<storyboard>` (with no event) starts over when its system is
+  selected: an `opacity` animation with `begin="1000"` shows it after a second of rest.
+  `begin` and `duration` take plain numbers; a `${variable}` there counts as 0.
+- **System figures**: `{system:favorites}`, `{system:gamesPlayed}`, `{system:gameTime}`,
+  `{system:lastPlayedDate}`, `{system:mostPlayed}`, `{system:isCheevosSupported}` and
+  `{system:isNetplaySupported}` work in the system view's texts. A text shows "None" for 0:
+  `{system:favorites} > 0 ? {system:favorites} : "0"` shows the number.
 - **RetroAchievements**: `${global.cheevos}` is set when an account is configured in Batocera,
   `${global.cheevos.username}` is its name; a `webimage` loads the avatar from
   `media.retroachievements.org` and keeps it in `~/.emulationstation/tmp`.
@@ -131,7 +143,7 @@ batox-theme/
     backgrounds/          generated backgrounds (tools/render-background.py)
     frames/               selection glow (ninepatch) and white.png (tools/render-frames.py)
     fonts/                Inter Light, Regular and SemiBold, and their license (OFL 1.1)
-    icons/                the down arrow of the selected tile; controller, gun and wheel
+    icons/                the top bar's controller, gun and wheel
     shaders/              white.glsl: draws the systems' logos in white
   views/
     screen.xml            always on top: controllers, network and battery, clock
@@ -155,7 +167,7 @@ batox-theme/
     render-background.py  draws the wave backgrounds, in pure Python
     render-system-backgrounds.py  draws the systems' backgrounds (needs Chrome or Chromium)
     render-frames.py      draws the selection glow and white.png, in pure Python
-    render-icons.py       draws the top bar's icons and the down arrow, in pure Python
+    render-icons.py       draws the top bar's icons, in pure Python
     preview-logos.py      shows every system logo as the home draws it, to pick its treatment
     deploy.sh             copies the theme to a console over SSH
     package.sh            builds the release ZIP
@@ -185,7 +197,7 @@ Colors (hex, `RRGGBBAA` where transparency matters):
 | `bgTop` / `bgBottom` | `0B1A33` / `04080F` | background gradient |
 | `wave` | `3B7BE0` at 10–25 % | light waves over the background |
 | `surface` / `tileSurface` | `14233DE6` / `1A2B48` | panels / game tiles |
-| `homeTile` / `homeTileSelected` / `homeStrip` | `15306B` / `3A5797` / `213F7D` (94 %) | the home's tiles |
+| `homeTile` / `homeTileSelected` / `homeStrip` | `15122B` (65 %) / `2E2659` / `1E1940` (94 %) | the home's tiles: dark indigo, after the sunset backgrounds; the unselected ones let the background show through |
 | `selectionColor` | `F2F4F8` | the selection frame: white, like a console home's |
 | `accent` | `3B8CFF` | rating, focus |
 | `textPrimary` | `FFFFFF` | titles, the brand |
@@ -205,10 +217,12 @@ The home at 16:9 (fractions of the screen), measured on a console's home screen:
 0.19 │┌───┐┏━━━━━━━━━┓┌───┐┌───┐┌───┐┌───┐┌───┐┌───┐┌───┐┌───┐┌───┐ │  square tiles of 202 px,
      ││ ▣ │┃         ┃│ ▣ ││ ▣ ││ ▣ ││ ▣ ││ ▣ ││ ▣ ││ ▣ ││ ▣ ││ ▣ │ │  5 px apart, white logos
 0.38 │└───┘┃  logo   ┃└───┘└───┘└───┘└───┘└───┘└───┘└───┘└───┘└───┘ │
-     │     ┃         ┃                                              │  the selection, in the
-0.51 │     ┃─────────┃ Final Burn Neo                                │  second place: 1.7 times
-0.59 │     ┗━━━↓━━━━━┛ Arcade   2019                                │  larger, a strip with an
-0.63 │                 918 GAMES                                    │  arrow, a white frame
+0.44 │     ┃         ┃ Final Burn Neo                                │  the selection, in the
+0.49 │     ┃─────────┃ Arcade   2019                                │  second place: 1.7 times
+0.59 │     ┗918 GAMES┛                                              │  larger, a strip with its
+0.62 │     ┌ favorites   played       play time ┐                   │  games, a white frame;
+0.84 │     └ last played most played  features  ┘                   │  under it, the panel,
+     │                                        the system's picture  │  after a second of rest
 0.88 │ ──────────────────────────────────────────────────────────── │  separator
 0.90 │ (start) MENU  (Y) SEARCH  (X) RANDOM  (B) SELECT             │  help bar
 1.00 └──────────────────────────────────────────────────────────────┘
@@ -247,12 +261,21 @@ Approved on the console, and kept unless asked:
 - A tile: a square of `homeTile` with the system's brand logo in white (see
   [Per-system artwork](#per-system-artwork)), else its name. The selected one grows 1.7 times
   into a card: lighter
-  (`homeTileSelected`), a `homeStrip` strip with a down arrow under it, and a white frame of four
+  (`homeTileSelected`), a `homeStrip` strip with its number of games under it, and a white frame of four
   thin bars.
-- At the card's right: the system's name (light, 0.052), maker and year, and number of games.
-- The background, name, maker, year and number of games follow the selection, crossfading in
-  300 ms; the waves, the separator and the help bar stay. `systemInfoDelay` 0 shows the number
-  of games at once, with the name (the engine waits otherwise).
+- At the card's right: the system's name (light, 0.052), and its maker and year. The engine's
+  own line of games (`systemInfo`) is hidden: the number is in the strip.
+- The name sits right under the row of tiles, so no empty band is left there, and the picture
+  of the machine stays clear below.
+- Under the selected card, from its left edge, the system's panel, like the one a console home
+  opens when you move down from a tile: two rows of a label over its value, in three equal
+  columns. Favorites, games played and play time; under them the last day played, the most
+  played game and the features the system supports, RetroAchievements and Netplay. The second row's values take two lines when they are long. The plate has an unselected tile's
+  color and transparency, sits the tiles' gap under the card, ends at the right edge of the
+  second tile after it and stops a little above the bottom bar's line (0.835 of 0.875). A theme can't react to the down key (see [Engine notes](#engine-notes)), so the panel
+  fades in by itself once the selection has rested a second on a system, and leaves with it.
+- The background, name, maker and year follow the selection, crossfading in 300 ms; the waves,
+  the separator and the help bar stay.
 - Background: the system's picture, drawn by the theme (see
   [Per-system artwork](#per-system-artwork)); a system without one gets Carbon's photo tinted by
   `artTint`, else the waves.
@@ -317,8 +340,8 @@ still to review there.
 **Backgrounds.** `tools/render-system-backgrounds.py` draws one picture per system, 25 so far
 (the test console's): the machine, inked and lit from behind, on a pier in front of a coastal
 city at sunset, with palms, in saturated pinks, oranges and purples over the theme's navy. The
-left and the top stay dark for the tiles and the texts, and a soft shade sits behind the
-system's name. Four moods of sky (`vice`, `miami`, `gold`, `night`) vary the row.
+left stays dark for the texts and the very top for the top bar, the sky keeps its color behind
+the row of tiles, which are translucent, and a soft shade sits behind the system's name. Four moods of sky (`vice`, `miami`, `gold`, `night`) vary the row.
 
 - A machine is a few boxes (a body, its raised parts, a cartridge, a controller) with details
   drawn flat on their faces, all seen from the same corner; consoles, handhelds, arcade

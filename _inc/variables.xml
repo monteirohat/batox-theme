@@ -63,7 +63,7 @@
     <!--
       The home, measured on a console's home screen and scaled to 1920 x 1080: square tiles of
       0.105 x 0.1867 (202 px) 5 px apart, in cells of 0.1075; the selected tile 1.7 times larger,
-      its top on the row's, with a strip and a down arrow under it, and one tile before it. The
+      its top on the row's, with a strip and its number of games under it, and one tile before it. The
       row is a carousel 15 cells wide that starts off-screen, so the selection, at its center,
       stays in the second place: its center at 0.2385 (left edge 0.149), the carousel at
       0.2385 - 7.5 x 0.1075.
@@ -75,14 +75,14 @@
     <homeTileSize>0.105 0.1867</homeTileSize>
     <homeScale>1.7</homeScale>
     <homeFrame>0.013</homeFrame>  <!-- the selection frame's width, in tiles: 4.5 px at 1080p -->
-    <homeTile>15306BF0</homeTile>
-    <homeTileSelected>3A5797F0</homeTileSelected>
-    <homeStrip>213F7DF0</homeStrip>
+    <homeTile>15122BA6</homeTile>  <!-- 65 %: the background shows a little through the tiles -->
+    <homeTileSelected>2E2659F0</homeTileSelected>
+    <homeStrip>1E1940F0</homeStrip>
+    <fontTileGames>0.02</fontTileGames>  <!-- the number of games in the strip, before the tile grows -->
     <homeTitleX>0.337</homeTitleX>
-    <homeTitleY>0.505</homeTitleY>
+    <homeTitleY>0.395</homeTitleY>
     <fontHomeTitle>0.052</fontHomeTitle>
-    <homeMakerY>0.59</homeMakerY>
-    <homeInfoY>0.625</homeInfoY>
+    <homeMakerY>0.471</homeMakerY>
     <homeMarginX>0.045</homeMarginX>
     <!--
       The tiles' logos (views/system.xml): the largest a logo gets in its tile, in tiles. Then the
@@ -97,6 +97,28 @@
     <logoCutGray>c64 c16 c20 c128 plus4 cplus4 atari gong kaneko msu-md neogeomvs segacd snesh trs-80 arduboy nintendo auto-strategy</logoCutGray>
     <logoAsName>auto-allgames</logoAsName>
     <fontTileName>0.036</fontTileName>
+    <!--
+      The system's panel (views/system.xml), under the selected card: six figures in three columns
+      and two rows.
+    -->
+    <infoX>0.147</infoX>   <!-- the selected card's left edge, frame included -->
+    <infoY>0.616</infoY>   <!-- under the card's frame (0.611), the gap of the tiles (5 px) apart -->
+    <infoSize>0.3959 0.219</infoSize>   <!-- to the right edge of the second tile after the card -->
+    <infoPanel>15122BA6</infoPanel>     <!-- an unselected tile's color and transparency -->
+    <!--
+      Inside, at 1080p: 46 px of margin above, as much under a one-line value, 28 px at the sides; three equal columns;
+      two rows of a label over its value, 6 px between them and 36 px between the rows. The
+      second row's values take two lines when they are long.
+    -->
+    <infoCol1X>0.1616</infoCol1X>
+    <infoCol2X>0.2838</infoCol2X>
+    <infoCol3X>0.4060</infoCol3X>
+    <infoLabelY>0.6465</infoLabelY>
+    <infoValueY>0.6733</infoValueY>
+    <infoLabel2Y>0.7280</infoLabel2Y>
+    <infoValue2Y>0.7586</infoValue2Y>
+    <fontInfoLabel>0.0155</fontInfoLabel>
+    <fontInfoValue>0.027</fontInfoValue>
     <!--
       Top bar's left: the connected controllers; then the RetroAchievements profile, if any.
       The engine gives each controller a square as tall as the bar (the icons are square, the

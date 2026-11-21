@@ -14,5 +14,12 @@
     <subsetMotion>Animations</subsetMotion>
     <on>On</on>
     <off>Off</off>
+    <infoFavorites>Favorites</infoFavorites>
+    <infoPlayed>Played</infoPlayed>
+    <infoTime>Play time</infoTime>
+    <infoLast>Last played</infoLast>
+    <infoMost>Most played</infoMost>
+    <infoGames>games</infoGames>
+    <infoFeatures>Features</infoFeatures>
   </variables>
 </theme>

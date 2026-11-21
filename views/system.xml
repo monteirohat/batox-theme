@@ -2,7 +2,7 @@
 <!--
   The theme's home, after a console's home screen: one row of square tiles with white system
   icons, 5 px apart; the selected tile, in the second place, grows 1.7 times into a card with a
-  strip and a down arrow under it, framed in white, and the system's name shows at its right.
+  strip with its number of games under it, framed in white, and the system's name shows at its right.
   A carousel (not a grid): in a carousel each system has its own copy of the view's elements, so
   the background and the texts follow the selection.
 -->
@@ -73,8 +73,6 @@
       <logoAlignment>top</logoAlignment>
       <maxLogoCount>15</maxLogoCount>
       <minLogoOpacity>1</minLogoOpacity>
-      <!-- The number of games shows at once, with the system's name (the engine waits otherwise) -->
-      <systemInfoDelay>0</systemInfoDelay>
       <transitionSpeed>250</transitionSpeed>
       <color>${transparent}</color>
       <zIndex>20</zIndex>
@@ -126,7 +124,7 @@
           <fontSize>${fontTileName}</fontSize>
           <zIndex>2</zIndex>
         </text>
-        <!-- Under the selected tile: a strip with a down arrow -->
+        <!-- Under the selected tile: a strip with the number of games -->
         <image>
           <path>${themePath}/_inc/frames/white.png</path>
           <pos>0 1</pos>
@@ -142,11 +140,17 @@
             <animation property="opacity" to="0" duration="${motionSelect}" mode="easeOut"/>
           </storyboard>
         </image>
-        <image>
-          <path>${themePath}/_inc/icons/arrow-down.svg</path>
+        <text>
+          <text>{system:total} ${infoGames}</text>
           <pos>0.5 1.125</pos>
           <origin>0.5 0.5</origin>
-          <maxSize>0.13 0.13</maxSize>
+          <size>0.92 0.2</size>
+          <alignment>center</alignment>
+          <verticalAlignment>center</verticalAlignment>
+          <forceUppercase>1</forceUppercase>
+          <color>${textPrimary}</color>
+          <fontPath>${fontRegular}</fontPath>
+          <fontSize>${fontTileGames}</fontSize>
           <opacity>0</opacity>
           <zIndex>2</zIndex>
           <storyboard event="activate">
@@ -155,7 +159,7 @@
           <storyboard event="deactivate">
             <animation property="opacity" to="0" duration="${motionSelect}" mode="easeOut"/>
           </storyboard>
-        </image>
+        </text>
         <!--
           The selection: a thin white frame just outside the tile and its strip, four bars of
           ${homeFrame} of a tile (a ninepatch blurs once the tile is scaled)
@@ -223,7 +227,7 @@
       </itemTemplate>
     </carousel>
 
-    <!-- At the selected card's right: the system's name, maker, year and games -->
+    <!-- At the selected card's right: the system's name, maker and year -->
     <text name="systemTitle" extra="true">
       <text>${system.fullName}</text>
       <pos>${homeTitleX} ${homeTitleY}</pos>
@@ -245,15 +249,219 @@
       <fontSize>${fontMeta}</fontSize>
       <zIndex>30</zIndex>
     </text>
+    <!-- The engine's own line of games: the number is in the strip under the selected tile -->
     <text name="systemInfo">
-      <pos>${homeTitleX} ${homeInfoY}</pos>
-      <size>0.62 0.035</size>
+      <visible>false</visible>
+    </text>
+
+    <!--
+      The system's panel, under the selected card and from its left edge, like the one a console
+      home opens under the selected tile: it fades in
+      by itself once the selection has rested a second on a system (a theme can't react to the
+      down key). Each system has its own copy of these elements and its storyboard starts over
+      when the system is selected; begin and duration take plain numbers, not variables.
+    -->
+    <image name="infoPanel" extra="true">
+      <path>${themePath}/_inc/frames/white.png</path>
+      <pos>${infoX} ${infoY}</pos>
+      <origin>0 0</origin>
+      <size>${infoSize}</size>
+      <color>${infoPanel}</color>
+      <zIndex>31</zIndex>
+      <opacity>0</opacity>
+      <storyboard>
+        <animation property="opacity" from="0" to="1" begin="1000" duration="300" mode="easeOut"/>
+      </storyboard>
+    </image>
+    <text name="infoFavoritesLabel" extra="true">
+      <text>${infoFavorites}</text>
+      <pos>${infoCol1X} ${infoLabelY}</pos>
+      <size>0.108 0.04</size>
       <alignment>left</alignment>
+      <verticalAlignment>center</verticalAlignment>
+      <forceUppercase>1</forceUppercase>
       <color>${textSecondary}</color>
-      <backgroundColor>${transparent}</backgroundColor>
+      <fontPath>${fontRegular}</fontPath>
+      <fontSize>${fontInfoLabel}</fontSize>
+      <zIndex>32</zIndex>
+      <opacity>0</opacity>
+      <storyboard>
+        <animation property="opacity" from="0" to="1" begin="1000" duration="300" mode="easeOut"/>
+      </storyboard>
+    </text>
+    <text name="infoFavorites" extra="true">
+      <text>{system:favorites} &gt; 0 ? {system:favorites} : "0"</text>
+      <pos>${infoCol1X} ${infoValueY}</pos>
+      <size>0.108 0.04</size>
+      <alignment>left</alignment>
+      <verticalAlignment>center</verticalAlignment>
+      <color>${textPrimary}</color>
+      <fontPath>${fontLight}</fontPath>
+      <fontSize>${fontInfoValue}</fontSize>
+      <zIndex>32</zIndex>
+      <opacity>0</opacity>
+      <storyboard>
+        <animation property="opacity" from="0" to="1" begin="1000" duration="300" mode="easeOut"/>
+      </storyboard>
+    </text>
+    <text name="infoPlayedLabel" extra="true">
+      <text>${infoPlayed}</text>
+      <pos>${infoCol2X} ${infoLabelY}</pos>
+      <size>0.108 0.04</size>
+      <alignment>left</alignment>
+      <verticalAlignment>center</verticalAlignment>
+      <forceUppercase>1</forceUppercase>
+      <color>${textSecondary}</color>
+      <fontPath>${fontRegular}</fontPath>
+      <fontSize>${fontInfoLabel}</fontSize>
+      <zIndex>32</zIndex>
+      <opacity>0</opacity>
+      <storyboard>
+        <animation property="opacity" from="0" to="1" begin="1000" duration="300" mode="easeOut"/>
+      </storyboard>
+    </text>
+    <text name="infoPlayed" extra="true">
+      <text>{system:gamesPlayed} &gt; 0 ? {system:gamesPlayed} : "0"</text>
+      <pos>${infoCol2X} ${infoValueY}</pos>
+      <size>0.108 0.04</size>
+      <alignment>left</alignment>
+      <verticalAlignment>center</verticalAlignment>
+      <color>${textPrimary}</color>
+      <fontPath>${fontLight}</fontPath>
+      <fontSize>${fontInfoValue}</fontSize>
+      <zIndex>32</zIndex>
+      <opacity>0</opacity>
+      <storyboard>
+        <animation property="opacity" from="0" to="1" begin="1000" duration="300" mode="easeOut"/>
+      </storyboard>
+    </text>
+    <text name="infoTimeLabel" extra="true">
+      <text>${infoTime}</text>
+      <pos>${infoCol3X} ${infoLabelY}</pos>
+      <size>0.108 0.04</size>
+      <alignment>left</alignment>
+      <verticalAlignment>center</verticalAlignment>
+      <forceUppercase>1</forceUppercase>
+      <color>${textSecondary}</color>
+      <fontPath>${fontRegular}</fontPath>
+      <fontSize>${fontInfoLabel}</fontSize>
+      <zIndex>32</zIndex>
+      <opacity>0</opacity>
+      <storyboard>
+        <animation property="opacity" from="0" to="1" begin="1000" duration="300" mode="easeOut"/>
+      </storyboard>
+    </text>
+    <text name="infoTime" extra="true">
+      <text>{system:gameTime}</text>
+      <pos>${infoCol3X} ${infoValueY}</pos>
+      <size>0.108 0.04</size>
+      <alignment>left</alignment>
+      <verticalAlignment>center</verticalAlignment>
+      <color>${textPrimary}</color>
+      <fontPath>${fontLight}</fontPath>
+      <fontSize>${fontInfoValue}</fontSize>
+      <zIndex>32</zIndex>
+      <opacity>0</opacity>
+      <storyboard>
+        <animation property="opacity" from="0" to="1" begin="1000" duration="300" mode="easeOut"/>
+      </storyboard>
+    </text>
+    <!-- Second row: the last day played, the most played game and what the system supports -->
+    <text name="infoLastLabel" extra="true">
+      <text>${infoLast}</text>
+      <pos>${infoCol1X} ${infoLabel2Y}</pos>
+      <size>0.108 0.04</size>
+      <alignment>left</alignment>
+      <verticalAlignment>center</verticalAlignment>
+      <forceUppercase>1</forceUppercase>
+      <color>${textSecondary}</color>
+      <fontPath>${fontRegular}</fontPath>
+      <fontSize>${fontInfoLabel}</fontSize>
+      <zIndex>32</zIndex>
+      <opacity>0</opacity>
+      <storyboard>
+        <animation property="opacity" from="0" to="1" begin="1000" duration="300" mode="easeOut"/>
+      </storyboard>
+    </text>
+    <text name="infoLast" extra="true">
+      <text>empty({system:lastPlayedDate}) ? "-" : {system:lastPlayedDate}</text>
+      <pos>${infoCol1X} ${infoValue2Y}</pos>
+      <size>0.108 0.066</size>
+      <lineSpacing>1.25</lineSpacing>
+      <alignment>left</alignment>
+      <verticalAlignment>top</verticalAlignment>
+      <color>${textPrimary}</color>
       <fontPath>${fontRegular}</fontPath>
       <fontSize>${fontMeta}</fontSize>
-      <zIndex>30</zIndex>
+      <zIndex>32</zIndex>
+      <opacity>0</opacity>
+      <storyboard>
+        <animation property="opacity" from="0" to="1" begin="1000" duration="300" mode="easeOut"/>
+      </storyboard>
+    </text>
+    <text name="infoMostLabel" extra="true">
+      <text>${infoMost}</text>
+      <pos>${infoCol2X} ${infoLabel2Y}</pos>
+      <size>0.108 0.04</size>
+      <alignment>left</alignment>
+      <verticalAlignment>center</verticalAlignment>
+      <forceUppercase>1</forceUppercase>
+      <color>${textSecondary}</color>
+      <fontPath>${fontRegular}</fontPath>
+      <fontSize>${fontInfoLabel}</fontSize>
+      <zIndex>32</zIndex>
+      <opacity>0</opacity>
+      <storyboard>
+        <animation property="opacity" from="0" to="1" begin="1000" duration="300" mode="easeOut"/>
+      </storyboard>
+    </text>
+    <text name="infoMost" extra="true">
+      <text>empty({system:mostPlayed}) ? "-" : {system:mostPlayed}</text>
+      <pos>${infoCol2X} ${infoValue2Y}</pos>
+      <size>0.108 0.066</size>
+      <lineSpacing>1.25</lineSpacing>
+      <alignment>left</alignment>
+      <verticalAlignment>top</verticalAlignment>
+      <color>${textPrimary}</color>
+      <fontPath>${fontRegular}</fontPath>
+      <fontSize>${fontMeta}</fontSize>
+      <zIndex>32</zIndex>
+      <opacity>0</opacity>
+      <storyboard>
+        <animation property="opacity" from="0" to="1" begin="1000" duration="300" mode="easeOut"/>
+      </storyboard>
+    </text>
+    <text name="infoSupportLabel" extra="true">
+      <text>${infoFeatures}</text>
+      <pos>${infoCol3X} ${infoLabel2Y}</pos>
+      <size>0.108 0.04</size>
+      <alignment>left</alignment>
+      <verticalAlignment>center</verticalAlignment>
+      <forceUppercase>1</forceUppercase>
+      <color>${textSecondary}</color>
+      <fontPath>${fontRegular}</fontPath>
+      <fontSize>${fontInfoLabel}</fontSize>
+      <zIndex>32</zIndex>
+      <opacity>0</opacity>
+      <storyboard>
+        <animation property="opacity" from="0" to="1" begin="1000" duration="300" mode="easeOut"/>
+      </storyboard>
+    </text>
+    <text name="infoSupport" extra="true">
+      <text>{system:isCheevosSupported} ? {system:isNetplaySupported} ? "RetroAchievements Netplay" : "RetroAchievements" : {system:isNetplaySupported} ? "Netplay" : "-"</text>
+      <pos>${infoCol3X} ${infoValue2Y}</pos>
+      <size>0.108 0.066</size>
+      <lineSpacing>1.25</lineSpacing>
+      <alignment>left</alignment>
+      <verticalAlignment>top</verticalAlignment>
+      <color>${accent}</color>
+      <fontPath>${fontRegular}</fontPath>
+      <fontSize>${fontMeta}</fontSize>
+      <zIndex>32</zIndex>
+      <opacity>0</opacity>
+      <storyboard>
+        <animation property="opacity" from="0" to="1" begin="1000" duration="300" mode="easeOut"/>
+      </storyboard>
     </text>
 
     <!-- Bottom bar -->

@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 """Draws the systems' backgrounds (systems/<name>/background.jpg): the machine, inked and lit
 from behind, on a pier in front of a coastal city at sunset. Saturated pinks, oranges and
-purples over the theme's navy, with the left and the top kept dark for the tiles and the texts.
+purples over the theme's navy, with the left kept dark for the texts and the very top for the
+top bar; the sky keeps its color behind the home's row of tiles, which are translucent.
 
     python3 tools/render-system-backgrounds.py            # every system
     python3 tools/render-system-backgrounds.py snes nes   # only these
@@ -54,22 +55,22 @@ def dim(c, keep):
 # Sky from the top to the horizon (fractions of the height), sun, light and shadow of each mood
 MOODS = {
     "vice": dict(
-        sky=[(0, "#040816"), (.34, "#0B1238"), (.42, "#3A1466"), (.50, "#9A1F85"), (.565, "#F03C72"),
+        sky=[(0, "#040816"), (.14, "#0B1238"), (.33, "#3A1466"), (.50, "#9A1F85"), (.565, "#F03C72"),
              (.61, "#FF7F4F"), (.64, "#FFCB66")],
         sun=("#FFE9A0", "#FF6F61"), glow="#FF5E8A", rim="#FFB07A", shadow="#2B1250", city="#27104D",
         cloud=("#5A1C78", "#FF8E7A"), water=("#C24A6E", "#45155C", "#080A1E")),
     "miami": dict(
-        sky=[(0, "#040816"), (.34, "#071A3A"), (.42, "#0F4A80"), (.50, "#6A55B8"), (.565, "#F0629F"),
+        sky=[(0, "#040816"), (.14, "#071A3A"), (.33, "#0F4A80"), (.50, "#6A55B8"), (.565, "#F0629F"),
              (.61, "#FF9F7A"), (.64, "#FFDDA6")],
         sun=("#FFF1C1", "#FF8FB1"), glow="#FF8FBF", rim="#FFC2A0", shadow="#1B2A5E", city="#1D2A63",
         cloud=("#3F4FA0", "#FFA9B8"), water=("#D46A98", "#2C3A86", "#060C22")),
     "gold": dict(
-        sky=[(0, "#040816"), (.34, "#101040"), (.42, "#43207A"), (.50, "#B23F74"), (.56, "#F6774C"),
+        sky=[(0, "#040816"), (.14, "#101040"), (.33, "#43207A"), (.50, "#B23F74"), (.56, "#F6774C"),
              (.61, "#FFAA3F"), (.64, "#FFE680")],
         sun=("#FFF4B8", "#FFA23D"), glow="#FF9A3D", rim="#FFD08A", shadow="#3A1848", city="#33154A",
         cloud=("#6B2A6E", "#FFB05E"), water=("#D9763F", "#5A1E55", "#0A0A1E")),
     "night": dict(
-        sky=[(0, "#03050F"), (.36, "#070B26"), (.46, "#1F1152"), (.54, "#62188C"), (.60, "#CC2585"),
+        sky=[(0, "#03050F"), (.14, "#070B26"), (.36, "#1F1152"), (.54, "#62188C"), (.60, "#CC2585"),
              (.64, "#FF6494")],
         sun=("#FFF3FF", "#F0B7FF"), glow="#C13CFF", rim="#FF6AD5", shadow="#150C3A", city="#120A33",
         cloud=("#2A1560", "#D94BB0"), water=("#8A2A86", "#2A1160", "#05061A")),
@@ -393,7 +394,7 @@ def scene(page, mood, rnd):
     cloud = page.gradient([(0, shade), (.55, mix(shade, lit, .55)), (1, lit)])
     clouds = []
     for _ in range(7):
-        cx, cy = rnd.uniform(720, 1900), rnd.uniform(HORIZON - 250, HORIZON - 70)
+        cx, cy = rnd.uniform(720, 1900), rnd.uniform(HORIZON - 440, HORIZON - 70)
         w = rnd.uniform(220, 520)
         for i in range(9):
             t = i / 8 - .5
@@ -427,7 +428,7 @@ def scene(page, mood, rnd):
     # An island with palms, far to the right
     dark = mix(mood["city"], "#04030C", .55)
     page.add(f'<ellipse cx="1800" cy="{HORIZON + 14:.0f}" rx="270" ry="20" fill="{dark}"/>')
-    for x, hgt, lean in ((1700, 250, -34), (1822, 300, 26), (1895, 215, -18), (1608, 150, 14)):
+    for x, hgt, lean in ((1700, 330, -40), (1822, 410, 30), (1895, 280, -20), (1608, 190, 16)):
         palm(page, x, HORIZON + 8, hgt * rnd.uniform(.92, 1.06), lean, dark, rnd)
     page.add(f'<rect x="600" y="{HORIZON - 26:.0f}" width="{W - 600}" height="34" fill="{mood["glow"]}" opacity=".22" filter="url(#blur8)"/>')
     # The water: the sky upside down, darker, with the sun's streak
@@ -448,12 +449,12 @@ def scene(page, mood, rnd):
 
 
 def finish(page):
-    """Keeps the left, the top and the bottom dark for the texts, and adds a grain of paint."""
+    """Keeps the left, the very top and the bottom dark for the texts, and adds a grain of paint."""
     left = page.gradient([(0, NAVY, .97), (.26, NAVY, .90), (.46, NAVY, .50), (.64, NAVY, 0)], 0, 0, 1, 0)
-    top = page.gradient([(0, NAVY, .96), (.28, NAVY, .78), (.42, NAVY, 0)])
+    top = page.gradient([(0, NAVY, .95), (.11, NAVY, .84), (.19, NAVY, .34), (.30, NAVY, 0)])
     bottom = page.gradient([(.84, "#03040C", 0), (1, "#03040C", .70)])
     # A soft shade behind the system's name, which may run far to the right over the bright sky
-    page.add(f'<ellipse cx="960" cy="552" rx="560" ry="78" fill="{NAVY}" opacity=".42" filter="url(#blur45)"/>')
+    page.add(f'<ellipse cx="960" cy="478" rx="560" ry="84" fill="{NAVY}" opacity=".42" filter="url(#blur45)"/>')
     page.add(f'<rect width="{W}" height="{H}" fill="{left}"/><rect width="{W}" height="{H}" fill="{top}"/>'
              f'<rect width="{W}" height="{H}" fill="{bottom}"/>'
              f'<rect width="{W}" height="{H}" filter="url(#grain)" opacity=".07" style="mix-blend-mode:overlay"/>')

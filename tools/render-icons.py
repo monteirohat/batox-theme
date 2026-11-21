@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
-"""Draws the theme's own icons, flat and white: the top bar's controller, gun and wheel and the
-down arrow under the selected tile (_inc/icons/). The systems' tiles show their brand logos
-instead (views/system.xml).
+"""Draws the theme's own icons, flat and white: the top bar's controller, gun and wheel
+(_inc/icons/). The systems' tiles show their brand logos instead (views/system.xml).
 
     python3 tools/render-icons.py
 
@@ -70,9 +69,6 @@ ICONS = {
                part(rr(45, 50, 10, 32, 4)),
                part(circle(50, 50, 9), circle(50, 50, 4))],
               "8 8 84 84"),
-    # Under the selected tile
-    "arrow-down": ([part(poly([(44, 20), (56, 20), (56, 58), (70, 58), (50, 82), (30, 58), (44, 58)]))],
-                   "0 0 100 100"),
 }
 
 
