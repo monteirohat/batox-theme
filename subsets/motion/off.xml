@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!-- Animations off (durations in milliseconds; 0 turns them off) -->
-<theme>
-  <formatVersion>7</formatVersion>
-  <variables>
-    <motionSelect>0</motionSelect>
-    <motionFade>0</motionFade>
-  </variables>
-</theme>

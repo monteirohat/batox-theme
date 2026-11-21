@@ -143,6 +143,23 @@ Learned on the console (Batocera 43.1); each one cost a round of screenshots:
   after `delay` seconds. The sound follows Batocera's own option.
 - **A shader's `_binding` without a binding** is still evaluated: with static variables only
   (`" ${system.theme} "`), it picks a value per system in a game view.
+- **Menus are the engine's.** The `menu` view sets their plate (a ninepatch and a color), their
+  fonts and colors, the selected row's color (a plain color: no frame), their buttons and one
+  icon per named entry; not their layout, row margins or capitals.
+- **A menu over the whole screen.** EmulationStation's `FullScreenMenu` setting (a string) makes
+  a menu fill the screen, but with the 10 px margins of its layout for tiny screens, and a theme
+  can't set it. Instead: `fadePath` is an image the engine draws over the whole screen behind
+  any menu, untinted (`page.png`, the page's color baked in), and the menu stays a panel in its
+  middle.
+- **The plate's fit.** The engine fits a menu's ninepatch 16 px inside the menu and lets its
+  corners out again: with `cornerSize` 16 the plate is the menu's exact size, under it a gap
+  shows around it and the rows' arrows stand outside, over it the plate reaches past the content
+  (64 gives 48 px of margin). Popups (the update notice) take the same plate and reach, so it
+  can't be made as large as the screen.
+- **A menu's button** draws its box in the text's color: at rest it needs an outline
+  (`outline.png`), or the label disappears on it; focused, a filled image (`white.png`).
+- **A menu's switch from the theme is drawn past the row's end**: the engine measures it before
+  it has loaded it (SVG or PNG alike). The theme keeps the engine's own switches.
 - **RetroAchievements**: `${global.cheevos}` is set when an account is configured in Batocera,
   `${global.cheevos.username}` is its name; a `webimage` loads the avatar from
   `media.retroachievements.org` and keeps it in `~/.emulationstation/tmp`.
@@ -155,20 +172,19 @@ batox-theme/
   _inc/
     variables.xml         design tokens: the only place colors, sizes and fonts are set
     backgrounds/          generated backgrounds (tools/render-background.py)
-    frames/               white.png and the list's selector (tools/render-frames.py)
+    frames/               white.png, the list's selector, the buttons' outline, the menus' page
     fonts/                Inter Light, Regular and SemiBold, and their license (OFL 1.1)
     icons/                the top bar's controller, gun and wheel; the tile for a missing cover
+      menu/               one white icon per entry of the menus
     shaders/              white.glsl: draws the systems' logos in white
   views/
     screen.xml            always on top: controllers, network and battery, clock
-    splash.xml            loading screen (milestone 3)
-    menu.xml              EmulationStation's menus, dark and rounded (milestone 3)
+    menu.xml              EmulationStation's menus: plate, fonts, selection, buttons, icons
     system.xml            Home of systems: the row of system tiles
     common.xml            the game lists: the system's picture and logo, the list, the bottom bar
     detailed.xml          the selected game's cover, name, details and description
   subsets/
     accent/               accent colors: blue (default), purple, teal, red, gray
-    motion/               animations on (default) or off
   systems/
     README.md             the artwork convention
     <system>/             the system's background, named by ${system.theme}
@@ -177,14 +193,16 @@ batox-theme/
     check.py              validates the theme (XML, includes, paths, elements, sizes)
     render-background.py  draws the wave backgrounds, in pure Python
     render-system-backgrounds.py  draws the systems' backgrounds (needs Chrome or Chromium)
-    render-frames.py      draws white.png and the list's selector, in pure Python
-    render-icons.py       draws the top bar's icons and the missing cover's tile, in pure Python
+    render-frames.py      draws white.png, the list's selector and the buttons' outline
+    render-icons.py       draws the top bar's and the menus' icons and the missing cover's tile
     preview-logos.py      shows every system logo as the home draws it, to pick its treatment
     deploy.sh             copies the theme to a console over SSH
     package.sh            builds the release ZIP
   docs/
     ARCHITECTURE.md       this file
     STYLE.md              how every screen should look
+    PUBLISHING.md         releasing a version; how Batocera lists themes
+    batocera-list-entry.json  the entry to ask Batocera's list for
     screenshots/          one per view and screen size, for the README
   .github/workflows/      ci.yml (check.py on every push), release.yml (ZIP on a tag)
 ```
@@ -242,8 +260,10 @@ The home at 16:9 (fractions of the screen), measured on a console's home screen:
      photo, tinted by artTint; else the waves
 ```
 
-Motion: the selected tile grows 1.7 times, lightens, and its strip and frame fade in, in 200 ms
-(ease-out); the background and texts crossfade in 300 ms. The motion subset turns it off.
+Motion: the selected tile grows 1.7 times as the row slides (250 ms); its color, strip and frame
+change at once; the background and texts crossfade in 300 ms; the system's panel fades in
+(300 ms) after a second of rest. There is no option to turn it off: a storyboard's duration
+takes a plain number, so an option can't change it.
 
 ### Decided
 
@@ -332,7 +352,15 @@ transparency, 5 px apart, from the home's row top (0.208) to a little above the 
 
 - `screen`, on every view: the connected controllers at the top left; the network icon (and the
   battery on a handheld) and the clock at the top right.
-- `menu` (to do): EmulationStation's menus in the home's style ([STYLE.md](STYLE.md)).
+- `menu`: EmulationStation's menus in the home's style ([STYLE.md](STYLE.md)). One square plate
+  of an unselected tile's color and transparency on a darker page (95 %); the title in Inter Light;
+  rows in Inter Regular, one step down at rest and white on `homeTileSelected` when selected;
+  group labels small over a thin line; square buttons, outlined at rest; and 18 white icons of
+  the theme's own, drawn by `tools/render-icons.py`, for the entries the engine names (Kodi,
+  games, controllers, interface, sound, network, scraper, updates, system, quit, restart,
+  shutdown...). A menu takes the whole screen: a dark page (`menuPage`) over everything behind
+  it, and the menu as a panel in the middle (`menuPlate`), 48 px wider than its content on each
+  side; the tallest menus stop just over the help prompts.
 - `splash` (to do): the loading screen.
 
 ## Per-system artwork
@@ -386,7 +414,6 @@ Subsets, with names translated in `lang/`:
 | Subset | Choices | Default |
 |---|---|---|
 | Accent color | blue, purple, teal, red, gray | blue |
-| Animations | on, off | on |
 
 ## Performance
 
@@ -394,7 +421,7 @@ Subsets, with names translated in `lang/`:
 - No `screenshader` blur and no videos by default (the Pi 4's GPU drops frames with them in a
   full grid); a later subset may offer videos in the details area.
 - `imagegrid` keeps few tiles alive: one row shows about eight.
-- Animations short and on opacity, scale and position only.
+- Animations few and short, on opacity only.
 
 ## Tools and workflow
 
@@ -402,7 +429,7 @@ Subsets, with names translated in `lang/`:
 python3 tools/check.py                    # well-formed XML, includes and paths exist, elements, sizes
 python3 tools/render-background.py        # writes _inc/backgrounds/waves.png
 python3 tools/render-system-backgrounds.py  # writes systems/*/background.jpg (needs Chrome)
-CONSOLE=192.168.0.84 tools/deploy.sh      # copies the theme to /userdata/themes/batox-theme
+CONSOLE=batocera.local tools/deploy.sh      # copies the theme to /userdata/themes/batox-theme
 python3 tools/render-frames.py            # writes _inc/frames/white.png and selector.png
 python3 tools/render-icons.py             # writes _inc/icons/*.svg
 python3 tools/preview-logos.py /tmp/logos # writes dist/logos.html from a copy of Carbon's logos
@@ -426,10 +453,12 @@ unpacking it into `/userdata/themes`.
    frame.
 3. **Game list** (first version done): the list at the left, the selected game's cover and
    details at the right, in the home's style.
-4. **Menus and splash**, in the same style; English and Brazilian Portuguese.
+4. **Menus** (done) and the splash, in the same style; English and Brazilian Portuguese.
 5. **Artwork**: a background for each of Batocera's other systems; the logos still to review.
-6. **Subsets** (accent, motion), small screens and 4:3.
-7. **Release 1.0**: screenshots, README, ZIP from CI, installable from BatoX.
+6. **Release 1.0** (done): screenshots, README, changelog, the ZIP from CI
+   ([PUBLISHING.md](PUBLISHING.md)).
+7. **Next**: the loading screen, small screens and 4:3, more systems' pictures, and asking for a
+   place in Batocera's theme list.
 
 ## Legal
 

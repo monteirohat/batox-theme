@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  EmulationStation's menus, in the home's style (docs/STYLE.md): one dark, square plate, white
+  type, the selected row solid, and the theme's own white icons. The engine draws the menus
+  itself: a theme sets their colors, fonts and images, not their layout.
+-->
+<theme>
+  <formatVersion>7</formatVersion>
+  <view name="menu">
+    <!--
+      A menu takes the whole screen: the engine draws page.png over everything behind it, then
+      the menu itself, a panel in the middle. The panel's plate reaches menuPlateReach less 16 px
+      past the menu's content on every side (that is how the engine fits it), which is the
+      menu's margin; 16 px would be the content's exact size, and less leaves a gap around it.
+    -->
+    <menuBackground name="menubg">
+      <path>${themePath}/_inc/frames/white.png</path>
+      <fadePath>${themePath}/_inc/frames/page.png</fadePath>
+      <cornerSize>${menuPlateReach}</cornerSize>
+      <color>${menuPlate}</color>
+      <scrollbarColor>${separatorColor}</scrollbarColor>
+      <scrollbarSize>0.003</scrollbarSize>
+      <scrollbarCorner>0</scrollbarCorner>
+      <scrollbarAlignment>innerright</scrollbarAlignment>
+    </menuBackground>
+    <menuText name="menutitle">
+      <fontPath>${fontLight}</fontPath>
+      <fontSize>${fontTitle}</fontSize>
+      <color>${textPrimary}</color>
+    </menuText>
+    <menuText name="menufooter">
+      <fontPath>${fontRegular}</fontPath>
+      <fontSize>${fontMenuSmall}</fontSize>
+      <color>${textSecondary}</color>
+    </menuText>
+    <!-- Rows at rest one step down, the selected one white on the selected surface's color -->
+    <menuText name="menutext">
+      <fontPath>${fontRegular}</fontPath>
+      <fontSize>${fontMenu}</fontSize>
+      <color>${textSecondary}</color>
+      <selectedColor>${textPrimary}</selectedColor>
+      <selectorColor>${homeTileSelected}</selectorColor>
+      <selectorColorEnd>${homeTileSelected}</selectorColorEnd>
+      <separatorColor>${transparent}</separatorColor>
+    </menuText>
+    <menuTextSmall name="menutextsmall">
+      <fontPath>${fontRegular}</fontPath>
+      <fontSize>${fontMenuSmall}</fontSize>
+      <color>${textSecondary}</color>
+    </menuTextSmall>
+    <!-- A group of rows: its label small, like the labels over values, on a thin line -->
+    <menuGroup name="menugroup">
+      <fontPath>${fontRegular}</fontPath>
+      <fontSize>${fontInfoLabel}</fontSize>
+      <color>${textSecondary}</color>
+      <backgroundColor>${transparent}</backgroundColor>
+      <separatorColor>${separatorColor}</separatorColor>
+      <lineSpacing>2.4</lineSpacing>
+    </menuGroup>
+    <menuGrid name="menugrid">
+      <separatorColor>${separatorColor}</separatorColor>
+    </menuGrid>
+    <!-- Buttons: a thin square outline at rest, the selected surface's color when focused -->
+    <menuButton name="menubutton">
+      <path>${themePath}/_inc/frames/outline.png</path>
+      <filledPath>${themePath}/_inc/frames/white.png</filledPath>
+      <cornerSize>6 6</cornerSize>
+    </menuButton>
+    <!--
+      The switches stay the engine's own: it sizes a theme's switch before it has loaded it, and
+      draws it past the row's end.
+    -->
+    <!-- One icon per entry the engine names (tools/render-icons.py) -->
+    <menuIcons name="menuicons">
+      <iconKodi>${themePath}/_inc/icons/menu/kodi.svg</iconKodi>
+      <iconSystem>${themePath}/_inc/icons/menu/system.svg</iconSystem>
+      <iconUpdates>${themePath}/_inc/icons/menu/updates.svg</iconUpdates>
+      <iconGames>${themePath}/_inc/icons/menu/games.svg</iconGames>
+      <iconControllers>${themePath}/_inc/icons/menu/controllers.svg</iconControllers>
+      <iconUI>${themePath}/_inc/icons/menu/ui.svg</iconUI>
+      <iconSound>${themePath}/_inc/icons/menu/sound.svg</iconSound>
+      <iconNetwork>${themePath}/_inc/icons/menu/network.svg</iconNetwork>
+      <iconPlanemode>${themePath}/_inc/icons/menu/planemode.svg</iconPlanemode>
+      <iconScraper>${themePath}/_inc/icons/menu/scraper.svg</iconScraper>
+      <iconAdvanced>${themePath}/_inc/icons/menu/advanced.svg</iconAdvanced>
+      <iconQuit>${themePath}/_inc/icons/menu/quit.svg</iconQuit>
+      <iconRestart>${themePath}/_inc/icons/menu/restart.svg</iconRestart>
+      <iconShutdown>${themePath}/_inc/icons/menu/shutdown.svg</iconShutdown>
+      <iconFastShutdown>${themePath}/_inc/icons/menu/fastshutdown.svg</iconFastShutdown>
+      <iconRetroachievements>${themePath}/_inc/icons/menu/retroachievements.svg</iconRetroachievements>
+      <iconManual>${themePath}/_inc/icons/menu/manual.svg</iconManual>
+      <iconNetplay>${themePath}/_inc/icons/menu/netplay.svg</iconNetplay>
+    </menuIcons>
+  </view>
+</theme>

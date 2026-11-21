@@ -1,20 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
   Design tokens (docs/ARCHITECTURE.md#design-tokens). Views use these variables only: never literal
-  colors, sizes or timings. Accent and motion subsets override some of them.
+  colors or sizes (docs/STYLE.md). The accent subsets override the accent color.
   Positions and sizes are fractions of the screen; font sizes are fractions of its height.
 -->
 <theme>
   <formatVersion>7</formatVersion>
   <variables>
-    <!-- Screen conditions, usable in if="" -->
-    <wideScreen>${screen.ratio} == "16/9" || ${screen.ratio} == "16/10" || ${screen.ratio} == "21/9"</wideScreen>
-
     <!-- Colors (docs/STYLE.md) -->
     <bgTop>0B1A33</bgTop>
     <bgBottom>04080F</bgBottom>
     <accent>3B8CFF</accent>
-    <accentGlow>3B8CFF80</accentGlow>
     <textPrimary>FFFFFFFF</textPrimary>
     <textSecondary>A9B7CCFF</textSecondary>
     <textMuted>6B7A90FF</textMuted>
@@ -147,6 +143,15 @@
     <gameDescriptionY>0.615</gameDescriptionY>
     <gameDescriptionSize>0.5182 0.195</gameDescriptionSize>
 
+    <!-- The menus (views/menu.xml): a dark page over the whole screen, a panel in its middle -->
+    <menuPage>0B0A18F2</menuPage>    <!-- the page: darker than a tile, 95 % -->
+    <menuPlate>15122BA6</menuPlate>  <!-- the panel: an unselected tile's color and transparency -->
+    <!-- 48 px of margin at the content's sides; 8 px less than the menu above and under, where its
+         title and buttons have their own room: the tallest menus stop just over the help prompts -->
+    <menuPlateReach>64 8</menuPlateReach>
+    <fontMenu>0.026</fontMenu>
+    <fontMenuSmall>0.018</fontMenuSmall>
+
     <!-- Bottom bar: a thin line, then the help prompts -->
     <separatorY>0.875</separatorY>
     <separatorColor>FFFFFF30</separatorColor>
@@ -160,9 +165,5 @@
     -->
     <carbonArt>/usr/share/emulationstation/themes/es-theme-carbon/art</carbonArt>
     <systemArtTint>${artTint}</systemArtTint>
-
-    <!-- Motion, in milliseconds (the motion subset sets them; these are its "on" values) -->
-    <motionSelect>200</motionSelect>
-    <motionFade>300</motionFade>
   </variables>
 </theme>

@@ -1,27 +1,51 @@
 # batox-theme
 
-A modern dark EmulationStation theme for Batocera, from the BatoX project.
+A dark EmulationStation theme for [Batocera](https://batocera.org), in the style of a modern
+console's home screen: flat dark tiles over a picture of each system at sunset, white type, and
+one thin white frame on what is selected.
 
-batox-theme takes the layout of a console's home screen: one row of square tiles with the
-systems' logos, the selected one grows into a card with its details, over a picture of the
-system at sunset. Inside a system, the games are a list at the left, with the selected game's
-cover and details at the right. Flat dark surfaces, white type and one accent color, sized for
-a TV first. The top
-bar shows the connected controllers, your RetroAchievements profile when you have an account set
-up in Batocera, the network and the clock.
+![The home: a row of system tiles, the selected one with its figures, over the system's picture](docs/screenshots/home.jpg)
 
-> **Status: in development.** The architecture and the skeleton are in place; the views are being
-> built milestone by milestone (see [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md#milestones)).
+| The game list | The menus |
+|---|---|
+| ![A list of games at the left, the selected game's cover and details at the right](docs/screenshots/game-list.jpg) | ![The main menu, a panel in the middle of a darkened screen, with an icon per entry](docs/screenshots/menu.jpg) |
+
+## What you get
+
+- **Home.** One row of square tiles with each system's logo in white. The selected system grows
+  into a card with its number of games; its name, maker and year sit beside it, and a panel with
+  your favorites, games played, play time, last day played and most played game fades in after
+  a second.
+- **A picture per system.** 25 systems have their own background, drawn for this theme: the
+  machine on a pier in front of a coastal city at sunset. The other systems show Batocera's own
+  photo, darkened.
+- **Game list.** The games in a list at the left; at the right the selected game's cover, name,
+  developer, publisher, genre, players, year, rating, last time played and description. A game
+  with a video plays it in the cover's place after a few seconds.
+- **Menus.** EmulationStation's menus as a panel in the middle of a darkened screen, with the
+  theme's own white icons.
+- **Top bar.** The connected controllers (lit while in use), your RetroAchievements avatar and
+  name when an account is set up in Batocera, the network and the clock.
+- **English and Brazilian Portuguese**, following the console's language.
+
+## Requirements
+
+- Batocera 43 or newer (made and tested on 43.1, on a Raspberry Pi 4).
+- A 16:9 screen, 1080p or 720p. Smaller and 4:3 screens are not tuned yet.
+- Batocera's default theme, Carbon, left installed (it always is): the systems' logos, and the
+  photos of the systems without a picture of their own, are read from it.
 
 ## Install
 
-- **With [BatoX](https://github.com/monteirohat/batox)**: download `batox-theme.zip` from the
-  [latest release](https://github.com/monteirohat/batox-theme/releases) and install it from the
-  EmulationStation screen.
-- **By hand**: unpack the ZIP into `/userdata/themes`, so the theme is at
-  `/userdata/themes/batox-theme`.
+1. Download `batox-theme.zip` from the
+   [latest release](https://github.com/monteirohat/batox-theme/releases/latest).
+2. Unpack it into `/userdata/themes` on the console (the `share/themes` folder over the
+   network), so the theme is at `/userdata/themes/batox-theme`. With
+   [BatoX](https://github.com/monteirohat/batox), install the ZIP from its EmulationStation
+   screen instead.
+3. On the console: Main menu > User interface settings > Theme set > batox-theme.
 
-Then choose it in Main menu > User interface settings > Theme set. Requires Batocera 43 or newer.
+To update, replace the folder with the new release's.
 
 ## Options
 
@@ -30,32 +54,55 @@ In Main menu > User interface settings > Theme configuration:
 | Option | Choices |
 |---|---|
 | Accent color | blue (default), purple, teal, red, gray |
-| Animations | on (default), off |
+
+The accent colors the few words the theme highlights: a game's rating, and what a system
+supports.
+
+## Good to know
+
+- **Gamelist view style**: leave it on automatic. The list described above is the theme's view;
+  the grid and carousel styles are not themed.
+- **Systems without their own picture** (anything outside the 25 drawn so far) and a few system
+  logos that don't turn white cleanly are still to do: see
+  [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md#per-system-artwork).
+- **The loading screen** is still Batocera's.
+- **Notifications** appear at the top center: their place belongs to EmulationStation.
+
+Found a problem, or want a system drawn? Open an
+[issue](https://github.com/monteirohat/batox-theme/issues).
 
 ## Development
 
 ```bash
-python3 tools/check.py                    # checks XML, includes, files, elements, variables, sizes
-python3 tools/render-background.py        # draws _inc/backgrounds/waves.png
+python3 tools/check.py                      # checks XML, includes, files, elements, variables, sizes
 python3 tools/render-system-backgrounds.py  # draws systems/*/background.jpg (needs Chrome)
-CONSOLE=192.168.0.84 tools/deploy.sh      # copies the theme to a console over SSH
-tools/package.sh                          # builds dist/batox-theme.zip from the last commit
+python3 tools/render-icons.py               # draws the theme's icons
+python3 tools/render-frames.py              # draws the selector, the buttons' outline, the menus' page
+python3 tools/render-background.py          # draws _inc/backgrounds/waves.png
+CONSOLE=batocera.local tools/deploy.sh      # copies the theme to a console over SSH
+tools/package.sh                            # builds dist/batox-theme.zip from the last commit
 ```
 
-How the theme is organized, its design tokens and its views are described in
-[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md); how every screen should look, in
-[docs/STYLE.md](docs/STYLE.md). Pushing a `v*` tag publishes a release with the
-ZIP.
+- [docs/STYLE.md](docs/STYLE.md): how every screen should look, and why. Read it before
+  changing one.
+- [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md): how the theme is built, its design tokens, and
+  what was learned about the engine.
+- [docs/PUBLISHING.md](docs/PUBLISHING.md): how a version is released, and how Batocera lists
+  themes.
+- [CHANGELOG.md](CHANGELOG.md): what changed in each version.
 
 ## Credits and trademarks
 
-The theme's backgrounds are drawn by its own tools, the systems' ones included (each machine on
-a pier at sunset), its font (Inter, SIL Open Font License) is openly licensed, and its icons are
-its own. The system logos, and the backgrounds of the systems not drawn yet, are those of
-Batocera's default theme, Carbon (CC BY-NC-SA, by Fabrice Caruso and its contributors), read where
-Batocera installs it; this theme doesn't ship them, and draws the logos in white. It takes inspiration from console home screens but uses
-none of their assets, and it is not affiliated with any console maker or with the Batocera
-project. System logos are trademarks of their owners.
+Everything the theme ships is its own, drawn by its tools: the systems' pictures, the icons, the
+frames and the wave background. Its font is Inter (SIL Open Font License).
+
+The systems' logos, and the photos of the systems not drawn yet, are those of Batocera's default
+theme, Carbon (CC BY-NC-SA, by Fabrice Caruso and its contributors). The theme reads them where
+Batocera installs them and ships none; it only draws the logos in white.
+
+The theme takes inspiration from console home screens and from the mood of sunset city art, but
+uses none of their assets. It is not affiliated with any console maker or game publisher, nor
+with the Batocera project. System names and logos are trademarks of their owners.
 
 ## License
 

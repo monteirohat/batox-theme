@@ -80,6 +80,19 @@ At 16:9, in fractions of the screen:
 - **No dead bands.** A name sits right under what it names; an empty strip between two
   elements is a layout to fix.
 
+## Menus
+
+The engine lays its menus out itself; the theme gives them the same surfaces and type.
+
+- **A page and a panel.** A menu darkens the whole screen (the page, 95 %) and sits in its
+  middle as a panel of a surface at rest (an unselected tile's color and transparency); the
+  page is what keeps its long lists of text readable over any picture.
+- **48 px of margin** between the panel's sides and its content; nothing stands outside it.
+- **The selected row** is the selected surface's color, without a frame (the engine draws a
+  plain bar). Rows at rest are one step down, the selected one white.
+- **Icons** are the theme's own, flat and white, on the grid of the top bar's icons; one per
+  entry, never a colored or outlined one.
+
 ## Backgrounds
 
 - **Each system has its picture** (`tools/render-system-backgrounds.py`): its machine, inked and

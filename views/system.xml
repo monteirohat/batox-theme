@@ -84,11 +84,12 @@
           <size>1 1</size>
           <color>${homeTile}</color>
           <zIndex>1</zIndex>
+          <!-- The selection answers at once (docs/STYLE.md): a duration takes a plain number -->
           <storyboard event="activate">
-            <animation property="color" to="${homeTileSelected}" duration="${motionSelect}" mode="easeOut"/>
+            <animation property="color" to="${homeTileSelected}" duration="0" mode="easeOut"/>
           </storyboard>
           <storyboard event="deactivate">
-            <animation property="color" to="${homeTile}" duration="${motionSelect}" mode="easeOut"/>
+            <animation property="color" to="${homeTile}" duration="0" mode="easeOut"/>
           </storyboard>
         </image>
         <!--
@@ -134,10 +135,10 @@
           <opacity>0</opacity>
           <zIndex>1</zIndex>
           <storyboard event="activate">
-            <animation property="opacity" to="1" duration="${motionSelect}" mode="easeOut"/>
+            <animation property="opacity" to="1" duration="0" mode="easeOut"/>
           </storyboard>
           <storyboard event="deactivate">
-            <animation property="opacity" to="0" duration="${motionSelect}" mode="easeOut"/>
+            <animation property="opacity" to="0" duration="0" mode="easeOut"/>
           </storyboard>
         </image>
         <text>
@@ -154,10 +155,10 @@
           <opacity>0</opacity>
           <zIndex>2</zIndex>
           <storyboard event="activate">
-            <animation property="opacity" to="1" duration="${motionSelect}" mode="easeOut"/>
+            <animation property="opacity" to="1" duration="0" mode="easeOut"/>
           </storyboard>
           <storyboard event="deactivate">
-            <animation property="opacity" to="0" duration="${motionSelect}" mode="easeOut"/>
+            <animation property="opacity" to="0" duration="0" mode="easeOut"/>
           </storyboard>
         </text>
         <!--
@@ -173,10 +174,10 @@
           <opacity>0</opacity>
           <zIndex>3</zIndex>
           <storyboard event="activate">
-            <animation property="opacity" to="1" duration="${motionSelect}" mode="easeOut"/>
+            <animation property="opacity" to="1" duration="0" mode="easeOut"/>
           </storyboard>
           <storyboard event="deactivate">
-            <animation property="opacity" to="0" duration="${motionSelect}" mode="easeOut"/>
+            <animation property="opacity" to="0" duration="0" mode="easeOut"/>
           </storyboard>
         </image>
         <image>
@@ -188,10 +189,10 @@
           <opacity>0</opacity>
           <zIndex>3</zIndex>
           <storyboard event="activate">
-            <animation property="opacity" to="1" duration="${motionSelect}" mode="easeOut"/>
+            <animation property="opacity" to="1" duration="0" mode="easeOut"/>
           </storyboard>
           <storyboard event="deactivate">
-            <animation property="opacity" to="0" duration="${motionSelect}" mode="easeOut"/>
+            <animation property="opacity" to="0" duration="0" mode="easeOut"/>
           </storyboard>
         </image>
         <image>
@@ -203,10 +204,10 @@
           <opacity>0</opacity>
           <zIndex>3</zIndex>
           <storyboard event="activate">
-            <animation property="opacity" to="1" duration="${motionSelect}" mode="easeOut"/>
+            <animation property="opacity" to="1" duration="0" mode="easeOut"/>
           </storyboard>
           <storyboard event="deactivate">
-            <animation property="opacity" to="0" duration="${motionSelect}" mode="easeOut"/>
+            <animation property="opacity" to="0" duration="0" mode="easeOut"/>
           </storyboard>
         </image>
         <image>
@@ -218,10 +219,10 @@
           <opacity>0</opacity>
           <zIndex>3</zIndex>
           <storyboard event="activate">
-            <animation property="opacity" to="1" duration="${motionSelect}" mode="easeOut"/>
+            <animation property="opacity" to="1" duration="0" mode="easeOut"/>
           </storyboard>
           <storyboard event="deactivate">
-            <animation property="opacity" to="0" duration="${motionSelect}" mode="easeOut"/>
+            <animation property="opacity" to="0" duration="0" mode="easeOut"/>
           </storyboard>
         </image>
       </itemTemplate>

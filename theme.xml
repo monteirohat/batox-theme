@@ -22,14 +22,11 @@
     <include name="red" displayName="${accentRed}">./subsets/accent/red.xml</include>
     <include name="gray" displayName="${accentGray}">./subsets/accent/gray.xml</include>
   </subset>
-  <subset name="motion" displayName="${subsetMotion}">
-    <include name="on" displayName="${on}">./subsets/motion/on.xml</include>
-    <include name="off" displayName="${off}">./subsets/motion/off.xml</include>
-  </subset>
 
   <!-- Views -->
   <include>./views/screen.xml</include>
   <include>./views/system.xml</include>
   <include>./views/common.xml</include>
   <include>./views/detailed.xml</include>
+  <include>./views/menu.xml</include>
 </theme>

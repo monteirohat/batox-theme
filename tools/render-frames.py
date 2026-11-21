@@ -3,6 +3,10 @@
 
 - _inc/frames/white.png: a plain white square, tinted by the views (scrims,
   tile backgrounds).
+- _inc/frames/outline.png: a thin white square outline, as a ninepatch: a menu's
+  button at rest (the engine tints it and fills the focused one with white.png).
+- _inc/frames/page.png: the page the engine draws over the whole screen behind a
+  menu, in the menuPage color of _inc/variables.xml (the engine doesn't tint it).
 - _inc/frames/selector.png: the selected row of a list, as the home's selected
   tile: its color (homeTileSelected) inside a white frame (selectionColor), both
   read from _inc/variables.xml. Drawn at a row's size at 1080p, so the frame
@@ -34,14 +38,15 @@ SELECTOR = (691, 54)  # a row of the game list at 1080p: 0.36 of the width, a tw
 SELECTOR_FRAME = 4    # the frame's width, as the home's selection (4.5 px)
 
 
-def selector(root):
+def token(root, name):
+    """A color of _inc/variables.xml, as four bytes."""
     tokens = ET.parse(os.path.join(root, "_inc", "variables.xml")).getroot().find("variables")
+    value = tokens.findtext(name).strip().ljust(8, "F")
+    return bytes(int(value[i:i + 2], 16) for i in (0, 2, 4, 6))
 
-    def color(name):
-        value = tokens.findtext(name).strip().ljust(8, "F")
-        return bytes(int(value[i:i + 2], 16) for i in (0, 2, 4, 6))
 
-    fill, frame = color("homeTileSelected"), color("selectionColor")
+def selector(root):
+    fill, frame = token(root, "homeTileSelected"), token(root, "selectionColor")
     width, height = SELECTOR
     rgba = bytearray()
     for y in range(height):
@@ -51,13 +56,27 @@ def selector(root):
     return rgba
 
 
+OUTLINE, OUTLINE_STROKE = 24, 2  # the ninepatch's size and its line; cornerSize 6
+
+
+def outline():
+    rgba = bytearray()
+    for y in range(OUTLINE):
+        for x in range(OUTLINE):
+            edge = min(x, y, OUTLINE - 1 - x, OUTLINE - 1 - y) < OUTLINE_STROKE
+            rgba += b"\xff\xff\xff\xff" if edge else b"\xff\xff\xff\x00"
+    return rgba
+
+
 def main():
     root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     frames = os.path.join(root, "_inc", "frames")
     os.makedirs(frames, exist_ok=True)
     write_png(os.path.join(frames, "selector.png"), *SELECTOR, selector(root))
     write_png(os.path.join(frames, "white.png"), 8, 8, bytearray(b"\xff" * 8 * 8 * 4))
-    print("wrote selector.png and white.png")
+    write_png(os.path.join(frames, "outline.png"), OUTLINE, OUTLINE, outline())
+    write_png(os.path.join(frames, "page.png"), 8, 8, bytearray(token(root, "menuPage") * 64))
+    print("wrote selector.png, outline.png, page.png and white.png")
 
 
 if __name__ == "__main__":

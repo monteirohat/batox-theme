@@ -9,9 +9,6 @@
     <accentTeal>Teal</accentTeal>
     <accentRed>Red</accentRed>
     <accentGray>Gray</accentGray>
-    <subsetMotion>Animations</subsetMotion>
-    <on>On</on>
-    <off>Off</off>
     <infoFavorites>Favorites</infoFavorites>
     <infoPlayed>Played</infoPlayed>
     <infoTime>Play time</infoTime>

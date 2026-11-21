@@ -30,7 +30,7 @@ ELEMENTS = {
     "gridtile", "clock", "networkIcon", "webimage", "batteryText", "batteryIcon", "text", "textlist",
     "container", "ninepatch", "datetime", "rating", "sound", "gameextras", "controllerActivity",
     "batteryIndicator", "helpsystem", "video", "carousel", "menuText", "menuTextSmall", "menuGroup",
-    "menuBackground", "menuIcons", "menuGrid",
+    "menuBackground", "menuIcons", "menuGrid", "menuSwitch", "menuTextEdit", "menuSlider", "menuButton",
 }
 VIEW_CHILDREN = ELEMENTS | {"include"}
 MAX_IMAGE = {".png": 600 << 10, ".jpg": 400 << 10, ".jpeg": 400 << 10, ".svg": 200 << 10}
