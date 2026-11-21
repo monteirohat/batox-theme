@@ -13,19 +13,13 @@
       <path>${themePath}/_inc/backgrounds/waves.png</path>
       <zIndex>0</zIndex>
     </image>
+    <!-- The selected game's art, darkened so the details stay readable; without it, the waves -->
     <image name="md_fanart">
       <pos>0 0</pos>
       <origin>0 0</origin>
       <size>1 1</size>
+      <color>${artTint}</color>
       <zIndex>1</zIndex>
-    </image>
-    <image name="artScrim" extra="true">
-      <pos>0 0</pos>
-      <origin>0 0</origin>
-      <size>1 1</size>
-      <path>${themePath}/_inc/frames/white.png</path>
-      <color>${scrim}</color>
-      <zIndex>2</zIndex>
     </image>
 
     <text name="md_name">
@@ -33,39 +27,45 @@
       <size>${contentWidth} 0.06</size>
       <alignment>left</alignment>
       <color>${textPrimary}</color>
+      <fontPath>${fontSemiBold}</fontPath>
       <fontSize>${fontTitle}</fontSize>
       <zIndex>30</zIndex>
     </text>
     <text name="md_developer">
       <pos>${marginX} ${detailsY}</pos>
-      <size>0.25 0.04</size>
+      <size>0.22 0.04</size>
       <color>${textSecondary}</color>
+      <fontPath>${fontRegular}</fontPath>
       <fontSize>${fontMeta}</fontSize>
       <zIndex>30</zIndex>
     </text>
     <datetime name="md_releasedate">
-      <pos>0.32 ${detailsY}</pos>
-      <size>0.08 0.04</size>
+      <pos>0.29 ${detailsY}</pos>
+      <size>0.06 0.04</size>
+      <format>%Y</format>
       <color>${textSecondary}</color>
+      <fontPath>${fontRegular}</fontPath>
       <fontSize>${fontMeta}</fontSize>
       <zIndex>30</zIndex>
     </datetime>
     <text name="md_genre">
-      <pos>0.41 ${detailsY}</pos>
-      <size>0.20 0.04</size>
+      <pos>0.36 ${detailsY}</pos>
+      <size>0.18 0.04</size>
       <color>${textSecondary}</color>
+      <fontPath>${fontRegular}</fontPath>
       <fontSize>${fontMeta}</fontSize>
       <zIndex>30</zIndex>
     </text>
     <text name="md_players">
-      <pos>0.62 ${detailsY}</pos>
-      <size>0.10 0.04</size>
+      <pos>0.55 ${detailsY}</pos>
+      <size>0.07 0.04</size>
       <color>${textSecondary}</color>
+      <fontPath>${fontRegular}</fontPath>
       <fontSize>${fontMeta}</fontSize>
       <zIndex>30</zIndex>
     </text>
     <rating name="md_rating">
-      <pos>0.73 ${detailsY}</pos>
+      <pos>0.63 ${detailsY}</pos>
       <size>0.10 0.03</size>
       <color>${accent}</color>
       <zIndex>30</zIndex>
@@ -74,7 +74,10 @@
       <pos>${marginX} ${descriptionY}</pos>
       <size>${contentWidth} ${descriptionHeight}</size>
       <color>${textSecondary}</color>
+      <fontPath>${fontRegular}</fontPath>
       <fontSize>${fontBody}</fontSize>
+      <lineSpacing>1.4</lineSpacing>
+      <verticalAlignment>top</verticalAlignment>
       <zIndex>30</zIndex>
     </text>
   </view>

@@ -1,32 +1,276 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Home of systems: one row of system tiles; the selected one grows. -->
+<!--
+  The theme's home, after a console's home screen: one row of square tiles with white system
+  icons, 5 px apart; the selected tile, in the second place, grows 1.7 times into a card with a
+  strip and a down arrow under it, framed in white, and the system's name shows at its right.
+  A carousel (not a grid): in a carousel each system has its own copy of the view's elements, so
+  the background and the texts follow the selection.
+-->
 <theme>
   <formatVersion>7</formatVersion>
-  <view name="system">
-    <image name="background" extra="true">
+  <view name="system" extraTransition="fade" extraTransitionSpeed="300">
+    <!-- The waves, always there, under the selected system's art -->
+    <image name="background" extra="static">
       <pos>0 0</pos>
       <origin>0 0</origin>
       <size>1 1</size>
       <path>${themePath}/_inc/backgrounds/waves.png</path>
       <zIndex>0</zIndex>
     </image>
+    <!--
+      The selected system's art: the theme's own picture (tools/render-system-backgrounds.py),
+      drawn dark where the texts are and shown as it is; else Batocera's own (Carbon's photo, read
+      in place), darkened by systemArtTint.
+    -->
+    <image name="systemArt" extra="true">
+      <pos>0.5 0.5</pos>
+      <origin>0.5 0.5</origin>
+      <minSize>1 1</minSize>
+      <path>${carbonArt}/background/${system.theme}.jpg</path>
+      <color>${systemArtTint}</color>
+      <zIndex>1</zIndex>
+    </image>
+    <image name="systemArt" extra="true" if="exists(${themePath} + '/systems/' + ${system.theme} + '/background.jpg')">
+      <path>${themePath}/systems/${system.theme}/background.jpg</path>
+      <color>FFFFFFFF</color>
+    </image>
+
+    <!--
+      The RetroAchievements profile, like a console home's user: avatar and name, only when an
+      account is set in Batocera (Main menu > Game settings > RetroAchievements)
+    -->
+    <webimage name="profileAvatar" extra="static" if="${global.cheevos}">
+      <path>https://media.retroachievements.org/UserPic/${global.cheevos.username}.png</path>
+      <pos>${profileX} ${topBarY}</pos>
+      <origin>0 0</origin>
+      <maxSize>${profileAvatar}</maxSize>
+      <linearSmooth>true</linearSmooth>
+      <zIndex>30</zIndex>
+    </webimage>
+    <text name="profileName" extra="static" if="${global.cheevos}">
+      <text>${global.cheevos.username}</text>
+      <pos>${profileNameX} ${topBarY}</pos>
+      <size>0.3 0.05</size>
+      <alignment>left</alignment>
+      <verticalAlignment>center</verticalAlignment>
+      <color>${textPrimary}</color>
+      <fontPath>${fontLight}</fontPath>
+      <fontSize>${fontProfile}</fontSize>
+      <zIndex>30</zIndex>
+    </text>
+
+    <!--
+      15 tiles across a carousel wider than the screen that starts off-screen: the selection, at
+      the carousel's center, stays in the second place (see homeRowX in _inc/variables.xml).
+    -->
     <carousel name="systemcarousel">
       <type>horizontal</type>
-      <pos>0 ${rowY}</pos>
-      <size>1 ${rowHeight}</size>
-      <logoSize>${tileWidth} ${tileHeight}</logoSize>
-      <logoScale>${selectedScale}</logoScale>
-      <maxLogoCount>8</maxLogoCount>
+      <pos>${homeRowX} ${homeRowY}</pos>
+      <size>${homeRowWidth} ${homeRowHeight}</size>
+      <logoSize>${homeTileSize}</logoSize>
+      <logoScale>${homeScale}</logoScale>
+      <scaledLogoSpacing>1</scaledLogoSpacing>
+      <logoAlignment>top</logoAlignment>
+      <maxLogoCount>15</maxLogoCount>
+      <minLogoOpacity>1</minLogoOpacity>
+      <!-- The number of games shows at once, with the system's name (the engine waits otherwise) -->
+      <systemInfoDelay>0</systemInfoDelay>
+      <transitionSpeed>250</transitionSpeed>
       <color>${transparent}</color>
       <zIndex>20</zIndex>
+      <itemTemplate>
+        <image>
+          <path>${themePath}/_inc/frames/white.png</path>
+          <pos>0 0</pos>
+          <origin>0 0</origin>
+          <size>1 1</size>
+          <color>${homeTile}</color>
+          <zIndex>1</zIndex>
+          <storyboard event="activate">
+            <animation property="color" to="${homeTileSelected}" duration="${motionSelect}" mode="easeOut"/>
+          </storyboard>
+          <storyboard event="deactivate">
+            <animation property="color" to="${homeTile}" duration="${motionSelect}" mode="easeOut"/>
+          </storyboard>
+        </image>
+        <!--
+          The system's brand logo in white: Batocera's own logos (Carbon's, read where Batocera
+          installs them, never copied), whitened by _inc/shaders/white.glsl. A logo drawn on a
+          dark plate would be a white blob: its dark parts go too (logoCutDark, logoCutGray).
+        -->
+        <image>
+          <path>firstfile("${carbonArt}/logos/" + {system:theme} + ".svg", "${carbonArt}/logos/" + {system:theme} + ".png")</path>
+          <pos>0.5 0.5</pos>
+          <origin>0.5 0.5</origin>
+          <maxSize>${homeLogoSize}</maxSize>
+          <opacity>contains(" ${logoAsName} ", " " + {system:theme} + " ") ? 0 : 1</opacity>
+          <linearSmooth>true</linearSmooth>
+          <zIndex>2</zIndex>
+          <shader>
+            <path>${themePath}/_inc/shaders/white.glsl</path>
+            <cutDark_binding>contains(" ${logoCutGray} ", " " + {system:theme} + " ") ? 0.45 : contains(" ${logoCutDark} ", " " + {system:theme} + " ") ? 0.25 : 0</cutDark_binding>
+          </shader>
+        </image>
+        <!-- A system without a logo, or whose logo can't be whitened: its name -->
+        <text>
+          <text>{system:fullName}</text>
+          <visible>contains(" ${logoAsName} ", " " + {system:theme} + " ") || (!exists("${carbonArt}/logos/" + {system:theme} + ".svg") &amp;&amp; !exists("${carbonArt}/logos/" + {system:theme} + ".png"))</visible>
+          <pos>0.5 0.5</pos>
+          <origin>0.5 0.5</origin>
+          <size>0.86 0.6</size>
+          <alignment>center</alignment>
+          <verticalAlignment>center</verticalAlignment>
+          <forceUppercase>1</forceUppercase>
+          <color>${textPrimary}</color>
+          <fontPath>${fontSemiBold}</fontPath>
+          <fontSize>${fontTileName}</fontSize>
+          <zIndex>2</zIndex>
+        </text>
+        <!-- Under the selected tile: a strip with a down arrow -->
+        <image>
+          <path>${themePath}/_inc/frames/white.png</path>
+          <pos>0 1</pos>
+          <origin>0 0</origin>
+          <size>1 0.25</size>
+          <color>${homeStrip}</color>
+          <opacity>0</opacity>
+          <zIndex>1</zIndex>
+          <storyboard event="activate">
+            <animation property="opacity" to="1" duration="${motionSelect}" mode="easeOut"/>
+          </storyboard>
+          <storyboard event="deactivate">
+            <animation property="opacity" to="0" duration="${motionSelect}" mode="easeOut"/>
+          </storyboard>
+        </image>
+        <image>
+          <path>${themePath}/_inc/icons/arrow-down.svg</path>
+          <pos>0.5 1.125</pos>
+          <origin>0.5 0.5</origin>
+          <maxSize>0.13 0.13</maxSize>
+          <opacity>0</opacity>
+          <zIndex>2</zIndex>
+          <storyboard event="activate">
+            <animation property="opacity" to="1" duration="${motionSelect}" mode="easeOut"/>
+          </storyboard>
+          <storyboard event="deactivate">
+            <animation property="opacity" to="0" duration="${motionSelect}" mode="easeOut"/>
+          </storyboard>
+        </image>
+        <!--
+          The selection: a thin white frame just outside the tile and its strip, four bars of
+          ${homeFrame} of a tile (a ninepatch blurs once the tile is scaled)
+        -->
+        <image>
+          <path>${themePath}/_inc/frames/white.png</path>
+          <pos>-${homeFrame} -${homeFrame}</pos>
+          <origin>0 0</origin>
+          <size>1.026 ${homeFrame}</size>
+          <color>${selectionColor}</color>
+          <opacity>0</opacity>
+          <zIndex>3</zIndex>
+          <storyboard event="activate">
+            <animation property="opacity" to="1" duration="${motionSelect}" mode="easeOut"/>
+          </storyboard>
+          <storyboard event="deactivate">
+            <animation property="opacity" to="0" duration="${motionSelect}" mode="easeOut"/>
+          </storyboard>
+        </image>
+        <image>
+          <path>${themePath}/_inc/frames/white.png</path>
+          <pos>-${homeFrame} 1.25</pos>
+          <origin>0 0</origin>
+          <size>1.026 ${homeFrame}</size>
+          <color>${selectionColor}</color>
+          <opacity>0</opacity>
+          <zIndex>3</zIndex>
+          <storyboard event="activate">
+            <animation property="opacity" to="1" duration="${motionSelect}" mode="easeOut"/>
+          </storyboard>
+          <storyboard event="deactivate">
+            <animation property="opacity" to="0" duration="${motionSelect}" mode="easeOut"/>
+          </storyboard>
+        </image>
+        <image>
+          <path>${themePath}/_inc/frames/white.png</path>
+          <pos>-${homeFrame} 0</pos>
+          <origin>0 0</origin>
+          <size>${homeFrame} 1.25</size>
+          <color>${selectionColor}</color>
+          <opacity>0</opacity>
+          <zIndex>3</zIndex>
+          <storyboard event="activate">
+            <animation property="opacity" to="1" duration="${motionSelect}" mode="easeOut"/>
+          </storyboard>
+          <storyboard event="deactivate">
+            <animation property="opacity" to="0" duration="${motionSelect}" mode="easeOut"/>
+          </storyboard>
+        </image>
+        <image>
+          <path>${themePath}/_inc/frames/white.png</path>
+          <pos>1 0</pos>
+          <origin>0 0</origin>
+          <size>${homeFrame} 1.25</size>
+          <color>${selectionColor}</color>
+          <opacity>0</opacity>
+          <zIndex>3</zIndex>
+          <storyboard event="activate">
+            <animation property="opacity" to="1" duration="${motionSelect}" mode="easeOut"/>
+          </storyboard>
+          <storyboard event="deactivate">
+            <animation property="opacity" to="0" duration="${motionSelect}" mode="easeOut"/>
+          </storyboard>
+        </image>
+      </itemTemplate>
     </carousel>
+
+    <!-- At the selected card's right: the system's name, maker, year and games -->
+    <text name="systemTitle" extra="true">
+      <text>${system.fullName}</text>
+      <pos>${homeTitleX} ${homeTitleY}</pos>
+      <size>0.62 0.08</size>
+      <alignment>left</alignment>
+      <verticalAlignment>center</verticalAlignment>
+      <color>${textPrimary}</color>
+      <fontPath>${fontLight}</fontPath>
+      <fontSize>${fontHomeTitle}</fontSize>
+      <zIndex>30</zIndex>
+    </text>
+    <text name="systemMaker" extra="true">
+      <text>${system.manufacturer}   ${system.releaseYearOrNull}</text>
+      <pos>${homeTitleX} ${homeMakerY}</pos>
+      <size>0.62 0.035</size>
+      <alignment>left</alignment>
+      <color>${textSecondary}</color>
+      <fontPath>${fontRegular}</fontPath>
+      <fontSize>${fontMeta}</fontSize>
+      <zIndex>30</zIndex>
+    </text>
     <text name="systemInfo">
-      <pos>${marginX} 0.60</pos>
-      <size>${contentWidth} 0.05</size>
+      <pos>${homeTitleX} ${homeInfoY}</pos>
+      <size>0.62 0.035</size>
       <alignment>left</alignment>
       <color>${textSecondary}</color>
       <backgroundColor>${transparent}</backgroundColor>
-      <fontSize>${fontBody}</fontSize>
+      <fontPath>${fontRegular}</fontPath>
+      <fontSize>${fontMeta}</fontSize>
+      <zIndex>30</zIndex>
     </text>
+
+    <!-- Bottom bar -->
+    <image name="separator" extra="static">
+      <path>${themePath}/_inc/frames/white.png</path>
+      <pos>${homeMarginX} ${separatorY}</pos>
+      <origin>0 0</origin>
+      <size>0.91 0.0015</size>
+      <color>${separatorColor}</color>
+      <zIndex>30</zIndex>
+    </image>
+    <helpsystem name="help">
+      <pos>${homeMarginX} ${helpY}</pos>
+      <textColor>${textSecondary}</textColor>
+      <iconColor>${textSecondary}</iconColor>
+      <fontPath>${fontRegular}</fontPath>
+      <fontSize>${fontHelp}</fontSize>
+    </helpsystem>
   </view>
 </theme>

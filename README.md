@@ -4,7 +4,9 @@ A modern dark EmulationStation theme for Batocera, from the BatoX project.
 
 batox-theme takes the layout of a console's home screen: one row of large tiles, the selected
 one grows, its details appear under it, and the background turns into the selected game's art.
-Dark navy, soft waves of light, white type and one accent color, sized for a TV first.
+Dark navy, soft waves of light, white type and one accent color, sized for a TV first. The top
+bar shows the connected controllers, your RetroAchievements profile when you have an account set
+up in Batocera, the network and the clock.
 
 > **Status: in development.** The architecture and the skeleton are in place; the views are being
 > built milestone by milestone (see [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md#milestones)).
@@ -32,8 +34,9 @@ In Main menu > User interface settings > Theme configuration:
 ## Development
 
 ```bash
-python3 tools/check.py                    # checks XML, includes, files, variables and sizes
+python3 tools/check.py                    # checks XML, includes, files, elements, variables, sizes
 python3 tools/render-background.py        # draws _inc/backgrounds/waves.png
+python3 tools/render-system-backgrounds.py  # draws systems/*/background.jpg (needs Chrome)
 CONSOLE=192.168.0.84 tools/deploy.sh      # copies the theme to a console over SSH
 tools/package.sh                          # builds dist/batox-theme.zip from the last commit
 ```
@@ -44,7 +47,15 @@ ZIP.
 
 ## Credits and trademarks
 
-The theme's backgrounds are drawn by its own tool, and its fonts and icons are openly licensed.
-It takes inspiration from console home screens but uses none of their assets, and it is not
-affiliated with any console maker or with the Batocera project. System logos are trademarks of
-their owners.
+The theme's backgrounds are drawn by its own tools, the systems' ones included (each machine on
+a pier at sunset), its font (Inter, SIL Open Font License) is openly licensed, and its icons are
+its own. The system logos, and the backgrounds of the systems not drawn yet, are those of
+Batocera's default theme, Carbon (CC BY-NC-SA, by Fabrice Caruso and its contributors), read where
+Batocera installs it; this theme doesn't ship them, and draws the logos in white. It takes inspiration from console home screens but uses
+none of their assets, and it is not affiliated with any console maker or with the Batocera
+project. System logos are trademarks of their owners.
+
+## License
+
+[MIT](LICENSE), except the Inter font, which keeps its own license (SIL Open Font License 1.1,
+[_inc/fonts/Inter-LICENSE.txt](_inc/fonts/Inter-LICENSE.txt)).

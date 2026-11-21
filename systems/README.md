@@ -5,7 +5,9 @@ One folder per system, named as the system's `${system.theme}` (its name in Bato
 
 | File | Size | Use |
 |---|---|---|
-| `logo.svg` | | the system's tile in the system view |
-| `background.jpg` | 1920×1080, under 300 KB | behind the system view and the system's game lists |
+| `background.jpg` | 1920×1080, about 90 KB | behind the home when the system is selected |
 
-Systems without a folder use `_default/`. See [docs/ARCHITECTURE.md](../docs/ARCHITECTURE.md#per-system-artwork).
+The backgrounds are drawn by `tools/render-system-backgrounds.py` (the machine on a pier at
+sunset): don't edit them by hand, change the script and run it again. A system without one shows
+Carbon's photo, read where Batocera installs it, darkened. The tiles' logos are Carbon's too,
+drawn in white. See [docs/ARCHITECTURE.md](../docs/ARCHITECTURE.md#per-system-artwork).

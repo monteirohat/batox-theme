@@ -1,15 +1,45 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Drawn on top of every view: the clock (battery and controllers come in milestone 3). -->
+<!--
+  Drawn on top of every view: the top bar. On the left, the connected controllers; on the right,
+  the network (and, on a handheld, the battery) just before the clock, on the clock's line. This view draws only the
+  engine's own elements (clock, indicators): extra texts don't show here.
+-->
 <theme>
   <formatVersion>7</formatVersion>
   <view name="screen">
+    <!-- The connected controllers (lightguns and wheels too), lit while in use -->
+    <controllerActivity name="controllerActivity">
+      <pos>${homeMarginX} ${devicesY}</pos>
+      <size>0.2 ${devicesHeight}</size>
+      <horizontalAlignment>left</horizontalAlignment>
+      <itemSpacing>${devicesSpacing}</itemSpacing>
+      <color>${textPrimary}</color>
+      <activityColor>${accent}</activityColor>
+      <hotkeyColor>${accent}</hotkeyColor>
+      <imagePath>${themePath}/_inc/icons/controller.svg</imagePath>
+      <gunPath>${themePath}/_inc/icons/gun.svg</gunPath>
+      <wheelPath>${themePath}/_inc/icons/wheel.svg</wheelPath>
+    </controllerActivity>
     <text name="clock">
-      <pos>0.94 ${topBarY}</pos>
+      <pos>0.955 ${topBarY}</pos>
       <origin>1 0</origin>
       <size>0.12 0.05</size>
       <alignment>right</alignment>
-      <color>${textSecondary}</color>
+      <verticalAlignment>center</verticalAlignment>
+      <color>${textPrimary}</color>
+      <fontPath>${fontLight}</fontPath>
       <fontSize>${fontClock}</fontSize>
     </text>
+    <!--
+      The engine's network (and battery) indicator, moved from the screen's edge to the clock's
+      left and line (HH:MM in this font is about 0.05 of the screen wide). It ignores <origin>:
+      its box starts at <pos> and its icons sit at the box's right, which ends at statusX.
+    -->
+    <batteryIndicator name="batteryIndicator">
+      <pos>${statusBoxX} ${topBarY}</pos>
+      <size>0.06 0.05</size>
+      <horizontalAlignment>right</horizontalAlignment>
+      <color>${textPrimary}</color>
+    </batteryIndicator>
   </view>
 </theme>

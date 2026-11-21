@@ -50,15 +50,76 @@ Engine features used, all present in Batocera's own theme (es-theme-carbon) on 4
 - `<imagegrid>` with `autoLayout`, `scrollDirection`, `centerSelection`, `scrollLoop` and an
   `<itemTemplate>` of `container`/`image`/`text`/`ninepatch`, with `storyboard` animations on
   `activate`/`deactivate`;
-- `<carousel name="systemcarousel">` of `type` horizontal for the system view;
+- the system view's `<carousel name="systemcarousel">` with an `<itemTemplate>`, like the game
+  grid's;
 - data bindings in `itemTemplate` and paths: `{game:image}`, `{game:thumbnail}`,
-  `{game:marquee}`, `{game:fanart}`, `{game:folder}`, `{system:fullName}`, `{system:logo}`, and
-  `exists()`/`?:` expressions;
+  `{game:name}`, `{system:theme}`, `{system:fullName}`, and `exists()`, `firstfile()` and `?:`
+  expressions;
+- `${system.fullName}`, `${system.manufacturer}` and `${system.releaseYearOrNull}` in the system
+  view's own elements;
 - metadata elements `md_description`, `md_developer`, `md_genre`, `md_releasedate`, `md_players`,
   `md_rating`, `md_name`, `md_image`, `md_fanart`;
 - `<subset>` with `displayName`, `appliesTo` and `ifSubset`, shown in Batocera's theme menu;
 - `<include lang="...">` for translated names;
 - `${themePath}` and `${system.theme}` in paths.
+
+### Engine notes
+
+Learned on the console (Batocera 43.1); each one cost a round of screenshots:
+
+- **No function inside another.** `firstfile(a, firstfile(b, c))` and `exists(firstfile(...))`
+  give nothing. Write one flat `firstfile(a, b, c)`, and test `exists()` on a plain path.
+- **No lookups in `<visible>`.** An item-template element whose `<visible>` holds
+  `exists(firstfile(...))` is never shown. Make the choice in the `<path>` instead
+  (`firstfile(console, logo)`, `exists(x) ? y : ""`).
+- **No game bindings in a view's own elements' `<visible>`** (an extra image with
+  `exists({game:fanart})` never showed). To darken the game art, tint `md_fanart` itself with
+  `<color>` (it multiplies the picture).
+- **Grid or carousel for the systems.** With a grid, the system view's own elements (background,
+  texts) stay those of the system selected when the view opened. A carousel gives every system
+  its own copy of them, so they follow the selection, and it takes the same `<itemTemplate>`.
+- **A grid clips its items.** A selected tile that grows past the grid's edges is cut: the
+  grid's `<padding>` (in screen fractions) leaves it room.
+- **Selection on the left.** A carousel (or a grid with `centerSelection` true) keeps the
+  selection at its center, so one much wider than the screen that starts off-screen puts that
+  center near the left edge.
+- **A scaled ninepatch blurs.** A frame drawn as a ninepatch inside a tile that the carousel
+  scales up turns into a soft haze; four thin images (top, bottom, sides) stay crisp.
+- **The carousel can push its neighbors.** `scaledLogoSpacing` 1 moves the tiles next to the
+  selected one so it doesn't cover them, and `logoAlignment` top keeps every tile's top on the
+  row, so the selected one grows down and to the right.
+- **`systemInfoDelay`** (the carousel's) is how long the engine waits before showing
+  `systemInfo`; 0 shows the number of games together with the name.
+- **No date.** Themes get no current date: `{global:clock}` is the "show clock" setting ("YES"),
+  the `<clock>` element shows the time only (`%H:%M`, or `%I:%M %p` with the 12-hour option)
+  and ignores `<format>`, and the date format in the engine is the screensaver's.
+- **The `screen` view draws the engine's elements only** (`clock`, `batteryIndicator`,
+  `controllerActivity`...): extra texts don't show there.
+- **`batteryIndicator` ignores `<origin>`**: its box starts at `<pos>` and its icons (the
+  network's, and the battery's on a handheld) sit at the box's right.
+- **Elements outside a carousel item** (the strip under the selected tile) are drawn, not cut.
+- **Moving around for screenshots**: a virtual keyboard through `/dev/uinput` presses the arrows
+  on the console; EmulationStation takes it like a real one.
+- **Several `<path>` lines**: the last one whose file exists is used.
+- **An element only when a file exists**: `if="exists(${themePath} + '/x/' + ${system.theme} +
+  '/y.jpg')"` on an element, with the variables outside the quotes. Declared a second time under
+  the same name, an element takes the new values: this is how a system with a background of the
+  theme's own drops the tint its photo would get.
+- **Element names are case sensitive**: `<webimage>` draws, `<webImage>` is skipped with only a
+  warning in the log. `tools/check.py` checks every view's elements against the engine's list.
+- **`controllerActivity` gives each device a square** as tall as its box and centers the image
+  on it: a wider image spills over its neighbor, so the device icons are square with the drawing
+  in the middle. `itemSpacing` is a fraction of the screen's width.
+- **A shader on an image**: `<shader><path>file.glsl</path>...</shader>` inside an `<image>` runs
+  the theme's own GLSL on it; a child named `<x_binding>` sets the shader's uniform `x` from an
+  expression, per item of a carousel. This is how the logos turn white.
+- **A list of systems in an expression**: `contains(" ${list} ", " " + {system:theme} + " ")`,
+  the list being a variable of names separated by spaces. It works in a `<path>`, a `<visible>`,
+  an `<opacity>` and a shader's `_binding`, and a condition may sit in another's "else"
+  (`a ? 1 : b ? 2 : 3`).
+- **RetroAchievements**: `${global.cheevos}` is set when an account is configured in Batocera,
+  `${global.cheevos.username}` is its name; a `webimage` loads the avatar from
+  `media.retroachievements.org` and keeps it in `~/.emulationstation/tmp`.
 
 ## Repository layout
 
@@ -68,11 +129,12 @@ batox-theme/
   _inc/
     variables.xml         design tokens: the only place colors, sizes and fonts are set
     backgrounds/          generated backgrounds (tools/render-background.py)
-    frames/               ninepatch frames: tile border, selection glow, panels; white.png
-    fonts/                OFL fonts and their licenses (milestone 2)
-    icons/                SVG icons: help prompts, battery, controller (milestone 3)
+    frames/               selection glow (ninepatch) and white.png (tools/render-frames.py)
+    fonts/                Inter Light, Regular and SemiBold, and their license (OFL 1.1)
+    icons/                the down arrow of the selected tile; controller, gun and wheel
+    shaders/              white.glsl: draws the systems' logos in white
   views/
-    screen.xml            always on top: clock, battery, controllers
+    screen.xml            always on top: controllers, network and battery, clock
     splash.xml            loading screen (milestone 3)
     menu.xml              EmulationStation's menus, dark and rounded (milestone 3)
     system.xml            Home of systems: the row of system tiles
@@ -86,12 +148,15 @@ batox-theme/
     background/           waves, game art (default), plain (milestone 5)
   systems/
     README.md             the artwork convention
-    _default/             fallback tile and background (milestone 4)
-    <system>/             per-system artwork, named by ${system.theme} (milestone 4)
+    <system>/             the system's background, named by ${system.theme}
   lang/                   en.xml (always included), pt_BR.xml, more later
   tools/
-    check.py              validates the theme (XML, includes, paths, sizes)
+    check.py              validates the theme (XML, includes, paths, elements, sizes)
     render-background.py  draws the wave backgrounds, in pure Python
+    render-system-backgrounds.py  draws the systems' backgrounds (needs Chrome or Chromium)
+    render-frames.py      draws the selection glow and white.png, in pure Python
+    render-icons.py       draws the top bar's icons and the down arrow, in pure Python
+    preview-logos.py      shows every system logo as the home draws it, to pick its treatment
     deploy.sh             copies the theme to a console over SSH
     package.sh            builds the release ZIP
   docs/
@@ -119,58 +184,89 @@ Colors (hex, `RRGGBBAA` where transparency matters):
 |---|---|---|
 | `bgTop` / `bgBottom` | `0B1A33` / `04080F` | background gradient |
 | `wave` | `3B7BE0` at 10–25 % | light waves over the background |
-| `surface` | `14233DE6` | panels, unselected tiles |
-| `accent` | `3B8CFF` | selection glow, focus, progress |
-| `textPrimary` | `FFFFFF` | titles, selected tile name |
+| `surface` / `tileSurface` | `14233DE6` / `1A2B48` | panels / game tiles |
+| `homeTile` / `homeTileSelected` / `homeStrip` | `15306B` / `3A5797` / `213F7D` (94 %) | the home's tiles |
+| `selectionColor` | `F2F4F8` | the selection frame: white, like a console home's |
+| `accent` | `3B8CFF` | rating, focus |
+| `textPrimary` | `FFFFFF` | titles, the brand |
 | `textSecondary` | `A9B7CC` | details, metadata |
 | `textMuted` | `6B7A90` | labels, help bar |
-| `scrim` | `000000A0` | darkens game art behind text |
+| `artTint` | `4A4A4A` | multiplies the system and game art behind the text: darker |
 
-Type: one sans-serif family with an open license (Inter, OFL 1.1), regular and semibold. Sizes,
-as a fraction of the screen height: title 0.040, tile name 0.026, body 0.021, metadata 0.019,
-clock 0.021.
+Type: Inter (OFL 1.1), light, regular and semibold. Sizes, as a fraction of the screen height:
+the home's title 0.052 (light), game title 0.040, body 0.021, metadata 0.019, clock 0.032
+(light), help bar 0.022.
 
-Layout at 16:9 (fractions of the screen):
+The home at 16:9 (fractions of the screen), measured on a console's home screen:
 
 ```
 0.00 ┌──────────────────────────────────────────────────────────────┐
-     │ system / view name                       clock · controllers │  top bar   0.03–0.08
-0.25 │  Selected title (large)                                      │
-0.30 │ ┏━━━━━━━┓ ┌────┐ ┌────┐ ┌────┐ ┌────┐ ┌────┐ ┌────┐ ┌────┐    │  tile row  0.30–0.56
-     │ ┃ sel.  ┃ │    │ │    │ │    │ │    │ │    │ │    │ │    │    │  tile 0.187 h, selected ×1.45
-0.56 │ ┗━━━━━━━┛ └────┘ └────┘ └────┘ └────┘ └────┘ └────┘ └────┘    │
-0.62 │ developer · year · genre · players · ★★★★☆                   │  details   0.62–0.90
-     │ description, three to five lines                             │
-0.94 │ (A) Play  (B) Back  (X) Options                              │  help bar  0.94–1.00
+0.07 │ ▭ ▭        ▣ Name                                wifi  13:49 │  top bar
+0.19 │┌───┐┏━━━━━━━━━┓┌───┐┌───┐┌───┐┌───┐┌───┐┌───┐┌───┐┌───┐┌───┐ │  square tiles of 202 px,
+     ││ ▣ │┃         ┃│ ▣ ││ ▣ ││ ▣ ││ ▣ ││ ▣ ││ ▣ ││ ▣ ││ ▣ ││ ▣ │ │  5 px apart, white logos
+0.38 │└───┘┃  logo   ┃└───┘└───┘└───┘└───┘└───┘└───┘└───┘└───┘└───┘ │
+     │     ┃         ┃                                              │  the selection, in the
+0.51 │     ┃─────────┃ Final Burn Neo                                │  second place: 1.7 times
+0.59 │     ┗━━━↓━━━━━┛ Arcade   2019                                │  larger, a strip with an
+0.63 │                 918 GAMES                                    │  arrow, a white frame
+0.88 │ ──────────────────────────────────────────────────────────── │  separator
+0.90 │ (start) MENU  (Y) SEARCH  (X) RANDOM  (B) SELECT             │  help bar
 1.00 └──────────────────────────────────────────────────────────────┘
+     behind: the selected system's picture (its machine on a pier at sunset); else Carbon's
+     photo, tinted by artTint; else the waves
 ```
 
-Motion: the selected tile scales from 1.0 to 1.45 in 200 ms (ease-out); the game art crossfades in
-300 ms; the waves never move faster than the eye notices. The motion subset turns all of it off.
+Motion: the selected tile grows 1.7 times, lightens, and its strip and frame fade in, in 200 ms
+(ease-out); the background and texts crossfade in 300 ms. The motion subset turns it off.
+
+### Decided
+
+Approved on the console, and kept unless asked:
+
+- **The light font**: Inter Light for the home's title (0.052) and the clock (0.032).
+- **The bottom bar**: a thin line at 0.875 of the screen's height (`separatorY`, white at 19 %),
+  the help prompts under it at 0.895 (`helpY`), both from 0.045 (`homeMarginX`), in Inter
+  Regular 0.022 and `textSecondary`.
+- **No brand on the home**, and no date (it isn't possible, see [Engine notes](#engine-notes)).
+- **The top bar's left**: the connected controllers (lightguns and wheels too) from 0.045, white,
+  lit in `accent` while in use, on every view; on the home, the RetroAchievements profile (avatar
+  and name, Inter Light 0.027) at 0.18, after room for four controllers, only when an account is
+  configured. Nothing comes from outside Batocera.
+- **The top bar's right**: the network icon (and the battery on a handheld) just left of the
+  clock, on its line.
 
 ## Views
 
-### System view: Home of systems
+### System view: the home (done)
 
-- `systemcarousel` of type horizontal across the tile row; logos 0.105×0.187, `logoScale` 1.45,
-  about 8 logos shown. The selected system's name and game count (`systemInfo`) sit under the
-  row.
-- Background: the system's `background.jpg` darkened, else the waves.
-- First milestone question: whether a horizontal carousel can keep the selection near the left
-  edge, as the reference does, or whether the grid-based system view (Carbon's `grid` system
-  view) is needed for that.
+- `systemcarousel` of type horizontal with an `itemTemplate`: 15 tiles across a carousel 1.6125
+  screens wide that starts at x = -0.5678, so the selection always sits in the second place
+  (see [Engine notes](#engine-notes)); square tiles of 202 px at 1080p, 5 px apart;
+  `scaledLogoSpacing` pushes the neighbors of the selected tile, `logoAlignment` top keeps the
+  row's top.
+- A tile: a square of `homeTile` with the system's brand logo in white (see
+  [Per-system artwork](#per-system-artwork)), else its name. The selected one grows 1.7 times
+  into a card: lighter
+  (`homeTileSelected`), a `homeStrip` strip with a down arrow under it, and a white frame of four
+  thin bars.
+- At the card's right: the system's name (light, 0.052), maker and year, and number of games.
+- The background, name, maker, year and number of games follow the selection, crossfading in
+  300 ms; the waves, the separator and the help bar stay. `systemInfoDelay` 0 shows the number
+  of games at once, with the name (the engine waits otherwise).
+- Background: the system's picture, drawn by the theme (see
+  [Per-system artwork](#per-system-artwork)); a system without one gets Carbon's photo tinted by
+  `artTint`, else the waves.
 
-### Home (customView, inherits grid): the game row
+### Home (customView, inherits grid): the game list (first version, to be revisited)
 
-- `imagegrid` named `gamegrid`, one row (`autoLayout` *n* 1, `scrollDirection` horizontal),
-  `centerSelection` to be tuned so the selection stays near the left.
-- `itemTemplate`: a rounded tile (`ninepatch` frame), the box art (`{game:image}`, else
-  `{game:thumbnail}`), a folder tile for folders, and the game's name under the selected tile
-  only. `storyboard` on `activate`/`deactivate` for the scale and the glow.
-- `md_fanart` (else `md_image`) full-screen behind a `scrim`, crossfading on selection.
-- Details area: `md_name`, `md_developer`, `md_releasedate`, `md_genre`, `md_players`,
-  `md_rating`, `md_description` (three to five lines).
+- `imagegrid` named `gamegrid`, one row of 7 (`centerSelection` partial), the same tile with the
+  box art (`{game:thumbnail}`, else `{game:image}`), else the game's name.
+- `md_fanart` full-screen, tinted by `artTint`.
+- Details area: `md_name` above the row; `md_developer`, `md_releasedate` (year), `md_genre`,
+  `md_players`, `md_rating` and `md_description` under it.
 - Default view of the theme.
+- Next: how to show a list of hundreds of games (one row is slow to browse); the details line
+  wants a `stackpanel`, and the description's first line is clipped at the top.
 
 ### Library (customView, inherits grid)
 
@@ -184,24 +280,54 @@ panel) and for people who prefer lists.
 
 ### Screen, menu and splash
 
-- `screen`: clock, battery and connected controllers in the top right corner, on every view.
+- `screen`, on every view: the connected controllers at the top left; the network icon (and the
+  battery on a handheld) and the clock at the top right.
 - `menu`: EmulationStation's menus with `surface` panels, `accent` selection and the theme's font.
 - `splash`: the waves with the BatoX wordmark and a progress bar in `accent`.
 
 ## Per-system artwork
 
 `systems/<name>/`, where `<name>` is the system's `${system.theme}` (as in Batocera's
-`es_systems.cfg`: `snes`, `megadrive`...):
+`es_systems.cfg`: `snes`, `megadrive`...; `auto-allgames`, `auto-favorites` and
+`auto-lastplayed` for the automatic collections):
 
 | File | Size | Use |
 |---|---|---|
-| `logo.svg` | | the system tile in the system view |
-| `background.jpg` | 1920×1080, under 300 KB | behind the system view and its game lists |
+| `background.jpg` | 1920×1080, under 300 KB | behind the home when the system is selected |
 
-Systems without artwork use `systems/_default`: a typographic tile with `{system:fullName}` and
-the waves. Artwork comes first for the systems on the test console (SNES, NES, Mega Drive,
-GBA, Game Boy Color, MAME, FBNeo, N64, PC Engine, Master System, Game Gear, Satellaview, Sufami
-Turbo).
+The logos are those of Carbon, the theme every Batocera has, read in place from
+`/usr/share/emulationstation/themes/es-theme-carbon/art` and never copied. The backgrounds are
+the theme's own for the systems drawn so far, Carbon's for the others.
+
+**Logos.** A tile shows `logos/<name>.svg` (else `.png`), 462 systems, drawn in white by
+`_inc/shaders/white.glsl`: every visible pixel of the colored logo turns white, which keeps its
+shape. Three lists in `_inc/variables.xml` handle the logos this doesn't suit:
+
+| List | For | What happens |
+|---|---|---|
+| `logoCutDark` | a logo on a black or dark plate (Mega Drive, Game Boy Advance, MSX) | pixels under 25 % of brightness disappear, so the letters show |
+| `logoCutGray` | a logo on a gray or colored plate (Commodore 64, Atari) | the same, under 45 % |
+| `logoAsName` | a logo neither suits (All games) | the system's name, in capitals |
+
+A system without a logo shows its name too. `tools/preview-logos.py` draws every logo as the
+home does, next to the other treatments, from a copy of Carbon's logos: the systems of the test
+console and the logos that whiten into a plain rectangle are sorted; the rest of the 462 are
+still to review there.
+
+**Backgrounds.** `tools/render-system-backgrounds.py` draws one picture per system, 25 so far
+(the test console's): the machine, inked and lit from behind, on a pier in front of a coastal
+city at sunset, with palms, in saturated pinks, oranges and purples over the theme's navy. The
+left and the top stay dark for the tiles and the texts, and a soft shade sits behind the
+system's name. Four moods of sky (`vice`, `miami`, `gold`, `night`) vary the row.
+
+- A machine is a few boxes (a body, its raised parts, a cartridge, a controller) with details
+  drawn flat on their faces, all seen from the same corner; consoles, handhelds, arcade
+  cabinets, home computers, and for the collections a pile of cartridges and neon signs. A new
+  system is one function and one line in `SYSTEMS`.
+- The script writes an SVG and a headless Chrome or Chromium turns it into the JPEG (about
+  90 KB each). Everything is drawn there: no photo, no logo, no art from a game or a maker.
+- A system without its own picture uses Carbon's photo (`art/background/<name>.jpg`, 323
+  systems), read in place, never copied, and tinted by `artTint`; else the waves.
 
 ## Options in Batocera's menu
 
@@ -225,10 +351,14 @@ Subsets, with names translated in `lang/`:
 ## Tools and workflow
 
 ```bash
-python3 tools/check.py                    # well-formed XML, includes and paths exist, sizes
+python3 tools/check.py                    # well-formed XML, includes and paths exist, elements, sizes
 python3 tools/render-background.py        # writes _inc/backgrounds/waves.png
+python3 tools/render-system-backgrounds.py  # writes systems/*/background.jpg (needs Chrome)
 CONSOLE=192.168.0.84 tools/deploy.sh      # copies the theme to /userdata/themes/batox-theme
-tools/package.sh                          # dist/batox-theme-<version>.zip
+python3 tools/render-frames.py            # writes _inc/frames/glow.png and white.png
+python3 tools/render-icons.py             # writes _inc/icons/*.svg
+python3 tools/preview-logos.py /tmp/logos # writes dist/logos.html from a copy of Carbon's logos
+tools/package.sh                          # dist/batox-theme.zip
 ```
 
 On the console, choose the theme in Main menu > User interface settings > Theme set; after a
@@ -241,10 +371,12 @@ unpacking it into `/userdata/themes`.
 
 ## Milestones
 
-1. **Skeleton** (this commit): layout, tokens, tools, CI, the waves background, and minimal
-   views that pass `tools/check.py`. The first look on a console belongs to milestone 2.
-2. **Home row**: the system carousel and the Home game row with the selection's scale and glow,
-   background art and details area; answer the left-anchored selection question.
+1. **Skeleton** (done): layout, tokens, tools, CI, the waves background, and minimal views.
+2. **Home** (done): the system row with the selection on the left, console and logo tiles, the
+   glow, the system's art as background, the brand, the help bar; then, after a console's home
+   screen, square tiles 5 px apart with the systems' logos in white and the selected card with a white
+   frame.
+   A first version of the game row. Next: the analysis of how to show the game list.
 3. **Menus, screen and splash**; English and Brazilian Portuguese.
 4. **Artwork**: waves backgrounds, the default tile, logos and backgrounds for the systems on the
    test console.
@@ -256,13 +388,22 @@ unpacking it into `/userdata/themes`.
 The theme takes the layout and mood of a console home screen, not its assets: no console maker's
 logos, fonts, sounds, wallpapers or names in the theme's files or views. Fonts and icons are
 openly licensed (their licenses ship next to them); backgrounds are drawn by
-`tools/render-background.py`. System logos are trademarks of their owners and are used to name
+`tools/render-background.py` and `tools/render-system-backgrounds.py`, whose machines are the
+theme's own drawings, without logos or names. System logos are trademarks of their owners and are used to name
 the systems, as every EmulationStation theme does.
+
+The top bar's icons are the theme's own (`tools/render-icons.py`). The system logos, and the
+backgrounds of the systems the theme hasn't drawn yet, come from Batocera's Carbon theme (CC
+BY-NC-SA, by Fabrice Caruso and its contributors), read from where Batocera installs it; this
+theme ships none of them, and only changes the logos' color as it draws them. The RetroAchievements avatar is
+loaded from retroachievements.org on the console, only for an account the user configured.
+
+License: MIT (`LICENSE`) for everything the theme ships, except the Inter font, which keeps its
+own license (SIL Open Font License 1.1, `_inc/fonts/Inter-LICENSE.txt`).
 
 ## Open decisions
 
-- **License**: CC BY-NC-SA 4.0 (the license of Batocera's Carbon theme, which would allow
-  reusing its system logos with credit) or CC BY 4.0 for art and MIT for the XML and tools.
-- **System logos**: draw our own wordmarks, or reuse Carbon's under its license.
+- **More system backgrounds**: 25 systems have their own picture; each of Batocera's other
+  systems needs its machine drawn in `tools/render-system-backgrounds.py`.
 - **Font**: Inter is the default proposal; Nunito Sans or Noto Sans would also fit (Noto covers
   more scripts).

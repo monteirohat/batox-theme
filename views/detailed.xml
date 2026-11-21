@@ -12,6 +12,7 @@
       <secondaryColor>${textMuted}</secondaryColor>
       <selectedColor>${textPrimary}</selectedColor>
       <selectorColor>${accentGlow}</selectorColor>
+      <fontPath>${fontRegular}</fontPath>
       <fontSize>${fontBody}</fontSize>
       <zIndex>20</zIndex>
     </textlist>
@@ -26,6 +27,7 @@
     <datetime name="md_releasedate">
       <pos>0.52 0.27</pos>
       <size>0.13 0.04</size>
+      <format>%Y</format>
     </datetime>
     <text name="md_genre">
       <pos>0.66 0.27</pos>

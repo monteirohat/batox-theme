@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  Home: the theme's main game view. One row of game tiles scrolling sideways; the details area
-  (views/common.xml) shows the selected game. Milestone 2 adds the tile template (rounded frame,
-  glow, name under the selected tile) and its animations.
+  Home: the theme's main game view. One row of game tiles scrolling sideways; the selected tile
+  grows and lights up, and the details area (views/common.xml) shows its game.
 -->
 <theme>
   <formatVersion>7</formatVersion>
@@ -13,8 +12,66 @@
       <autoLayout>7 1</autoLayout>
       <scrollDirection>horizontal</scrollDirection>
       <centerSelection>partial</centerSelection>
-      <margin>0.008 0.010</margin>
+      <cellProportion>1</cellProportion>
+      <margin>0.02 0.02</margin>
+      <padding>${rowPadding}</padding>
       <zIndex>20</zIndex>
+      <itemTemplate>
+        <container>
+          <scale>1</scale>
+          <storyboard event="activate">
+            <animation property="scale" to="${selectedScale}" duration="${motionSelect}" mode="easeOut"/>
+          </storyboard>
+          <storyboard event="deactivate">
+            <animation property="scale" to="1" duration="${motionSelect}" mode="easeOut"/>
+          </storyboard>
+          <image>
+            <path>${themePath}/_inc/frames/white.png</path>
+            <pos>0 0</pos>
+            <origin>0 0</origin>
+            <size>1 1</size>
+            <color>${tileSurface}</color>
+            <zIndex>1</zIndex>
+          </image>
+          <!-- The box art (thumbnail), else the main image, fitted inside the tile -->
+          <image>
+            <path>exists({game:thumbnail}) ? {game:thumbnail} : {game:image}</path>
+            <pos>0.5 0.5</pos>
+            <origin>0.5 0.5</origin>
+            <maxSize>0.9 0.9</maxSize>
+            <zIndex>2</zIndex>
+          </image>
+          <!-- No picture at all: the game's name -->
+          <text>
+            <visible>!exists({game:thumbnail}) &amp;&amp; !exists({game:image})</visible>
+            <text>{game:name}</text>
+            <pos>0.08 0</pos>
+            <size>0.84 1</size>
+            <alignment>center</alignment>
+            <verticalAlignment>center</verticalAlignment>
+            <color>${textSecondary}</color>
+            <fontPath>${fontSemiBold}</fontPath>
+            <fontSize>${fontMeta}</fontSize>
+            <zIndex>2</zIndex>
+          </text>
+          <ninepatch>
+            <pos>0 0</pos>
+            <size>1 1</size>
+            <path>${glowFrame}</path>
+            <cornerSize>${glowCorner}</cornerSize>
+            <padding>${glowPadding}</padding>
+            <color>${accent}</color>
+            <opacity>0</opacity>
+            <zIndex>3</zIndex>
+            <storyboard event="activate">
+              <animation property="opacity" to="1" duration="${motionSelect}" mode="easeOut"/>
+            </storyboard>
+            <storyboard event="deactivate">
+              <animation property="opacity" to="0" duration="${motionSelect}" mode="easeOut"/>
+            </storyboard>
+          </ninepatch>
+        </container>
+      </itemTemplate>
     </imagegrid>
   </customView>
 </theme>

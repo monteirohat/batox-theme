@@ -19,29 +19,113 @@
     <textPrimary>FFFFFFFF</textPrimary>
     <textSecondary>A9B7CCFF</textSecondary>
     <textMuted>6B7A90FF</textMuted>
-    <scrim>000000A0</scrim>
+    <artTint>4A4A4AFF</artTint>  <!-- multiplies the game art behind the details: darker -->
     <transparent>00000000</transparent>
+
+    <tileSurface>1A2B48FF</tileSurface>
+
+    <!-- Fonts (Inter, SIL Open Font License; _inc/fonts/Inter-LICENSE.txt) -->
+    <fontRegular>${themePath}/_inc/fonts/Inter-Regular.ttf</fontRegular>
+    <fontSemiBold>${themePath}/_inc/fonts/Inter-SemiBold.ttf</fontSemiBold>
+    <fontLight>${themePath}/_inc/fonts/Inter-Light.ttf</fontLight>
+
+    <!-- Tiles: square, like a console home's; the selection: a thin white border with a little
+         light around it (tools/render-frames.py) -->
+    <glowFrame>${themePath}/_inc/frames/glow.png</glowFrame>
+    <glowCorner>9 9</glowCorner>
+    <glowPadding>-6 -6</glowPadding>
+    <selectionColor>F2F4F8FF</selectionColor>
 
     <!-- Type sizes -->
     <fontTitle>0.040</fontTitle>
     <fontTile>0.026</fontTile>
     <fontBody>0.021</fontBody>
     <fontMeta>0.019</fontMeta>
-    <fontClock>0.021</fontClock>
+    <fontClock>0.032</fontClock>
 
     <!-- Layout: top bar, tile row, details area, help bar -->
     <marginX>0.06</marginX>
     <contentWidth>0.88</contentWidth>
-    <topBarY>0.03</topBarY>
-    <titleY>0.22</titleY>
-    <rowY>0.30</rowY>
-    <rowHeight>0.26</rowHeight>
+    <topBarY>0.065</topBarY>
+    <titleY>0.16</titleY>
+    <!-- The tile row's grid: taller than its tiles, so a selected tile can grow without being cut -->
+    <rowY>0.24</rowY>
+    <rowHeight>0.38</rowHeight>
+    <rowPadding>0.03 0.07 0.03 0.07</rowPadding>
     <tileWidth>0.105</tileWidth>
     <tileHeight>0.187</tileHeight>
-    <selectedScale>1.45</selectedScale>
-    <detailsY>0.62</detailsY>
-    <descriptionY>0.67</descriptionY>
-    <descriptionHeight>0.22</descriptionHeight>
+    <selectedScale>1.30</selectedScale>
+    <librarySelectedScale>1.10</librarySelectedScale>
+    <detailsY>0.64</detailsY>
+    <descriptionY>0.69</descriptionY>
+    <descriptionHeight>0.20</descriptionHeight>
+
+    <!--
+      The home, measured on a console's home screen and scaled to 1920 x 1080: square tiles of
+      0.105 x 0.1867 (202 px) 5 px apart, in cells of 0.1075; the selected tile 1.7 times larger,
+      its top on the row's, with a strip and a down arrow under it, and one tile before it. The
+      row is a carousel 15 cells wide that starts off-screen, so the selection, at its center,
+      stays in the second place: its center at 0.2385 (left edge 0.149), the carousel at
+      0.2385 - 7.5 x 0.1075.
+    -->
+    <homeRowX>-0.5678</homeRowX>
+    <homeRowWidth>1.6125</homeRowWidth>
+    <homeRowY>0.19</homeRowY>
+    <homeRowHeight>0.42</homeRowHeight>
+    <homeTileSize>0.105 0.1867</homeTileSize>
+    <homeScale>1.7</homeScale>
+    <homeFrame>0.013</homeFrame>  <!-- the selection frame's width, in tiles: 4.5 px at 1080p -->
+    <homeTile>15306BF0</homeTile>
+    <homeTileSelected>3A5797F0</homeTileSelected>
+    <homeStrip>213F7DF0</homeStrip>
+    <homeTitleX>0.337</homeTitleX>
+    <homeTitleY>0.505</homeTitleY>
+    <fontHomeTitle>0.052</fontHomeTitle>
+    <homeMakerY>0.59</homeMakerY>
+    <homeInfoY>0.625</homeInfoY>
+    <homeMarginX>0.045</homeMarginX>
+    <!--
+      The tiles' logos (views/system.xml): the largest a logo gets in its tile, in tiles. Then the
+      systems, separated by spaces, whose logo sits on a plate that would whiten into a blob, so
+      its dark parts go too (_inc/shaders/white.glsl's cutDark): below 25 % of brightness
+      (logoCutDark), or below 45 % for a gray plate (logoCutGray); and those whose logo can't be
+      whitened at all and show their name instead (logoAsName), as a system without a logo does.
+      Checked on the console's systems with tools/preview-logos.py.
+    -->
+    <homeLogoSize>0.86 0.5</homeLogoSize>
+    <logoCutDark>megadrive megadrive-japan gba msx msx1 msx2 msx2+ msxturbor msxlaserdisk pygame 3do atarilynx dragon32 dynax enterprise epic fallout1-ce gx4000 gzdoom lowresnx vis coleco lcdgames</logoCutDark>
+    <logoCutGray>c64 c16 c20 c128 plus4 cplus4 atari gong kaneko msu-md neogeomvs segacd snesh trs-80 arduboy nintendo auto-strategy</logoCutGray>
+    <logoAsName>auto-allgames</logoAsName>
+    <fontTileName>0.036</fontTileName>
+    <!--
+      Top bar's left: the connected controllers; then the RetroAchievements profile, if any.
+      The engine gives each controller a square as tall as the bar (the icons are square, the
+      drawing in their middle), so devicesHeight sets their width; centered on the clock's line.
+      The profile starts after room for four controllers: the screen view can't tell how many
+      there are, and the two must never overlap.
+    -->
+    <devicesHeight>0.046</devicesHeight>
+    <devicesY>0.067</devicesY>
+    <devicesSpacing>0.005</devicesSpacing>
+    <profileX>0.18</profileX>
+    <profileAvatar>0.027 0.048</profileAvatar>
+    <profileNameX>0.215</profileNameX>
+    <fontProfile>0.027</fontProfile>
+    <statusBoxX>0.833</statusBoxX>  <!-- the network/battery indicator's box: 0.06 wide, so it ends at 0.893, the clock's left less a gap -->
+
+    <!-- Bottom bar: a thin line, then the help prompts -->
+    <separatorY>0.875</separatorY>
+    <separatorColor>FFFFFF30</separatorColor>
+    <helpY>0.895</helpY>
+    <fontHelp>0.022</fontHelp>
+
+    <!--
+      System artwork: ours first (systems/<name>/), else that of Batocera's default theme, Carbon,
+      read in place on the console, never copied (docs/ARCHITECTURE.md#legal). The lookups
+      themselves are in views/system.xml.
+    -->
+    <carbonArt>/usr/share/emulationstation/themes/es-theme-carbon/art</carbonArt>
+    <systemArtTint>${artTint}</systemArtTint>
 
     <!-- Motion, in milliseconds (the motion subset sets them; these are its "on" values) -->
     <motionSelect>200</motionSelect>

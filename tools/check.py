@@ -5,6 +5,8 @@ mistakes, so they are easy to miss:
 - every XML file is well formed and declares formatVersion 7;
 - every <include> and every referenced file exists;
 - every ${variable} a view uses is defined (or comes from the engine);
+- every element of a view is one the engine knows (the names are case sensitive: <webImage> is
+  skipped, <webimage> is drawn);
 - images stay small enough for a Raspberry Pi.
 
     python3 tools/check.py        # exit status 1 when something is wrong
@@ -22,6 +24,15 @@ ENGINE_VARS = re.compile(r"^(themePath|lang|screen\.|system\.|global\.|systemvie
 VAR = re.compile(r"\$\{([^}]+)\}")
 # Text that names a file of the theme
 FILE_REF = re.compile(r"^(\$\{themePath\}|\.)/[^{}$]*\.(png|jpe?g|svg|ttf|otf|xml|glsl|wav|ogg|mp4)$", re.I)
+# The element types of Batocera's EmulationStation (ThemeData::sElementMap), and what may sit in a view
+ELEMENTS = {
+    "splash", "control", "stackpanel", "rectangle", "screenshader", "shader", "image", "imagegrid",
+    "gridtile", "clock", "networkIcon", "webimage", "batteryText", "batteryIcon", "text", "textlist",
+    "container", "ninepatch", "datetime", "rating", "sound", "gameextras", "controllerActivity",
+    "batteryIndicator", "helpsystem", "video", "carousel", "menuText", "menuTextSmall", "menuGroup",
+    "menuBackground", "menuIcons", "menuGrid",
+}
+VIEW_CHILDREN = ELEMENTS | {"include"}
 MAX_IMAGE = {".png": 600 << 10, ".jpg": 400 << 10, ".jpeg": 400 << 10, ".svg": 200 << 10}
 
 
@@ -52,6 +63,10 @@ def main():
         root = tree.getroot()
         if root.tag != "theme" or (root.findtext("formatVersion") or "").strip() != "7":
             errors.append(f"{rel}: expected <theme> with <formatVersion>7</formatVersion>")
+        for view in list(root.iter("view")) + list(root.iter("customView")):
+            for child in view:
+                if isinstance(child.tag, str) and child.tag not in VIEW_CHILDREN:
+                    errors.append(f"{rel}: <{child.tag}> is not an element the engine knows")
         for variables in root.iter("variables"):
             defined.update(child.tag for child in variables)
         for el in root.iter():
