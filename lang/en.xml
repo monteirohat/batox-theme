@@ -3,8 +3,6 @@
 <theme>
   <formatVersion>7</formatVersion>
   <variables>
-    <viewHome>Home</viewHome>
-    <viewLibrary>Library</viewLibrary>
     <subsetAccent>Accent color</subsetAccent>
     <accentBlue>Blue</accentBlue>
     <accentPurple>Purple</accentPurple>
@@ -21,5 +19,12 @@
     <infoMost>Most played</infoMost>
     <infoGames>games</infoGames>
     <infoFeatures>Features</infoFeatures>
+    <gameDeveloper>Developer</gameDeveloper>
+    <gamePublisher>Publisher</gamePublisher>
+    <gameGenre>Genre</gameGenre>
+    <gamePlayers>Players</gamePlayers>
+    <gameReleased>Released</gameReleased>
+    <gameRating>Rating</gameRating>
+    <gameTimesPlayed>Times played</gameTimesPlayed>
   </variables>
 </theme>

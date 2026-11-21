@@ -3,7 +3,7 @@
   batox-theme: a dark EmulationStation theme for Batocera, in the style of a console's home screen.
   https://github.com/monteirohat/batox-theme - see docs/ARCHITECTURE.md
 -->
-<theme defaultView="Home">
+<theme defaultView="detailed">
   <formatVersion>7</formatVersion>
 
   <!-- Design tokens: the only place colors, sizes and timings are set -->
@@ -31,7 +31,5 @@
   <include>./views/screen.xml</include>
   <include>./views/system.xml</include>
   <include>./views/common.xml</include>
-  <include>./views/home.xml</include>
-  <include>./views/library.xml</include>
   <include>./views/detailed.xml</include>
 </theme>

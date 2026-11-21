@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  Shared by every game view (Home and Library inherit grid): the background, the selected game's
-  art behind a scrim, and the details area under the tile row.
+  Shared by the game lists (docs/STYLE.md): the system's picture, dimmed, its logo in white as
+  the header, the list of games on a plate at the left, and the bottom bar. The detailed view
+  (views/detailed.xml) adds the selected game's cover and details at the right.
 -->
 <theme>
   <formatVersion>7</formatVersion>
-  <view name="basic, detailed, grid">
+  <view name="basic, detailed, video">
     <image name="background" extra="true">
       <pos>0 0</pos>
       <origin>0 0</origin>
@@ -13,72 +14,88 @@
       <path>${themePath}/_inc/backgrounds/waves.png</path>
       <zIndex>0</zIndex>
     </image>
-    <!-- The selected game's art, darkened so the details stay readable; without it, the waves -->
-    <image name="md_fanart">
-      <pos>0 0</pos>
-      <origin>0 0</origin>
-      <size>1 1</size>
-      <color>${artTint}</color>
+    <!-- The system's picture, as on the home but dimmed: the theme's own, else Batocera's photo -->
+    <image name="systemArt" extra="true">
+      <pos>0.5 0.5</pos>
+      <origin>0.5 0.5</origin>
+      <minSize>1 1</minSize>
+      <path>${carbonArt}/background/${system.theme}.jpg</path>
+      <color>${systemArtTint}</color>
       <zIndex>1</zIndex>
     </image>
+    <image name="systemArt" extra="true" if="exists(${themePath} + '/systems/' + ${system.theme} + '/background.jpg')">
+      <path>${themePath}/systems/${system.theme}/background.jpg</path>
+      <color>${listArtTint}</color>
+    </image>
 
-    <text name="md_name">
-      <pos>${marginX} ${titleY}</pos>
-      <size>${contentWidth} 0.06</size>
+    <!-- Header: the system's logo in white, as on its tile (see views/system.xml), else its name -->
+    <image name="systemLogo" extra="true">
+      <path>${carbonArt}/logos/${system.theme}.png</path>
+      <path>${carbonArt}/logos/${system.theme}.svg</path>
+      <pos>${homeMarginX} ${listHeaderY}</pos>
+      <origin>0 0.5</origin>
+      <maxSize>${listLogoSize}</maxSize>
+      <linearSmooth>true</linearSmooth>
+      <zIndex>30</zIndex>
+      <shader>
+        <path>${themePath}/_inc/shaders/white.glsl</path>
+        <cutDark_binding>contains(" ${logoCutGray} ", " ${system.theme} ") ? 0.45 : contains(" ${logoCutDark} ", " ${system.theme} ") ? 0.25 : 0</cutDark_binding>
+      </shader>
+    </image>
+    <text name="systemName" extra="true" if="!exists(${carbonArt} + '/logos/' + ${system.theme} + '.svg') &amp;&amp; !exists(${carbonArt} + '/logos/' + ${system.theme} + '.png')">
+      <text>${system.fullName}</text>
+      <pos>${homeMarginX} ${listHeaderY}</pos>
+      <origin>0 0.5</origin>
+      <size>0.6 0.06</size>
       <alignment>left</alignment>
+      <verticalAlignment>center</verticalAlignment>
       <color>${textPrimary}</color>
-      <fontPath>${fontSemiBold}</fontPath>
+      <fontPath>${fontLight}</fontPath>
       <fontSize>${fontTitle}</fontSize>
       <zIndex>30</zIndex>
     </text>
-    <text name="md_developer">
-      <pos>${marginX} ${detailsY}</pos>
-      <size>0.22 0.04</size>
-      <color>${textSecondary}</color>
+
+    <!-- The list's plate: a surface at rest, from the screen's margin -->
+    <image name="listPlate" extra="true">
+      <path>${themePath}/_inc/frames/white.png</path>
+      <pos>${homeMarginX} ${listY}</pos>
+      <origin>0 0</origin>
+      <size>${listSize}</size>
+      <color>${homeTile}</color>
+      <zIndex>10</zIndex>
+    </image>
+    <!-- Twelve rows; the selected one as the home's selected tile: solid, in a white frame -->
+    <textlist name="gamelist">
+      <pos>${homeMarginX} ${listRowsY}</pos>
+      <size>${listRowsSize}</size>
+      <lines>12</lines>
+      <alignment>left</alignment>
+      <horizontalMargin>${listRowMargin}</horizontalMargin>
+      <primaryColor>${textSecondary}</primaryColor>
+      <secondaryColor>${textSecondary}</secondaryColor>
+      <selectedColor>${textPrimary}</selectedColor>
+      <selectorColor>FFFFFFFF</selectorColor>
+      <selectorImagePath>${themePath}/_inc/frames/selector.png</selectorImagePath>
       <fontPath>${fontRegular}</fontPath>
-      <fontSize>${fontMeta}</fontSize>
+      <fontSize>${fontList}</fontSize>
+      <zIndex>20</zIndex>
+    </textlist>
+
+    <!-- Bottom bar, as on the home -->
+    <image name="separator" extra="true">
+      <path>${themePath}/_inc/frames/white.png</path>
+      <pos>${homeMarginX} ${separatorY}</pos>
+      <origin>0 0</origin>
+      <size>0.91 0.0015</size>
+      <color>${separatorColor}</color>
       <zIndex>30</zIndex>
-    </text>
-    <datetime name="md_releasedate">
-      <pos>0.29 ${detailsY}</pos>
-      <size>0.06 0.04</size>
-      <format>%Y</format>
-      <color>${textSecondary}</color>
+    </image>
+    <helpsystem name="help">
+      <pos>${homeMarginX} ${helpY}</pos>
+      <textColor>${textSecondary}</textColor>
+      <iconColor>${textSecondary}</iconColor>
       <fontPath>${fontRegular}</fontPath>
-      <fontSize>${fontMeta}</fontSize>
-      <zIndex>30</zIndex>
-    </datetime>
-    <text name="md_genre">
-      <pos>0.36 ${detailsY}</pos>
-      <size>0.18 0.04</size>
-      <color>${textSecondary}</color>
-      <fontPath>${fontRegular}</fontPath>
-      <fontSize>${fontMeta}</fontSize>
-      <zIndex>30</zIndex>
-    </text>
-    <text name="md_players">
-      <pos>0.55 ${detailsY}</pos>
-      <size>0.07 0.04</size>
-      <color>${textSecondary}</color>
-      <fontPath>${fontRegular}</fontPath>
-      <fontSize>${fontMeta}</fontSize>
-      <zIndex>30</zIndex>
-    </text>
-    <rating name="md_rating">
-      <pos>0.63 ${detailsY}</pos>
-      <size>0.10 0.03</size>
-      <color>${accent}</color>
-      <zIndex>30</zIndex>
-    </rating>
-    <text name="md_description">
-      <pos>${marginX} ${descriptionY}</pos>
-      <size>${contentWidth} ${descriptionHeight}</size>
-      <color>${textSecondary}</color>
-      <fontPath>${fontRegular}</fontPath>
-      <fontSize>${fontBody}</fontSize>
-      <lineSpacing>1.4</lineSpacing>
-      <verticalAlignment>top</verticalAlignment>
-      <zIndex>30</zIndex>
-    </text>
+      <fontSize>${fontHelp}</fontSize>
+    </helpsystem>
   </view>
 </theme>

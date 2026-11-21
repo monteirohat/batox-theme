@@ -1,49 +1,229 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Detailed: a list of games on the left, the details on the right; for small screens. -->
+<!--
+  The game list (docs/STYLE.md): the list at the left (views/common.xml) and, at the right, a
+  plate with the selected game's cover, its name, eight details as labels over values in two
+  columns, and its description.
+-->
 <theme>
   <formatVersion>7</formatVersion>
-  <view name="detailed">
-    <textlist name="gamelist">
-      <pos>${marginX} 0.12</pos>
-      <size>0.40 0.78</size>
-      <alignment>left</alignment>
-      <horizontalMargin>0.01</horizontalMargin>
-      <primaryColor>${textSecondary}</primaryColor>
-      <secondaryColor>${textMuted}</secondaryColor>
-      <selectedColor>${textPrimary}</selectedColor>
-      <selectorColor>${accentGlow}</selectorColor>
-      <fontPath>${fontRegular}</fontPath>
-      <fontSize>${fontBody}</fontSize>
-      <zIndex>20</zIndex>
-    </textlist>
+  <view name="detailed, video">
+    <!-- The details' plate, 5 px from the list's, to the right margin (the clock's edge) -->
+    <image name="gamePlate" extra="true">
+      <path>${themePath}/_inc/frames/white.png</path>
+      <pos>${gamePlateX} ${listY}</pos>
+      <origin>0 0</origin>
+      <size>${gamePlateSize}</size>
+      <color>${homeTile}</color>
+      <zIndex>10</zIndex>
+    </image>
+    <!--
+      The cover, in the plate's top left corner: the game's box, whole (its picture when it has no
+      box; a plain tile when it has neither). A game with a video shows it there after a few
+      seconds on the game, as wide as the cover's area.
+    -->
+    <video name="md_video">
+      <pos>${gameCoverX} ${gameCoverY}</pos>
+      <origin>0 0</origin>
+      <maxSize>${gameCoverSize}</maxSize>
+      <delay>${gameVideoDelay}</delay>
+      <snapshotSource>thumbnail</snapshotSource>
+      <showSnapshotNoVideo>true</showSnapshotNoVideo>
+      <showSnapshotDelay>true</showSnapshotDelay>
+      <defaultSnapshot>${themePath}/_inc/icons/no-cover.svg</defaultSnapshot>
+      <zIndex>30</zIndex>
+    </video>
     <text name="md_name">
-      <pos>0.52 0.12</pos>
-      <size>0.42 0.10</size>
+      <pos>${gameCol1X} ${gameCoverY}</pos>
+      <size>${gameNameSize}</size>
+      <alignment>left</alignment>
+      <verticalAlignment>top</verticalAlignment>
+      <lineSpacing>1.15</lineSpacing>
+      <color>${textPrimary}</color>
+      <fontPath>${fontLight}</fontPath>
+      <fontSize>${fontTitle}</fontSize>
+      <zIndex>30</zIndex>
+    </text>
+    <!-- The engine's own labels end with a colon: the theme writes its own, in capitals -->
+    <text name="md_lbl_rating, md_lbl_releasedate, md_lbl_developer, md_lbl_publisher, md_lbl_genre, md_lbl_players, md_lbl_lastplayed, md_lbl_playcount, md_lbl_gametime">
+      <visible>false</visible>
+    </text>
+    <text name="lblDeveloper" extra="true">
+      <text>${gameDeveloper}</text>
+      <pos>${gameCol1X} ${gameRow1Y}</pos>
+      <size>${gameColWidth} 0.03</size>
+      <alignment>left</alignment>
+      <verticalAlignment>center</verticalAlignment>
+      <forceUppercase>1</forceUppercase>
+      <color>${textSecondary}</color>
+      <fontPath>${fontRegular}</fontPath>
+      <fontSize>${fontInfoLabel}</fontSize>
+      <zIndex>30</zIndex>
     </text>
     <text name="md_developer">
-      <pos>0.52 0.23</pos>
-      <size>0.42 0.04</size>
+      <pos>${gameCol1X} ${gameRow1ValueY}</pos>
+      <size>${gameColWidth} 0.035</size>
+      <alignment>left</alignment>
+      <color>${textPrimary}</color>
+      <fontPath>${fontRegular}</fontPath>
+      <fontSize>${fontMeta}</fontSize>
+      <zIndex>30</zIndex>
     </text>
-    <datetime name="md_releasedate">
-      <pos>0.52 0.27</pos>
-      <size>0.13 0.04</size>
-      <format>%Y</format>
-    </datetime>
+    <text name="lblPublisher" extra="true">
+      <text>${gamePublisher}</text>
+      <pos>${gameCol2X} ${gameRow1Y}</pos>
+      <size>${gameColWidth} 0.03</size>
+      <alignment>left</alignment>
+      <verticalAlignment>center</verticalAlignment>
+      <forceUppercase>1</forceUppercase>
+      <color>${textSecondary}</color>
+      <fontPath>${fontRegular}</fontPath>
+      <fontSize>${fontInfoLabel}</fontSize>
+      <zIndex>30</zIndex>
+    </text>
+    <text name="md_publisher">
+      <pos>${gameCol2X} ${gameRow1ValueY}</pos>
+      <size>${gameColWidth} 0.035</size>
+      <alignment>left</alignment>
+      <color>${textPrimary}</color>
+      <fontPath>${fontRegular}</fontPath>
+      <fontSize>${fontMeta}</fontSize>
+      <zIndex>30</zIndex>
+    </text>
+    <text name="lblGenre" extra="true">
+      <text>${gameGenre}</text>
+      <pos>${gameCol1X} ${gameRow2Y}</pos>
+      <size>${gameColWidth} 0.03</size>
+      <alignment>left</alignment>
+      <verticalAlignment>center</verticalAlignment>
+      <forceUppercase>1</forceUppercase>
+      <color>${textSecondary}</color>
+      <fontPath>${fontRegular}</fontPath>
+      <fontSize>${fontInfoLabel}</fontSize>
+      <zIndex>30</zIndex>
+    </text>
     <text name="md_genre">
-      <pos>0.66 0.27</pos>
-      <size>0.28 0.04</size>
+      <pos>${gameCol1X} ${gameRow2ValueY}</pos>
+      <size>${gameColWidth} 0.035</size>
+      <alignment>left</alignment>
+      <color>${textPrimary}</color>
+      <fontPath>${fontRegular}</fontPath>
+      <fontSize>${fontMeta}</fontSize>
+      <zIndex>30</zIndex>
+    </text>
+    <text name="lblPlayers" extra="true">
+      <text>${gamePlayers}</text>
+      <pos>${gameCol2X} ${gameRow2Y}</pos>
+      <size>${gameColWidth} 0.03</size>
+      <alignment>left</alignment>
+      <verticalAlignment>center</verticalAlignment>
+      <forceUppercase>1</forceUppercase>
+      <color>${textSecondary}</color>
+      <fontPath>${fontRegular}</fontPath>
+      <fontSize>${fontInfoLabel}</fontSize>
+      <zIndex>30</zIndex>
     </text>
     <text name="md_players">
-      <pos>0.52 0.31</pos>
-      <size>0.13 0.04</size>
+      <pos>${gameCol2X} ${gameRow2ValueY}</pos>
+      <size>${gameColWidth} 0.035</size>
+      <alignment>left</alignment>
+      <color>${textPrimary}</color>
+      <fontPath>${fontRegular}</fontPath>
+      <fontSize>${fontMeta}</fontSize>
+      <zIndex>30</zIndex>
+    </text>
+    <text name="lblReleased" extra="true">
+      <text>${gameReleased}</text>
+      <pos>${gameCol1X} ${gameRow3Y}</pos>
+      <size>${gameColWidth} 0.03</size>
+      <alignment>left</alignment>
+      <verticalAlignment>center</verticalAlignment>
+      <forceUppercase>1</forceUppercase>
+      <color>${textSecondary}</color>
+      <fontPath>${fontRegular}</fontPath>
+      <fontSize>${fontInfoLabel}</fontSize>
+      <zIndex>30</zIndex>
+    </text>
+    <datetime name="md_releasedate">
+      <pos>${gameCol1X} ${gameRow3ValueY}</pos>
+      <size>${gameColWidth} 0.035</size>
+      <alignment>left</alignment>
+      <format>%Y</format>
+      <color>${textPrimary}</color>
+      <fontPath>${fontRegular}</fontPath>
+      <fontSize>${fontMeta}</fontSize>
+      <zIndex>30</zIndex>
+    </datetime>
+    <text name="lblRating" extra="true">
+      <text>${gameRating}</text>
+      <pos>${gameCol2X} ${gameRow3Y}</pos>
+      <size>${gameColWidth} 0.03</size>
+      <alignment>left</alignment>
+      <verticalAlignment>center</verticalAlignment>
+      <forceUppercase>1</forceUppercase>
+      <color>${textSecondary}</color>
+      <fontPath>${fontRegular}</fontPath>
+      <fontSize>${fontInfoLabel}</fontSize>
+      <zIndex>30</zIndex>
     </text>
     <rating name="md_rating">
-      <pos>0.66 0.315</pos>
-      <size>0.10 0.03</size>
+      <pos>${gameCol2X} ${gameRow3ValueY}</pos>
+      <size>0.09 0.026</size>
+      <color>${accent}</color>
+      <zIndex>30</zIndex>
     </rating>
+    <text name="lblLastPlayed" extra="true">
+      <text>${infoLast}</text>
+      <pos>${gameCol1X} ${gameRow4Y}</pos>
+      <size>${gameColWidth} 0.03</size>
+      <alignment>left</alignment>
+      <verticalAlignment>center</verticalAlignment>
+      <forceUppercase>1</forceUppercase>
+      <color>${textSecondary}</color>
+      <fontPath>${fontRegular}</fontPath>
+      <fontSize>${fontInfoLabel}</fontSize>
+      <zIndex>30</zIndex>
+    </text>
+    <datetime name="md_lastplayed">
+      <pos>${gameCol1X} ${gameRow4ValueY}</pos>
+      <size>${gameColWidth} 0.035</size>
+      <alignment>left</alignment>
+      <displayRelative>true</displayRelative>
+      <color>${textPrimary}</color>
+      <fontPath>${fontRegular}</fontPath>
+      <fontSize>${fontMeta}</fontSize>
+      <zIndex>30</zIndex>
+    </datetime>
+    <text name="lblPlayCount" extra="true">
+      <text>${gameTimesPlayed}</text>
+      <pos>${gameCol2X} ${gameRow4Y}</pos>
+      <size>${gameColWidth} 0.03</size>
+      <alignment>left</alignment>
+      <verticalAlignment>center</verticalAlignment>
+      <forceUppercase>1</forceUppercase>
+      <color>${textSecondary}</color>
+      <fontPath>${fontRegular}</fontPath>
+      <fontSize>${fontInfoLabel}</fontSize>
+      <zIndex>30</zIndex>
+    </text>
+    <text name="md_playcount">
+      <pos>${gameCol2X} ${gameRow4ValueY}</pos>
+      <size>${gameColWidth} 0.035</size>
+      <alignment>left</alignment>
+      <color>${textPrimary}</color>
+      <fontPath>${fontRegular}</fontPath>
+      <fontSize>${fontMeta}</fontSize>
+      <zIndex>30</zIndex>
+    </text>
     <text name="md_description">
-      <pos>0.52 0.37</pos>
-      <size>0.42 0.52</size>
+      <pos>${gameCoverX} ${gameDescriptionY}</pos>
+      <size>${gameDescriptionSize}</size>
+      <alignment>left</alignment>
+      <verticalAlignment>top</verticalAlignment>
+      <lineSpacing>1.4</lineSpacing>
+      <color>${textSecondary}</color>
+      <fontPath>${fontRegular}</fontPath>
+      <fontSize>${fontBody}</fontSize>
+      <zIndex>30</zIndex>
     </text>
   </view>
 </theme>

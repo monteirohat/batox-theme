@@ -1,26 +1,20 @@
 #!/usr/bin/env python3
 """Draws the theme's frames, in pure Python (no image library):
 
-- _inc/frames/glow.png: the selection frame, a white rounded border with a soft
-  outer glow, as a ninepatch (corners kept, edges stretched). The views tint it
-  with the accent color. Its glow reaches GLOW pixels outside the tile, which is
-  the padding the views give it.
 - _inc/frames/white.png: a plain white square, tinted by the views (scrims,
   tile backgrounds).
+- _inc/frames/selector.png: the selected row of a list, as the home's selected
+  tile: its color (homeTileSelected) inside a white frame (selectionColor), both
+  read from _inc/variables.xml. Drawn at a row's size at 1080p, so the frame
+  keeps its width when the engine stretches the image over the row.
 
     python3 tools/render-frames.py
 """
 
-import math
 import os
 import struct
+import xml.etree.ElementTree as ET
 import zlib
-
-GLOW = 6       # pixels of soft light outside the border
-RADIUS = 0     # the tile's corner radius: square, like a console home's tiles
-STROKE = 3     # the border's width: thin and white, like a console home's selection
-SIZE = 2 * (GLOW + RADIUS + STROKE) + 24  # corners plus a stretchable middle
-CORNER = GLOW + RADIUS + STROKE           # the ninepatch's cornerSize
 
 
 def write_png(path, width, height, rgba):
@@ -36,30 +30,24 @@ def write_png(path, width, height, rgba):
     os.replace(tmp, path)
 
 
-def rounded_rect_distance(x, y, x0, y0, x1, y1, r):
-    """Signed distance from (x, y) to a rounded rectangle's edge (negative inside)."""
-    cx, cy = (x0 + x1) / 2, (y0 + y1) / 2
-    hx, hy = (x1 - x0) / 2 - r, (y1 - y0) / 2 - r
-    qx, qy = abs(x - cx) - hx, abs(y - cy) - hy
-    outside = math.hypot(max(qx, 0), max(qy, 0))
-    inside = min(max(qx, qy), 0)
-    return outside + inside - r
+SELECTOR = (691, 54)  # a row of the game list at 1080p: 0.36 of the width, a twelfth of the list
+SELECTOR_FRAME = 4    # the frame's width, as the home's selection (4.5 px)
 
 
-def glow():
-    rgba = bytearray(SIZE * SIZE * 4)
-    lo, hi = GLOW, SIZE - GLOW  # the tile's edges inside the image
-    for y in range(SIZE):
-        for x in range(SIZE):
-            d = rounded_rect_distance(x + 0.5, y + 0.5, lo, lo, hi, hi, RADIUS)
-            if -STROKE <= d <= 0:
-                a = 1.0
-            elif d > 0:
-                a = 0.45 * math.exp(-(d / (GLOW / 2.2)) ** 2)
-            else:
-                a = max(0.0, 1 - (-STROKE - d))  # antialiasing on the inner edge
-            i = (y * SIZE + x) * 4
-            rgba[i:i + 4] = bytes((255, 255, 255, int(a * 255 + 0.5)))
+def selector(root):
+    tokens = ET.parse(os.path.join(root, "_inc", "variables.xml")).getroot().find("variables")
+
+    def color(name):
+        value = tokens.findtext(name).strip().ljust(8, "F")
+        return bytes(int(value[i:i + 2], 16) for i in (0, 2, 4, 6))
+
+    fill, frame = color("homeTileSelected"), color("selectionColor")
+    width, height = SELECTOR
+    rgba = bytearray()
+    for y in range(height):
+        for x in range(width):
+            edge = min(x, y, width - 1 - x, height - 1 - y) < SELECTOR_FRAME
+            rgba += frame if edge else fill
     return rgba
 
 
@@ -67,9 +55,9 @@ def main():
     root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     frames = os.path.join(root, "_inc", "frames")
     os.makedirs(frames, exist_ok=True)
-    write_png(os.path.join(frames, "glow.png"), SIZE, SIZE, glow())
+    write_png(os.path.join(frames, "selector.png"), *SELECTOR, selector(root))
     write_png(os.path.join(frames, "white.png"), 8, 8, bytearray(b"\xff" * 8 * 8 * 4))
-    print(f"wrote glow.png ({SIZE}x{SIZE}, cornerSize {CORNER}, padding -{GLOW}) and white.png")
+    print("wrote selector.png and white.png")
 
 
 if __name__ == "__main__":

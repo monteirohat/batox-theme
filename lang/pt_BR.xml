@@ -3,8 +3,6 @@
 <theme>
   <formatVersion>7</formatVersion>
   <variables lang="pt_BR">
-    <viewHome>Início</viewHome>
-    <viewLibrary>Biblioteca</viewLibrary>
     <subsetAccent>Cor de destaque</subsetAccent>
     <accentBlue>Azul</accentBlue>
     <accentPurple>Roxo</accentPurple>
@@ -21,5 +19,12 @@
     <infoMost>Mais jogado</infoMost>
     <infoGames>jogos</infoGames>
     <infoFeatures>Recursos</infoFeatures>
+    <gameDeveloper>Desenvolvedora</gameDeveloper>
+    <gamePublisher>Publicadora</gamePublisher>
+    <gameGenre>Gênero</gameGenre>
+    <gamePlayers>Jogadores</gamePlayers>
+    <gameReleased>Lançamento</gameReleased>
+    <gameRating>Avaliação</gameRating>
+    <gameTimesPlayed>Vezes jogado</gameTimesPlayed>
   </variables>
 </theme>

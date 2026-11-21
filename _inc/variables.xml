@@ -10,55 +10,31 @@
     <!-- Screen conditions, usable in if="" -->
     <wideScreen>${screen.ratio} == "16/9" || ${screen.ratio} == "16/10" || ${screen.ratio} == "21/9"</wideScreen>
 
-    <!-- Colors -->
+    <!-- Colors (docs/STYLE.md) -->
     <bgTop>0B1A33</bgTop>
     <bgBottom>04080F</bgBottom>
-    <surface>14233DE6</surface>
     <accent>3B8CFF</accent>
     <accentGlow>3B8CFF80</accentGlow>
     <textPrimary>FFFFFFFF</textPrimary>
     <textSecondary>A9B7CCFF</textSecondary>
     <textMuted>6B7A90FF</textMuted>
-    <artTint>4A4A4AFF</artTint>  <!-- multiplies the game art behind the details: darker -->
+    <artTint>4A4A4AFF</artTint>  <!-- multiplies a photo behind texts: darker -->
     <transparent>00000000</transparent>
-
-    <tileSurface>1A2B48FF</tileSurface>
+    <selectionColor>F2F4F8FF</selectionColor>  <!-- the selection's frame: white -->
 
     <!-- Fonts (Inter, SIL Open Font License; _inc/fonts/Inter-LICENSE.txt) -->
     <fontRegular>${themePath}/_inc/fonts/Inter-Regular.ttf</fontRegular>
     <fontSemiBold>${themePath}/_inc/fonts/Inter-SemiBold.ttf</fontSemiBold>
     <fontLight>${themePath}/_inc/fonts/Inter-Light.ttf</fontLight>
 
-    <!-- Tiles: square, like a console home's; the selection: a thin white border with a little
-         light around it (tools/render-frames.py) -->
-    <glowFrame>${themePath}/_inc/frames/glow.png</glowFrame>
-    <glowCorner>9 9</glowCorner>
-    <glowPadding>-6 -6</glowPadding>
-    <selectionColor>F2F4F8FF</selectionColor>
-
     <!-- Type sizes -->
     <fontTitle>0.040</fontTitle>
-    <fontTile>0.026</fontTile>
     <fontBody>0.021</fontBody>
     <fontMeta>0.019</fontMeta>
     <fontClock>0.032</fontClock>
 
-    <!-- Layout: top bar, tile row, details area, help bar -->
-    <marginX>0.06</marginX>
-    <contentWidth>0.88</contentWidth>
+    <!-- The top bar's line -->
     <topBarY>0.065</topBarY>
-    <titleY>0.16</titleY>
-    <!-- The tile row's grid: taller than its tiles, so a selected tile can grow without being cut -->
-    <rowY>0.24</rowY>
-    <rowHeight>0.38</rowHeight>
-    <rowPadding>0.03 0.07 0.03 0.07</rowPadding>
-    <tileWidth>0.105</tileWidth>
-    <tileHeight>0.187</tileHeight>
-    <selectedScale>1.30</selectedScale>
-    <librarySelectedScale>1.10</librarySelectedScale>
-    <detailsY>0.64</detailsY>
-    <descriptionY>0.69</descriptionY>
-    <descriptionHeight>0.20</descriptionHeight>
 
     <!--
       The home, measured on a console's home screen and scaled to 1920 x 1080: square tiles of
@@ -134,6 +110,42 @@
     <profileNameX>0.215</profileNameX>
     <fontProfile>0.027</fontProfile>
     <statusBoxX>0.833</statusBoxX>  <!-- the network/battery indicator's box: 0.06 wide, so it ends at 0.893, the clock's left less a gap -->
+
+    <!--
+      The game list (views/common.xml, views/detailed.xml): a header with the system's logo, then
+      two plates from the home's row top (0.208) to a little above the bottom line, 5 px apart:
+      the list from the screen's margin, the selected game's details to the right margin (0.955).
+    -->
+    <listArtTint>8E8E9CFF</listArtTint>  <!-- multiplies the system's picture behind the plates -->
+    <listHeaderY>0.158</listHeaderY>
+    <listLogoSize>0.20 0.052</listLogoSize>
+    <listY>0.208</listY>
+    <listSize>0.36 0.627</listSize>
+    <listRowsY>0.2228</listRowsY>          <!-- 16 px of margin above and under the twelve rows -->
+    <listRowsSize>0.36 0.5972</listRowsSize>
+    <listRowMargin>0.0146</listRowMargin>  <!-- 28 px -->
+    <fontList>0.0215</fontList>
+    <gamePlateX>0.4076</gamePlateX>
+    <gamePlateSize>0.5474 0.627</gamePlateSize>
+    <!-- Inside: 28 px at the sides, 34 px above; the cover, then two columns from its right -->
+    <gameCoverX>0.4222</gameCoverX>
+    <gameCoverY>0.2395</gameCoverY>
+    <gameCoverSize>0.19 0.345</gameCoverSize>
+    <gameVideoDelay>2.5</gameVideoDelay>  <!-- seconds on a game before its video plays -->
+    <gameCol1X>0.633</gameCol1X>
+    <gameCol2X>0.7865</gameCol2X>
+    <gameColWidth>0.145</gameColWidth>
+    <gameNameSize>0.307 0.105</gameNameSize>
+    <gameRow1Y>0.352</gameRow1Y>
+    <gameRow1ValueY>0.376</gameRow1ValueY>
+    <gameRow2Y>0.410</gameRow2Y>
+    <gameRow2ValueY>0.434</gameRow2ValueY>
+    <gameRow3Y>0.468</gameRow3Y>
+    <gameRow3ValueY>0.492</gameRow3ValueY>
+    <gameRow4Y>0.526</gameRow4Y>
+    <gameRow4ValueY>0.550</gameRow4ValueY>
+    <gameDescriptionY>0.615</gameDescriptionY>
+    <gameDescriptionSize>0.5182 0.195</gameDescriptionSize>
 
     <!-- Bottom bar: a thin line, then the help prompts -->
     <separatorY>0.875</separatorY>

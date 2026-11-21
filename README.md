@@ -2,9 +2,11 @@
 
 A modern dark EmulationStation theme for Batocera, from the BatoX project.
 
-batox-theme takes the layout of a console's home screen: one row of large tiles, the selected
-one grows, its details appear under it, and the background turns into the selected game's art.
-Dark navy, soft waves of light, white type and one accent color, sized for a TV first. The top
+batox-theme takes the layout of a console's home screen: one row of square tiles with the
+systems' logos, the selected one grows into a card with its details, over a picture of the
+system at sunset. Inside a system, the games are a list at the left, with the selected game's
+cover and details at the right. Flat dark surfaces, white type and one accent color, sized for
+a TV first. The top
 bar shows the connected controllers, your RetroAchievements profile when you have an account set
 up in Batocera, the network and the clock.
 
@@ -29,7 +31,6 @@ In Main menu > User interface settings > Theme configuration:
 |---|---|
 | Accent color | blue (default), purple, teal, red, gray |
 | Animations | on (default), off |
-| Game view | Home (one row of tiles), Library (every game at once), Detailed (a list) |
 
 ## Development
 
@@ -42,7 +43,8 @@ tools/package.sh                          # builds dist/batox-theme.zip from the
 ```
 
 How the theme is organized, its design tokens and its views are described in
-[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md). Pushing a `v*` tag publishes a release with the
+[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md); how every screen should look, in
+[docs/STYLE.md](docs/STYLE.md). Pushing a `v*` tag publishes a release with the
 ZIP.
 
 ## Credits and trademarks

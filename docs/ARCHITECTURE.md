@@ -1,8 +1,11 @@
 # Architecture
 
 batox-theme is a dark EmulationStation theme for Batocera in the style of a modern console's home
-screen: one row of large tiles, the selected tile grows, its title and details appear under it,
-and the background turns into the selected game's artwork.
+screen: one row of square tiles with the systems' logos, the selected one grows into a card with
+its details, over a picture of the system at sunset; inside a system, a list of games at the
+left and the selected game's cover and details at the right.
+
+How it should look, and why, is in [STYLE.md](STYLE.md): read it before changing a screen.
 
 - [Goals](#goals)
 - [Target](#target)
@@ -19,12 +22,12 @@ and the background turns into the selected game's artwork.
 
 ## Goals
 
-- **A console home screen.** A single row of square tiles in the middle of the screen; the
-  selected one is larger, framed by a soft glow, with its name next to it.
-- **The game in front.** In a game list, the background becomes the selected game's fanart or
-  screenshot, darkened, and the area under the row shows its details: description, developer,
-  year, genre, players, rating.
-- **Dark and calm.** A deep navy background with slow light waves, white type, one accent color.
+- **A console home screen.** A single row of square tiles; the selected one is larger, in a thin
+  white frame, with its name next to it and its figures under it.
+- **A list to find a game.** Inside a system, the games in a list at the left; at the right the
+  selected game's cover, name, details and description.
+- **Dark and calm.** Flat dark surfaces over the system's picture, white type, one accent color
+  (see [STYLE.md](STYLE.md)).
 - **Readable from the sofa.** Sized for a 1080p TV first; still usable on 720p, 4:3 and small
   screens.
 - **Light on a Raspberry Pi 4.** No blur shaders or videos by default.
@@ -46,7 +49,6 @@ Engine features used, all present in Batocera's own theme (es-theme-carbon) on 4
 
 - `<variables>` with evaluated expressions (`${screen.ratio}`, `${screen.height}`), used for the
   design tokens and for screen-size conditions;
-- `<customView name="..." inherits="grid">`, for the Home and Library game views;
 - `<imagegrid>` with `autoLayout`, `scrollDirection`, `centerSelection`, `scrollLoop` and an
   `<itemTemplate>` of `container`/`image`/`text`/`ninepatch`, with `storyboard` animations on
   `activate`/`deactivate`;
@@ -129,6 +131,18 @@ Learned on the console (Batocera 43.1); each one cost a round of screenshots:
   `{system:lastPlayedDate}`, `{system:mostPlayed}`, `{system:isCheevosSupported}` and
   `{system:isNetplaySupported}` work in the system view's texts. A text shows "None" for 0:
   `{system:favorites} > 0 ? {system:favorites} : "0"` shows the number.
+- **A list's rows**: `<lines>` on a `textlist` sets how many rows fit its height, whatever the
+  font. `selectorImagePath` is stretched over the selected row (keep `selectorColor` white, it
+  multiplies the image).
+- **Game details**: an `md_` element the theme doesn't declare isn't drawn; several names in
+  one `name="a, b, c"` share a declaration (`<visible>false</visible>` hides the engine's
+  `md_lbl_*`).
+- **A cover that becomes a video**: one `md_video` with `snapshotSource` thumbnail,
+  `showSnapshotNoVideo` and `showSnapshotDelay` true shows the box of every game (the engine
+  falls back to the game's picture), `defaultSnapshot` when there is none, and plays the video
+  after `delay` seconds. The sound follows Batocera's own option.
+- **A shader's `_binding` without a binding** is still evaluated: with static variables only
+  (`" ${system.theme} "`), it picks a value per system in a game view.
 - **RetroAchievements**: `${global.cheevos}` is set when an account is configured in Batocera,
   `${global.cheevos.username}` is its name; a `webimage` loads the avatar from
   `media.retroachievements.org` and keeps it in `~/.emulationstation/tmp`.
@@ -141,23 +155,20 @@ batox-theme/
   _inc/
     variables.xml         design tokens: the only place colors, sizes and fonts are set
     backgrounds/          generated backgrounds (tools/render-background.py)
-    frames/               selection glow (ninepatch) and white.png (tools/render-frames.py)
+    frames/               white.png and the list's selector (tools/render-frames.py)
     fonts/                Inter Light, Regular and SemiBold, and their license (OFL 1.1)
-    icons/                the top bar's controller, gun and wheel
+    icons/                the top bar's controller, gun and wheel; the tile for a missing cover
     shaders/              white.glsl: draws the systems' logos in white
   views/
     screen.xml            always on top: controllers, network and battery, clock
     splash.xml            loading screen (milestone 3)
     menu.xml              EmulationStation's menus, dark and rounded (milestone 3)
     system.xml            Home of systems: the row of system tiles
-    home.xml              customView "Home" (inherits grid): the row of game tiles
-    library.xml           customView "Library" (inherits grid): every game, several rows
-    detailed.xml          list view, for long lists and small screens
-    common.xml            shared by game views: background art, details area, help bar
+    common.xml            the game lists: the system's picture and logo, the list, the bottom bar
+    detailed.xml          the selected game's cover, name, details and description
   subsets/
     accent/               accent colors: blue (default), purple, teal, red, gray
     motion/               animations on (default) or off
-    background/           waves, game art (default), plain (milestone 5)
   systems/
     README.md             the artwork convention
     <system>/             the system's background, named by ${system.theme}
@@ -166,13 +177,14 @@ batox-theme/
     check.py              validates the theme (XML, includes, paths, elements, sizes)
     render-background.py  draws the wave backgrounds, in pure Python
     render-system-backgrounds.py  draws the systems' backgrounds (needs Chrome or Chromium)
-    render-frames.py      draws the selection glow and white.png, in pure Python
-    render-icons.py       draws the top bar's icons, in pure Python
+    render-frames.py      draws white.png and the list's selector, in pure Python
+    render-icons.py       draws the top bar's icons and the missing cover's tile, in pure Python
     preview-logos.py      shows every system logo as the home draws it, to pick its treatment
     deploy.sh             copies the theme to a console over SSH
     package.sh            builds the release ZIP
   docs/
     ARCHITECTURE.md       this file
+    STYLE.md              how every screen should look
     screenshots/          one per view and screen size, for the README
   .github/workflows/      ci.yml (check.py on every push), release.yml (ZIP on a tag)
 ```
@@ -280,33 +292,48 @@ Approved on the console, and kept unless asked:
   [Per-system artwork](#per-system-artwork)); a system without one gets Carbon's photo tinted by
   `artTint`, else the waves.
 
-### Home (customView, inherits grid): the game list (first version, to be revisited)
+### Game list (the `detailed` view, the theme's default)
 
-- `imagegrid` named `gamegrid`, one row of 7 (`centerSelection` partial), the same tile with the
-  box art (`{game:thumbnail}`, else `{game:image}`), else the game's name.
-- `md_fanart` full-screen, tinted by `artTint`.
-- Details area: `md_name` above the row; `md_developer`, `md_releasedate` (year), `md_genre`,
-  `md_players`, `md_rating` and `md_description` under it.
-- Default view of the theme.
-- Next: how to show a list of hundreds of games (one row is slow to browse); the details line
-  wants a `stackpanel`, and the description's first line is clipped at the top.
+The home's style ([STYLE.md](STYLE.md)) on a list: two plates of an unselected tile's color and
+transparency, 5 px apart, from the home's row top (0.208) to a little above the bottom line.
 
-### Library (customView, inherits grid)
+```
+0.07 │ ▭ ▭                                               wifi  13:49 │  top bar
+0.16 │ SUPER NINTENDO (logo, white)                                  │  header
+0.21 │┌──────────────────────┐┌─────────────────────────────────────┐│
+     ││ Game                 ││ ┌───────┐  Name of the game         ││  list: twelve rows, the
+     ││┏━━━━━━━━━━━━━━━━━━━━┓││ │ cover │  DEVELOPER   PUBLISHER    ││  selected one solid, in
+     ││┃ Selected game      ┃││ │       │  GENRE       PLAYERS      ││  a white frame
+     ││┗━━━━━━━━━━━━━━━━━━━━┛││ │       │  RELEASED    RATING       ││
+     ││ Game                 ││ └───────┘  LAST PLAYED TIMES PLAYED ││  details: cover, name,
+     ││ Game                 ││ Description of the game, on several ││  four rows of labels
+0.83 │└──────────────────────┘└─ lines, scrolling by itself ────────┘│  over values, description
+0.88 │ ──────────────────────────────────────────────────────────── │
+0.90 │ (select) OPTIONS  (start) MENU  (A) BACK ...                 │  help bar
+     behind: the system's picture, dimmed by listArtTint
+```
 
-Every game at once: four or five rows of smaller tiles, vertical scrolling, the details of the
-selected game in a side panel. For long lists, where one row is slow to browse.
-
-### Detailed
-
-The engine's list view with the same background and details area, for small screens (the 7"
-panel) and for people who prefer lists.
+- **`views/common.xml`** (`basic`, `detailed`, `video`): the system's picture as on the home,
+  dimmed; the system's logo in white as the header (the same shader and lists as the tiles,
+  else the system's name); the list's plate from the screen's margin, 0.36 wide; the
+  `textlist` with `lines` 12, the selected row drawn by `selector.png`; the bottom bar.
+- **`views/detailed.xml`** (`detailed`, `video`): the details' plate to the right margin; the
+  cover (the game's box, whole in a 0.19 x 0.345 area; its picture when it has no box; else
+  `no-cover.svg`), which gives way to the game's video, in the same place and as wide, after
+  2.5 seconds on a game that has one (`md_video` with its snapshot); the
+  name in Inter Light, on two lines if long; developer, publisher, genre, players, year, rating,
+  last time played and times played as labels over values in two columns; the description.
+- The engine's own labels (`md_lbl_*`) end with a colon and are hidden; the theme's are in
+  `lang/`. The engine writes "Unknown" and "never" for what a game lacks.
+- Not shown: the game's marquee and fanart; its screenshot only when it stands for a missing box. Other gamelist styles (grid,
+  carousel) are not themed.
 
 ### Screen, menu and splash
 
 - `screen`, on every view: the connected controllers at the top left; the network icon (and the
   battery on a handheld) and the clock at the top right.
-- `menu`: EmulationStation's menus with `surface` panels, `accent` selection and the theme's font.
-- `splash`: the waves with the BatoX wordmark and a progress bar in `accent`.
+- `menu` (to do): EmulationStation's menus in the home's style ([STYLE.md](STYLE.md)).
+- `splash` (to do): the loading screen.
 
 ## Per-system artwork
 
@@ -359,9 +386,7 @@ Subsets, with names translated in `lang/`:
 | Subset | Choices | Default |
 |---|---|---|
 | Accent color | blue, purple, teal, red, gray | blue |
-| Background | waves, game art, plain | game art (falls back to waves) |
 | Animations | on, off | on |
-| Game view | Home, Library, Detailed | Home |
 
 ## Performance
 
@@ -378,7 +403,7 @@ python3 tools/check.py                    # well-formed XML, includes and paths 
 python3 tools/render-background.py        # writes _inc/backgrounds/waves.png
 python3 tools/render-system-backgrounds.py  # writes systems/*/background.jpg (needs Chrome)
 CONSOLE=192.168.0.84 tools/deploy.sh      # copies the theme to /userdata/themes/batox-theme
-python3 tools/render-frames.py            # writes _inc/frames/glow.png and white.png
+python3 tools/render-frames.py            # writes _inc/frames/white.png and selector.png
 python3 tools/render-icons.py             # writes _inc/icons/*.svg
 python3 tools/preview-logos.py /tmp/logos # writes dist/logos.html from a copy of Carbon's logos
 tools/package.sh                          # dist/batox-theme.zip
@@ -399,12 +424,12 @@ unpacking it into `/userdata/themes`.
    glow, the system's art as background, the brand, the help bar; then, after a console's home
    screen, square tiles 5 px apart with the systems' logos in white and the selected card with a white
    frame.
-   A first version of the game row. Next: the analysis of how to show the game list.
-3. **Menus, screen and splash**; English and Brazilian Portuguese.
-4. **Artwork**: waves backgrounds, the default tile, logos and backgrounds for the systems on the
-   test console.
-5. **Library view, subsets** (accent, background, motion), small screens and 4:3.
-6. **Release 1.0**: screenshots, README, ZIP from CI, installable from BatoX.
+3. **Game list** (first version done): the list at the left, the selected game's cover and
+   details at the right, in the home's style.
+4. **Menus and splash**, in the same style; English and Brazilian Portuguese.
+5. **Artwork**: a background for each of Batocera's other systems; the logos still to review.
+6. **Subsets** (accent, motion), small screens and 4:3.
+7. **Release 1.0**: screenshots, README, ZIP from CI, installable from BatoX.
 
 ## Legal
 

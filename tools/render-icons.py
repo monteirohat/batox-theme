@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
-"""Draws the theme's own icons, flat and white: the top bar's controller, gun and wheel
-(_inc/icons/). The systems' tiles show their brand logos instead (views/system.xml).
+"""Draws the theme's own icons, flat and white: the top bar's controller, gun and wheel, and
+the picture that stands for a game without a cover, a faint controller on a tile of the strip's
+color (_inc/icons/). The systems' tiles show their brand logos instead (views/system.xml).
 
     python3 tools/render-icons.py
 
@@ -9,6 +10,7 @@ Every icon is drawn on a 100 x 100 grid from a few shapes; each part is one path
 """
 
 import os
+import xml.etree.ElementTree as ET
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -72,11 +74,23 @@ ICONS = {
 }
 
 
+def no_cover():
+    """A game without a cover: the controller, faint, on a square of the strip's color."""
+    tokens = ET.parse(os.path.join(ROOT, "_inc", "variables.xml")).getroot().find("variables")
+    color = "#" + tokens.findtext("homeStrip").strip()[:6]
+    controller = ICONS["controller"][0][0]
+    return ('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="400" height="400">\n'
+            f'<rect width="100" height="100" fill="{color}"/>\n'
+            f'<path fill="#FFFFFF" fill-opacity="0.22" fill-rule="evenodd" transform="translate(25 25) scale(0.5)" d="{controller}"/>\n</svg>\n')
+
+
 def main():
     for name, (parts, view) in ICONS.items():
         with open(os.path.join(ROOT, "_inc", "icons", name + ".svg"), "w") as f:
             f.write(svg(parts, view))
-    print(f"wrote {len(ICONS)} icons in _inc/icons")
+    with open(os.path.join(ROOT, "_inc", "icons", "no-cover.svg"), "w") as f:
+        f.write(no_cover())
+    print(f"wrote {len(ICONS) + 1} icons in _inc/icons")
 
 
 if __name__ == "__main__":

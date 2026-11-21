@@ -8,8 +8,8 @@ All notable changes to this project are documented here. The format follows
 
 ### Added
 
-- Architecture (docs/ARCHITECTURE.md) and skeleton: design tokens, the system view, the Home,
-  Library and Detailed game views, accent color and animation options, English and Brazilian
+- Architecture (docs/ARCHITECTURE.md) and skeleton: design tokens, the system view, the game
+  views, accent color and animation options, English and Brazilian
   Portuguese, the waves background drawn by `tools/render-background.py`, `tools/check.py`,
   `tools/deploy.sh`, `tools/package.sh`, and CI and release workflows.
 - The home, after a console's home screen: one row of square tiles 5 px apart with each
@@ -28,9 +28,12 @@ All notable changes to this project are documented here. The format follows
   shader (`_inc/shaders/white.glsl`); a logo on a dark plate also loses its dark parts, and a
   system without a usable logo shows its name. `tools/preview-logos.py` previews them all.
 - `tools/render-icons.py` draws the top bar's icons.
-- A first version of the game list (Home view): a row of box-art tiles, the game's art behind
-  and its details under the row.
-- Inter (OFL), light, regular and semibold, as the theme's font, and `tools/render-frames.py` for the selection glow.
+- The game list, in the home's style: the system's logo as the header, the games in a list at
+  the left with the selected row solid in a white frame, and at the right the selected game's
+  cover, name, eight details as labels over values, and description, over the system's picture.
+  A game's video plays in the cover's place after a few seconds on the game.
+- `docs/STYLE.md`: the look every screen follows.
+- Inter (OFL), light, regular and semibold, as the theme's font, and `tools/render-frames.py` for the list's selector.
 - The top bar's left: the connected controllers, lightguns and wheels (white icons of the
   theme's own, lit while in use) on every view, and on the home the RetroAchievements avatar and
   name when an account is configured in Batocera.
