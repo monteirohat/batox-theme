@@ -107,7 +107,10 @@ The engine lays its menus out itself; the theme gives them the same surfaces and
   screen's bottom: the line is the progress bar, filling in white, and the engine's message is
   where the help prompts will be.
 - **A picture of no system**: cartridges and a controller, the sun in the middle, nothing
-  shaded but the top and the bottom. No logo, no brand, no spinner.
+  shaded but the top and the bottom. No spinner.
+- **The name, once.** "BatoX" stands over the sky in a pink brush script, leaning, as on a
+  poster of the eighties. It is the only place the theme signs: no other screen carries a
+  brand, and the script is not used for anything else.
 
 ## Motion
 
@@ -123,7 +126,8 @@ The engine lays its menus out itself; the theme gives them the same surfaces and
 
 - Short, plain labels, translated in `lang/` (English and Brazilian Portuguese).
 - Numbers and dates as the engine formats them for the console's language.
-- No brand of the theme on the screens, and no console maker's assets: system logos are
+- No brand of the theme on the screens but its name on the loading screen, and no console
+  maker's assets: system logos are
   Batocera's, drawn in white.
 
 ## Before a screen is done

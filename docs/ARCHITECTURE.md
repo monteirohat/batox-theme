@@ -201,6 +201,7 @@ batox-theme/
     check.py              validates the theme (XML, includes, paths, elements, sizes)
     render-background.py  draws the wave backgrounds, in pure Python
     render-system-backgrounds.py  draws the systems' backgrounds (needs Chrome or Chromium)
+    fonts/                Mr Dafoe (OFL), for the name on the loading screen's picture
     render-frames.py      draws white.png, the list's selector and the buttons' outline
     render-icons.py       draws the top bar's and the menus' icons and the missing cover's tile
     preview-logos.py      shows every system logo as the home draws it, to pick its treatment
@@ -371,7 +372,9 @@ transparency, 5 px apart, from the home's row top (0.208) to a little above the 
   side; the tallest menus stop just over the help prompts.
 - `splash.xml`, at the theme's root: the loading screen, shown while EmulationStation starts.
   The theme's picture of no system in particular (`_inc/backgrounds/splash.jpg`: cartridges and
-  a controller on the pier, the sun in the middle, only its top and bottom shaded); the bottom
+  a controller on the pier, the sun in the middle, only its top and bottom shaded, and "BatoX"
+  over the sky in a pink brush script: the font, Mr Dafoe, is in `tools/fonts` and goes into
+  the picture, not into the theme); the bottom
   line of every other screen is the progress bar (`separatorColor`, filling in white) and the
   engine's message ("Loading theme", then each system's name) sits where the help prompts are.
 

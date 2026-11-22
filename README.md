@@ -100,7 +100,8 @@ tools/package.sh                            # builds dist/batox-theme.zip from t
 ## Credits and trademarks
 
 Everything the theme ships is its own, drawn by its tools: the systems' pictures, the icons, the
-frames and the wave background. Its font is Inter (SIL Open Font License).
+frames and the wave background. Its font is Inter (SIL Open Font License); the name on the
+loading screen is set in Mr Dafoe, by Sudtipos (SIL Open Font License).
 
 The systems' logos are those of Batocera's default
 theme, Carbon (CC BY-NC-SA, by Fabrice Caruso and its contributors). The theme reads them where

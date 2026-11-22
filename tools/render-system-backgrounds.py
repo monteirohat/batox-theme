@@ -17,6 +17,7 @@ A machine is a few boxes (a body, its raised parts, a cartridge...) seen from th
 x runs along its front, y from its back to the viewer, z up. The sun is behind it, to the right.
 """
 
+import base64
 import math
 import os
 import random
@@ -1222,6 +1223,22 @@ def neon_sign(symbol):
     return lambda page: sign(page, SIGNS[symbol]())
 
 
+def wordmark(page, text="BatoX"):
+    """The theme's name over the loading screen's sky, in a brush script, pink and leaning, as
+    on a poster of the eighties. The font is Mr Dafoe (SIL Open Font License,
+    tools/fonts/MrDafoe-LICENSE.txt); it goes into the picture, not into the theme."""
+    with open(os.path.join(ROOT, "tools", "fonts", "MrDafoe-Regular.ttf"), "rb") as f:
+        font = base64.b64encode(f.read()).decode()
+    page.defs.append(f'<style>@font-face{{font-family:"Wordmark";src:url(data:font/ttf;base64,{font})}}</style>')
+    fill = page.gradient([(0, "#FFA3D4"), (.55, "#FF4F9A"), (1, "#E0237A")])
+    words = (f'<text x="960" y="372" text-anchor="middle" font-family="Wordmark" font-size="300" {{}}>{text}</text>')
+    page.add('<g transform="rotate(-7 960 300)">'
+             + words.format('fill="#FF4F9A" opacity=".55" filter="url(#blur20)"')
+             + words.format('fill="#1A0626" transform="translate(9 11)" opacity=".85"')
+             + words.format(f'fill="{fill}" stroke="#2A0A3A" stroke-width="5" paint-order="stroke" stroke-linejoin="round"')
+             + '</g>')
+
+
 def loading(page):
     """The loading screen's picture: cartridges and a controller, for no system in particular."""
     return allgames(page) + [pad(-150, 210, 124, 54, "#C9C7D0", ("#F03C72", "#FFC25E", "#3B8CFF", "#7BE0C3"), rot=-14)]
@@ -1449,6 +1466,8 @@ def render(name, keep_svg, browser, work):
     # On the loading screen, the picture's subject stays clear of the progress line (at 945)
     draw_machine(page, model(page), mood, *((960, 890) if splash else (1390, 940)))
     finish(page, splash)
+    if splash:
+        wordmark(page)
     svg = page.svg()
     if keep_svg:
         os.makedirs(os.path.join(ROOT, "dist", "backgrounds"), exist_ok=True)
@@ -1461,7 +1480,8 @@ def render(name, keep_svg, browser, work):
     os.makedirs(folder, exist_ok=True)
     out = os.path.join(folder, "splash.jpg" if splash else "background.jpg")
     subprocess.run([browser, "--headless=new", "--disable-gpu", "--hide-scrollbars", f"--user-data-dir={work}/profile",
-                    f"--window-size={W},{H}", "--force-device-scale-factor=1", f"--screenshot={out}", "file://" + html],
+                    f"--window-size={W},{H}", "--force-device-scale-factor=1", "--virtual-time-budget=4000",
+                    f"--screenshot={out}", "file://" + html],
                    check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
     if shutil.which("xattr"):
         subprocess.run(["xattr", "-c", out], check=False)

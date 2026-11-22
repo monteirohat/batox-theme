@@ -18,7 +18,7 @@ All notable changes to this project are documented here. The format follows
   neon sign. The theme grows from 4 to about 36 MB.
 - **Loading screen** (`splash.xml`), shown while EmulationStation starts: a picture of the
   theme's own for no system in particular (cartridges and a controller on the pier, the sun in
-  the middle), with the bottom line of every other screen as the progress bar and the engine's
+  the middle, "BatoX" over the sky in a pink brush script), with the bottom line of every other screen as the progress bar and the engine's
   message where the help prompts are. `tools/render-system-backgrounds.py splash` draws it.
 
 ### Changed
