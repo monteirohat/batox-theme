@@ -65,9 +65,9 @@
       Checked on the console's systems with tools/preview-logos.py.
     -->
     <homeLogoSize>0.86 0.5</homeLogoSize>
-    <logoCutDark>megadrive megadrive-japan gba msx msx1 msx2 msx2+ msxturbor msxlaserdisk pygame 3do atarilynx dragon32 dynax enterprise epic fallout1-ce gx4000 gzdoom lowresnx vis coleco lcdgames odyssey2</logoCutDark>
-    <logoCutGray>c64 c16 c20 c128 plus4 cplus4 atari gong kaneko msu-md neogeomvs segacd snesh trs-80 arduboy nintendo auto-strategy</logoCutGray>
-    <logoAsName>auto-allgames</logoAsName>
+    <logoCutDark>megadrive megadrive-japan gba msx msx1 msx2 msx2+ msxturbor msxlaserdisk pygame 3do atarilynx dragon32 dynax enterprise epic fallout1-ce gx4000 gzdoom lowresnx vis coleco lcdgames odyssey2 arcadia auto-retroachievements auto-verticalarcade cdogs colecovision eduke32 etlegacy fallout2-ce gbah genesis genh ggh gp32 hcl hurrican irem megacd model2 model3 mrboom neogeo64 openjazz pokemini powerbomberman pyxel residualvm retrobat scv solarus sonic3-air starship superbroswar teknoparrot thextech vpinball zaccariapinball</logoCutDark>
+    <logoCutGray>c64 c16 c20 c128 plus4 cplus4 atari gong kaneko msu-md neogeomvs segacd snesh trs-80 arduboy nintendo auto-strategy advision auto-favorites auto-lightgun lightgun bennugd capcom cps2 gbch internet nesh openbor pinballfx3 plugnplay prboom sonic-mania tvgames</logoCutGray>
+    <logoAsName>auto-allgames pinballfx2</logoAsName>
     <fontTileName>0.036</fontTileName>
     <!--
       The system's panel (views/system.xml), under the selected card: six figures in three columns

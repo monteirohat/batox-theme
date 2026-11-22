@@ -14,8 +14,10 @@ All notable changes to this project are documented here. The format follows
 
 ### Fixed
 
-- **Home**: the Odyssey2 logo showed as a white blob; its dark outline is now cut, so the
-  letters show.
+- **Home**: logos drawn on a dark or colored plate showed as a white blob. All of Carbon's
+  logos were reviewed: 53 of them (Odyssey2, Genesis, ColecoVision, Mega CD, Hyper Neo Geo
+  64, Cassette Vision, the hacks, the pinball systems...) now cut their plate so the letters
+  show, and PinballFX2 shows its name.
 - **Home**: a system with one game says "1 game", not "1 games".
 
 ## [1.1.0] - 2026-11-22

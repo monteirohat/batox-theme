@@ -68,8 +68,8 @@ supports.
 - **Gamelist view style**: leave it on automatic. The list described above is the theme's view;
   the grid and carousel styles are not themed.
 - **A machine drawn wrong, or too generic?** Many systems share a family's drawing; tell which
-  one deserves its own. A few system logos that don't turn white cleanly are also still to do:
-  see [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md#per-system-artwork).
+  one deserves its own. The same for a system logo that doesn't read well in white: see
+  [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md#per-system-artwork).
 - **Size**: about 36 MB, nearly all of it the systems' pictures.
 - **Batocera's own image** still shows as the console boots and, on a Raspberry Pi, while a
   game starts: it belongs to the system, not to a theme.

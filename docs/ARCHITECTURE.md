@@ -417,9 +417,10 @@ shape. Three lists in `_inc/variables.xml` handle the logos this doesn't suit:
 | `logoAsName` | a logo neither suits (All games) | the system's name, in capitals |
 
 A system without a logo shows its name too. `tools/preview-logos.py` draws every logo as the
-home does, next to the other treatments, from a copy of Carbon's logos: the systems of the test
-console and the logos that whiten into a plain rectangle are sorted; the rest of the 462 are
-still to review there.
+home does, next to the other treatments, from a copy of Carbon's logos. All of Batocera 43.1's
+were reviewed there (November 2026): the logos whose white silhouette loses its letters, those
+for which a cut leaves more outline than the plain silhouette, were looked at one by one and
+sorted into the lists; the others keep their silhouette.
 
 **Backgrounds.** `tools/render-system-backgrounds.py` draws one picture per system, 354 names (every
 system of Batocera 43 on a Raspberry Pi 4, and those Carbon knows from other boards): the machine, inked and lit from behind, on a pier in front of a coastal
