@@ -123,7 +123,10 @@
     <fontList>0.0215</fontList>
     <gamePlateX>0.4076</gamePlateX>
     <gamePlateSize>0.5474 0.627</gamePlateSize>
-    <!-- Inside: 28 px at the sides, 34 px above; the cover, then two columns from its right -->
+    <!--
+      Inside: 28 px at the sides, 34 px above. Two columns: the cover and, under it, the game's
+      screenshot; from their right, the name, the details and the description.
+    -->
     <gameCoverX>0.4222</gameCoverX>
     <gameCoverY>0.2395</gameCoverY>
     <gameCoverSize>0.19 0.345</gameCoverSize>
@@ -140,8 +143,17 @@
     <gameRow3ValueY>0.492</gameRow3ValueY>
     <gameRow4Y>0.526</gameRow4Y>
     <gameRow4ValueY>0.550</gameRow4ValueY>
+    <!--
+      The second row: the screenshot under the cover, the description under the details. A game
+      without a screenshot there gives its place to the description, which then starts at the
+      cover's edge and takes the plate's whole width.
+    -->
+    <gameShotY>0.615</gameShotY>
+    <gameShotSize>0.19 0.195</gameShotSize>
     <gameDescriptionY>0.615</gameDescriptionY>
-    <gameDescriptionSize>0.5182 0.195</gameDescriptionSize>
+    <gameDescriptionSize>0.307 0.195</gameDescriptionSize>
+    <gameDescriptionWidth>0.307</gameDescriptionWidth>
+    <gameDescriptionWide>0.5182</gameDescriptionWide>
 
     <!-- The menus (views/menu.xml): a dark page over the whole screen, a panel in its middle -->
     <menuPage>0B0A18F2</menuPage>    <!-- the page: darker than a tile, 95 % -->

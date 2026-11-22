@@ -6,6 +6,12 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+### Added
+
+- **Game list**: the game's screenshot under its cover, so a game is seen as it plays and not
+  only its box. The description sits at its right, under the details; for a game without a
+  screenshot it takes that place too, across the plate.
+
 ## [1.1.0] - 2026-11-22
 
 ### Added

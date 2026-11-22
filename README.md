@@ -21,9 +21,10 @@ one thin white frame on what is selected.
   handhelds and computers have a drawing of their own; the others share one with their family
   (an arcade cabinet, a home computer, a handheld), in their own colors; collections get a neon
   sign.
-- **Game list.** The games in a list at the left; at the right the selected game's cover, name,
-  developer, publisher, genre, players, year, rating, last time played and description. A game
-  with a video plays it in the cover's place after a few seconds.
+- **Game list.** The games in a list at the left; at the right the selected game's cover and,
+  under it, its screenshot, with its name, developer, publisher, genre, players, year, rating,
+  last time played and description. A game with a video plays it in the cover's place after a
+  few seconds.
 - **Menus.** EmulationStation's menus as a panel in the middle of a darkened screen, with the
   theme's own white icons.
 - **Loading screen.** While EmulationStation starts: a picture of its own, and the bottom line

@@ -137,6 +137,10 @@ Learned on the console (Batocera 43.1); each one cost a round of screenshots:
 - **Game details**: an `md_` element the theme doesn't declare isn't drawn; several names in
   one `name="a, b, c"` share a declaration (`<visible>false</visible>` hides the engine's
   `md_lbl_*`).
+- **An element that moves with the game**: an `md_` element stays where the theme puts it, but
+  an extra's `<x>`, `<y>`, `<w>` and `<h>` (numbers, unlike `<pos>` and `<size>`) take a
+  binding, evaluated for each game: `<x>exists({game:image}) ? 0.63 : 0.42</x>`. A text bound
+  to `{game:desc}` with `autoScroll` vertical stands for `md_description`.
 - **A cover that becomes a video**: one `md_video` with `snapshotSource` thumbnail,
   `showSnapshotNoVideo` and `showSnapshotDelay` true shows the box of every game (the engine
   falls back to the game's picture), `defaultSnapshot` when there is none, and plays the video
@@ -334,8 +338,9 @@ transparency, 5 px apart, from the home's row top (0.208) to a little above the 
      ││┃ Selected game      ┃││ │       │  GENRE       PLAYERS      ││  a white frame
      ││┗━━━━━━━━━━━━━━━━━━━━┛││ │       │  RELEASED    RATING       ││
      ││ Game                 ││ └───────┘  LAST PLAYED TIMES PLAYED ││  details: cover, name,
-     ││ Game                 ││ Description of the game, on several ││  four rows of labels
-0.83 │└──────────────────────┘└─ lines, scrolling by itself ────────┘│  over values, description
+     ││ Game                 ││ ┌───────┐  Description of the game, ││  four rows of labels
+     ││ Game                 ││ │ shot  │  on several lines,        ││  over values; under
+0.83 │└──────────────────────┘└─└───────┘─ scrolling by itself ─────┘│  them, shot, description
 0.88 │ ──────────────────────────────────────────────────────────── │
 0.90 │ (select) OPTIONS  (start) MENU  (A) BACK ...                 │  help bar
      behind: the system's picture, dimmed by listArtTint
@@ -350,10 +355,17 @@ transparency, 5 px apart, from the home's row top (0.208) to a little above the 
   `no-cover.svg`), which gives way to the game's video, in the same place and as wide, after
   2.5 seconds on a game that has one (`md_video` with its snapshot); the
   name in Inter Light, on two lines if long; developer, publisher, genre, players, year, rating,
-  last time played and times played as labels over values in two columns; the description.
+  last time played and times played as labels over values in two columns. Under them, a
+  second row: the game's screenshot under the cover (an extra image bound to `{game:image}`,
+  whole in a 0.19 x 0.195 area, and left out when the game has no box, since the cover's place
+  then shows that picture already), and the description under the details. A game with no
+  screenshot there gives that place to the description, which then starts at the cover's edge
+  and takes the plate's width: the description is a text of the theme's own bound to
+  `{game:desc}`, with `<x>` and `<w>` bound to the same test as the screenshot, and
+  `autoScroll` vertical as the engine's `md_description`, which it replaces.
 - The engine's own labels (`md_lbl_*`) end with a colon and are hidden; the theme's are in
   `lang/`. The engine writes "Unknown" and "never" for what a game lacks.
-- Not shown: the game's marquee and fanart; its screenshot only when it stands for a missing box. Other gamelist styles (grid,
+- Not shown: the game's marquee, fan art and title screen. Other gamelist styles (grid,
   carousel) are not themed.
 
 ### Screen, menu and splash

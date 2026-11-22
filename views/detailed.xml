@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
   The game list (docs/STYLE.md): the list at the left (views/common.xml) and, at the right, a
-  plate with the selected game's cover, its name, eight details as labels over values in two
-  columns, and its description.
+  plate in two columns: the selected game's cover and, under it, its screenshot; its name,
+  eight details as labels over values, and its description, which takes the screenshot's place
+  too when there is none.
 -->
 <theme>
   <formatVersion>7</formatVersion>
@@ -32,6 +33,18 @@
       <defaultSnapshot>${themePath}/_inc/icons/no-cover.svg</defaultSnapshot>
       <zIndex>30</zIndex>
     </video>
+    <!--
+      The screenshot, under the cover, so the game is seen as it plays and not only its box.
+      Whole, in the cover's column. Only for a game with a box: without one the cover's place
+      already shows this picture, and it isn't drawn twice.
+    -->
+    <image name="gameShot" extra="true">
+      <pos>${gameCoverX} ${gameShotY}</pos>
+      <origin>0 0</origin>
+      <maxSize>${gameShotSize}</maxSize>
+      <path>empty({game:thumbnail}) ? "" : {game:image}</path>
+      <zIndex>30</zIndex>
+    </image>
     <text name="md_name">
       <pos>${gameCol1X} ${gameCoverY}</pos>
       <size>${gameNameSize}</size>
@@ -214,11 +227,21 @@
       <fontSize>${fontMeta}</fontSize>
       <zIndex>30</zIndex>
     </text>
-    <text name="md_description">
-      <pos>${gameCoverX} ${gameDescriptionY}</pos>
+    <!--
+      The description. Not the engine's md_description, which can't move: a text of the theme's
+      own bound to the game, so it sits at the screenshot's right or, for a game with no
+      screenshot under its cover, takes that place too. It scrolls by itself, as the engine's.
+    -->
+    <text name="gameDescription" extra="true">
+      <text>{game:desc}</text>
+      <pos>${gameCol1X} ${gameDescriptionY}</pos>
       <size>${gameDescriptionSize}</size>
+      <x>!empty({game:thumbnail}) &amp;&amp; exists({game:image}) ? ${gameCol1X} : ${gameCoverX}</x>
+      <w>!empty({game:thumbnail}) &amp;&amp; exists({game:image}) ? ${gameDescriptionWidth} : ${gameDescriptionWide}</w>
       <alignment>left</alignment>
       <verticalAlignment>top</verticalAlignment>
+      <multiLine>true</multiLine>
+      <autoScroll>vertical</autoScroll>
       <lineSpacing>1.4</lineSpacing>
       <color>${textSecondary}</color>
       <fontPath>${fontRegular}</fontPath>
