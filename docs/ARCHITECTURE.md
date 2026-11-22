@@ -131,6 +131,9 @@ Learned on the console (Batocera 43.1); each one cost a round of screenshots:
   `{system:lastPlayedDate}`, `{system:mostPlayed}`, `{system:isCheevosSupported}` and
   `{system:isNetplaySupported}` work in the system view's texts. A text shows "None" for 0:
   `{system:favorites} > 0 ? {system:favorites} : "0"` shows the number.
+  To join a number and a word, put the binding inside the quotes:
+  `{system:total} > 1 ? "{system:total} games" : "1 game"`; `{system:total} + " games"` adds
+  them as numbers and shows only the number.
 - **A list's rows**: `<lines>` on a `textlist` sets how many rows fit its height, whatever the
   font. `selectorImagePath` is stretched over the selected row (keep `selectorColor` white, it
   multiplies the image).

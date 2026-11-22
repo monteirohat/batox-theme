@@ -12,6 +12,12 @@ All notable changes to this project are documented here. The format follows
   only its box. The description sits at its right, under the details; for a game without a
   screenshot it takes that place too, across the plate.
 
+### Fixed
+
+- **Home**: the Odyssey2 logo showed as a white blob; its dark outline is now cut, so the
+  letters show.
+- **Home**: a system with one game says "1 game", not "1 games".
+
 ## [1.1.0] - 2026-11-22
 
 ### Added
