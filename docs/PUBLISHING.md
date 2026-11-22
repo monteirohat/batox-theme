@@ -37,7 +37,7 @@ patch, and a change that breaks someone's setup (a removed option, a renamed fol
 
 ## How Batocera lists themes
 
-Read in EmulationStation's source (`ApiSystem.cpp`) and in the public list:
+Read in EmulationStation's source (`ApiSystem.cpp`, `GuiThemeInstaller.cpp`) and in the public list:
 
 - The console's Updates & downloads > Themes screen reads
   `https://updates.batocera.org/themes.json` (the wiki also links
@@ -45,16 +45,27 @@ Read in EmulationStation's source (`ApiSystem.cpp`) and in the public list:
   author, the URL of a GitHub repository, the date of its last update, its size in megabytes and
   a screenshot kept on Batocera's server.
 - To install a theme, the console downloads **the repository's default branch** as a ZIP from
-  GitHub and unpacks it as `/userdata/themes/<name>`. It does not use releases or tags.
+  GitHub and unpacks it as `/userdata/themes/<repository>`, named after the last part of the
+  entry's URL, not after the entry's name. It does not use releases or tags.
+- A theme counts as installed when a folder named after the repository (or after the entry)
+  exists. An installed theme's entry offers **UPDATE**, which downloads the default branch again
+  and replaces the folder whole; files changed by hand inside it are lost.
+- Nothing tells a console that a theme changed: the screen shows the entry's last update and its
+  freshness stars, but doesn't compare them with what is installed. People update when they
+  choose UPDATE themselves.
 
 So for a listed theme:
 
 - `main` is what people get, at any moment: it must always be a working theme. Work that isn't
-  ready goes on a branch.
+  ready goes on a branch. A push reaches the next install or UPDATE at once, before the list's
+  date changes the next night.
 - `theme.xml` must be at the repository's root (it is).
 - GitHub's ZIP honors `export-ignore`, so `docs` and `tools` stay out of it too.
-- The folder is named after the list's entry, not the repository: the entry's name should be
-  `batox-theme`, so installs from the list and from the release ZIP share one folder.
+- The folder is `batox-theme`, from the repository's name, whatever the entry is called (it is
+  listed as "Batox"), so installs from the list and from the release ZIP share one folder.
+  Renaming the repository would install a second copy beside the first.
+- A version worth knowing about is announced where people will see it (Batocera's Discord),
+  since consoles aren't told.
 
 A screenshot at the size the list uses is in `screenshots/batocera-list.jpg`.
 
@@ -65,7 +76,7 @@ every night from the repositories the team has listed; `up_to_date` there is how
 repository's last update is, from 5 (the last 90 days) down to 0 (over 730 days). There is no
 repository to send a pull request to, and the wiki doesn't describe a submission: a request goes
 to the team, through the [contact page](https://batocera.org/contact) (in English) or their
-Discord.
+Discord. This theme is listed, as "Batox".
 
 ### Other ways to install
 
