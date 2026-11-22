@@ -6,6 +6,11 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [1.2.0] - 2026-11-22
+
+The screenshot of each game in the list, and every system's logo reviewed. It also gathers the
+tags v1.1.1 to v1.1.3, made along the way without notes of their own.
+
 ### Added
 
 - **Game list**: the game's screenshot under its cover, so a game is seen as it plays and not
@@ -75,6 +80,7 @@ The first version: the home, the game list, the menus and the top bar, for Batoc
   push, and a `v*` tag publishes the release ZIP.
 - The Inter font (SIL Open Font License); the theme itself is under the MIT license.
 
-[Unreleased]: https://github.com/monteirohat/batox-theme/compare/v1.1.0...HEAD
+[Unreleased]: https://github.com/monteirohat/batox-theme/compare/v1.2.0...HEAD
+[1.2.0]: https://github.com/monteirohat/batox-theme/compare/v1.1.0...v1.2.0
 [1.1.0]: https://github.com/monteirohat/batox-theme/compare/v1.0.0...v1.1.0
 [1.0.0]: https://github.com/monteirohat/batox-theme/releases/tag/v1.0.0
