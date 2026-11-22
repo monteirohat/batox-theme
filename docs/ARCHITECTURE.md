@@ -211,7 +211,6 @@ batox-theme/
     ARCHITECTURE.md       this file
     STYLE.md              how every screen should look
     PUBLISHING.md         releasing a version; how Batocera lists themes
-    batocera-list-entry.json  the entry to ask Batocera's list for
     screenshots/          one per view and screen size, for the README
   .github/workflows/      ci.yml (check.py on every push), release.yml (ZIP on a tag)
 ```
@@ -483,8 +482,8 @@ unpacking it into `/userdata/themes`.
    ([PUBLISHING.md](PUBLISHING.md)).
 7. **Loading screen** (done, 1.1.0).
 8. **A picture for every system** (done, 1.1.0).
-9. **Next**: small screens and 4:3, drawings of their own for the machines that share a
-   family's, and asking for a place in Batocera's theme list.
+9. **Next**: small screens and 4:3, and drawings of their own for the machines that share a
+   family's.
 
 ## Legal
 

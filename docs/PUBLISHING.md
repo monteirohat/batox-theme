@@ -53,28 +53,24 @@ So for a listed theme:
   ready goes on a branch.
 - `theme.xml` must be at the repository's root (it is).
 - GitHub's ZIP honors `export-ignore`, so `docs` and `tools` stay out of it too.
-- The folder is named after the list's entry, not the repository: ask for the name
+- The folder is named after the list's entry, not the repository: the entry's name should be
   `batox-theme`, so installs from the list and from the release ZIP share one folder.
 
-The entry to ask for is in [batocera-list-entry.json](batocera-list-entry.json), with its
-screenshot in `screenshots/batocera-list.jpg`. The list's entries also carry an `up_to_date` number,
-which Batocera's team sets; what it measures isn't documented.
+A screenshot at the size the list uses is in `screenshots/batocera-list.jpg`.
 
-### Getting listed
+### Who keeps the list
 
-Batocera's wiki ([Themes](https://wiki.batocera.org/themes),
-[Write themes](https://wiki.batocera.org/write_themes_for_emulationstation)) does not say how a
-theme is added to the list, nor what it requires of one; the list is kept by the Batocera team.
-Ask them through their community channels (the links are on <https://batocera.org>), with the
-repository's URL, the entry above and the screenshot. This step has not been done yet, and the
-right channel is not confirmed.
+Batocera's team, by hand. The site makes `themes.json` and <https://batocera.org/themes.php>
+every night from the repositories the team has listed; `up_to_date` there is how recent a
+repository's last update is, from 5 (the last 90 days) down to 0 (over 730 days). There is no
+repository to send a pull request to, and the wiki doesn't describe a submission: a request goes
+to the team, through the [contact page](https://batocera.org/contact) (in English) or their
+Discord.
 
-What the wiki does recommend to theme authors: keep the theme small, for weak hardware's video
-memory (this one ships about 36 MB, nearly all of it the systems' pictures), and compress its images.
+### Other ways to install
 
-### Until it is listed
-
-People install the release ZIP by hand or with BatoX (see the [README](../README.md#install)).
+People can always install the release ZIP by hand or with BatoX (see the
+[README](../README.md#install)).
 
 A console can also be pointed at another list: `global.themes.url=<URL of a themes.json>` in
 `/userdata/system/batocera.conf` replaces Batocera's list with that one in the Themes screen.
