@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  The loading screen, shown while EmulationStation starts (docs/STYLE.md): the theme's picture
+  of no system in particular, and the bottom bar of every other screen, where the line fills as
+  the systems load and the engine's message takes the place of the help prompts.
+  The engine loads this file by itself, by its name at the theme's root: it includes the tokens.
+-->
+<theme>
+  <formatVersion>7</formatVersion>
+  <include>./_inc/variables.xml</include>
+  <view name="splash">
+    <splash name="splash">
+      <backgroundColor>${splashColor}</backgroundColor>
+    </splash>
+    <!-- tools/render-system-backgrounds.py splash -->
+    <image name="background">
+      <path>${themePath}/_inc/backgrounds/splash.jpg</path>
+      <pos>0.5 0.5</pos>
+      <origin>0.5 0.5</origin>
+      <minSize>1 1</minSize>
+      <roundCorners>0</roundCorners>
+      <linearSmooth>true</linearSmooth>
+    </image>
+    <!-- The bottom line is the progress bar: the separator's color, filling in white -->
+    <image name="progressbar">
+      <pos>${homeMarginX} ${separatorY}</pos>
+      <origin>0 0</origin>
+      <size>${splashBarSize}</size>
+      <color>${separatorColor}</color>
+      <colorEnd>${separatorColor}</colorEnd>
+      <roundCorners>0</roundCorners>
+    </image>
+    <image name="progressbar:active">
+      <color>${selectionColor}</color>
+      <colorEnd>${selectionColor}</colorEnd>
+    </image>
+    <!-- The engine's message ("Loading..."), where the help prompts are -->
+    <text name="label">
+      <pos>${homeMarginX} ${helpY}</pos>
+      <size>0.91 0.04</size>
+      <alignment>left</alignment>
+      <color>${textSecondary}</color>
+      <fontPath>${fontRegular}</fontPath>
+      <fontSize>${fontHelp}</fontSize>
+      <forceUppercase>1</forceUppercase>
+      <glowSize>0</glowSize>
+    </text>
+  </view>
+</theme>

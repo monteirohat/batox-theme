@@ -6,9 +6,9 @@ one thin white frame on what is selected.
 
 ![The home: a row of system tiles, the selected one with its figures, over the system's picture](docs/screenshots/home.jpg)
 
-| The game list | The menus |
-|---|---|
-| ![A list of games at the left, the selected game's cover and details at the right](docs/screenshots/game-list.jpg) | ![The main menu, a panel in the middle of a darkened screen, with an icon per entry](docs/screenshots/menu.jpg) |
+| The game list | The menus | Loading |
+|---|---|---|
+| ![A list of games at the left, the selected game's cover and details at the right](docs/screenshots/game-list.jpg) | ![The main menu, a panel in the middle of a darkened screen, with an icon per entry](docs/screenshots/menu.jpg) | ![The loading screen: cartridges and a controller on a pier at sunset](docs/screenshots/loading.jpg) |
 
 ## What you get
 
@@ -16,14 +16,18 @@ one thin white frame on what is selected.
   into a card with its number of games; its name, maker and year sit beside it, and a panel with
   your favorites, games played, play time, last day played and most played game fades in after
   a second.
-- **A picture per system.** 25 systems have their own background, drawn for this theme: the
-  machine on a pier in front of a coastal city at sunset. The other systems show Batocera's own
-  photo, darkened.
+- **A picture per system.** Every system of Batocera has its own background, drawn for this
+  theme: the machine on a pier in front of a coastal city at sunset. The best-known consoles,
+  handhelds and computers have a drawing of their own; the others share one with their family
+  (an arcade cabinet, a home computer, a handheld), in their own colors; collections get a neon
+  sign.
 - **Game list.** The games in a list at the left; at the right the selected game's cover, name,
   developer, publisher, genre, players, year, rating, last time played and description. A game
   with a video plays it in the cover's place after a few seconds.
 - **Menus.** EmulationStation's menus as a panel in the middle of a darkened screen, with the
   theme's own white icons.
+- **Loading screen.** While EmulationStation starts: a picture of its own, and the bottom line
+  filling as the systems load.
 - **Top bar.** The connected controllers (lit while in use), your RetroAchievements avatar and
   name when an account is set up in Batocera, the network and the clock.
 - **English and Brazilian Portuguese**, following the console's language.
@@ -32,8 +36,8 @@ one thin white frame on what is selected.
 
 - Batocera 43 or newer (made and tested on 43.1, on a Raspberry Pi 4).
 - A 16:9 screen, 1080p or 720p. Smaller and 4:3 screens are not tuned yet.
-- Batocera's default theme, Carbon, left installed (it always is): the systems' logos, and the
-  photos of the systems without a picture of their own, are read from it.
+- Batocera's default theme, Carbon, left installed (it always is): the systems' logos are read
+  from it.
 
 ## Install
 
@@ -62,10 +66,12 @@ supports.
 
 - **Gamelist view style**: leave it on automatic. The list described above is the theme's view;
   the grid and carousel styles are not themed.
-- **Systems without their own picture** (anything outside the 25 drawn so far) and a few system
-  logos that don't turn white cleanly are still to do: see
-  [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md#per-system-artwork).
-- **The loading screen** is still Batocera's.
+- **A machine drawn wrong, or too generic?** Many systems share a family's drawing; tell which
+  one deserves its own. A few system logos that don't turn white cleanly are also still to do:
+  see [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md#per-system-artwork).
+- **Size**: about 36 MB, nearly all of it the systems' pictures.
+- **Batocera's own image** still shows as the console boots and, on a Raspberry Pi, while a
+  game starts: it belongs to the system, not to a theme.
 - **Notifications** appear at the top center: their place belongs to EmulationStation.
 
 Found a problem, or want a system drawn? Open an
@@ -96,7 +102,7 @@ tools/package.sh                            # builds dist/batox-theme.zip from t
 Everything the theme ships is its own, drawn by its tools: the systems' pictures, the icons, the
 frames and the wave background. Its font is Inter (SIL Open Font License).
 
-The systems' logos, and the photos of the systems not drawn yet, are those of Batocera's default
+The systems' logos are those of Batocera's default
 theme, Carbon (CC BY-NC-SA, by Fabrice Caruso and its contributors). The theme reads them where
 Batocera installs them and ships none; it only draws the logos in white.
 

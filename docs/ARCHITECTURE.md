@@ -160,6 +160,13 @@ Learned on the console (Batocera 43.1); each one cost a round of screenshots:
   (`outline.png`), or the label disappears on it; focused, a filled image (`white.png`).
 - **A menu's switch from the theme is drawn past the row's end**: the engine measures it before
   it has loaded it (SVG or PNG alike). The theme keeps the engine's own switches.
+- **The loading screen is a file of its own.** The engine loads `splash.xml` from the theme's
+  root, alone (it must include the tokens itself), in a view named `splash`: an `image` named
+  `background`, a `text` named `label` (the engine writes it), `image`s named `progressbar` and
+  `progressbar:active` (the engine sets the second's width; it shows only while systems load),
+  a `splash` element for the color behind, and extras. `gamesplash.xml`, for a game starting,
+  works the same with the game bound, but a Raspberry Pi shows Batocera's own image then (and
+  as the console boots), so the theme ships none: it couldn't be checked.
 - **RetroAchievements**: `${global.cheevos}` is set when an account is configured in Batocera,
   `${global.cheevos.username}` is its name; a `webimage` loads the avatar from
   `media.retroachievements.org` and keeps it in `~/.emulationstation/tmp`.
@@ -169,9 +176,10 @@ Learned on the console (Batocera 43.1); each one cost a round of screenshots:
 ```
 batox-theme/
   theme.xml               entry point: includes, languages, subsets, views
+  splash.xml              the loading screen, loaded by the engine on its own
   _inc/
     variables.xml         design tokens: the only place colors, sizes and fonts are set
-    backgrounds/          generated backgrounds (tools/render-background.py)
+    backgrounds/          the waves (tools/render-background.py) and the loading screen's picture
     frames/               white.png, the list's selector, the buttons' outline, the menus' page
     fonts/                Inter Light, Regular and SemiBold, and their license (OFL 1.1)
     icons/                the top bar's controller, gun and wheel; the tile for a missing cover
@@ -361,7 +369,11 @@ transparency, 5 px apart, from the home's row top (0.208) to a little above the 
   shutdown...). A menu takes the whole screen: a dark page (`menuPage`) over everything behind
   it, and the menu as a panel in the middle (`menuPlate`), 48 px wider than its content on each
   side; the tallest menus stop just over the help prompts.
-- `splash` (to do): the loading screen.
+- `splash.xml`, at the theme's root: the loading screen, shown while EmulationStation starts.
+  The theme's picture of no system in particular (`_inc/backgrounds/splash.jpg`: cartridges and
+  a controller on the pier, the sun in the middle, only its top and bottom shaded); the bottom
+  line of every other screen is the progress bar (`separatorColor`, filling in white) and the
+  engine's message ("Loading theme", then each system's name) sits where the help prompts are.
 
 ## Per-system artwork
 
@@ -375,7 +387,7 @@ transparency, 5 px apart, from the home's row top (0.208) to a little above the 
 
 The logos are those of Carbon, the theme every Batocera has, read in place from
 `/usr/share/emulationstation/themes/es-theme-carbon/art` and never copied. The backgrounds are
-the theme's own for the systems drawn so far, Carbon's for the others.
+the theme's own.
 
 **Logos.** A tile shows `logos/<name>.svg` (else `.png`), 462 systems, drawn in white by
 `_inc/shaders/white.glsl`: every visible pixel of the colored logo turns white, which keeps its
@@ -392,20 +404,29 @@ home does, next to the other treatments, from a copy of Carbon's logos: the syst
 console and the logos that whiten into a plain rectangle are sorted; the rest of the 462 are
 still to review there.
 
-**Backgrounds.** `tools/render-system-backgrounds.py` draws one picture per system, 25 so far
-(the test console's): the machine, inked and lit from behind, on a pier in front of a coastal
+**Backgrounds.** `tools/render-system-backgrounds.py` draws one picture per system, 354 names (every
+system of Batocera 43 on a Raspberry Pi 4, and those Carbon knows from other boards): the machine, inked and lit from behind, on a pier in front of a coastal
 city at sunset, with palms, in saturated pinks, oranges and purples over the theme's navy. The
 left stays dark for the texts and the very top for the top bar, the sky keeps its color behind
 the row of tiles, which are translucent, and a soft shade sits behind the system's name. Four moods of sky (`vice`, `miami`, `gold`, `night`) vary the row.
 
 - A machine is a few boxes (a body, its raised parts, a cartridge, a controller) with details
   drawn flat on their faces, all seen from the same corner; consoles, handhelds, arcade
-  cabinets, home computers, and for the collections a pile of cartridges and neon signs. A new
-  system is one function and one line in `SYSTEMS`.
+  cabinets, home computers, and for the collections a pile of cartridges and neon signs.
+- About forty machines have a drawing of their own (the Nintendo, Sega, Sony, Microsoft, NEC,
+  SNK and Atari consoles and handhelds, the Commodore 64, the MSX...). The others share a
+  family's drawing with their own colors and details: `keyboard` (a home computer in its
+  keyboard, with a tape deck, a floppy slot or a cartridge), `computer` and `allinone` (with a
+  monitor), `cart_console`, `docked_console` and `disc_console`, `tower`, `handheld`, `cabinet`
+  and `pinball`; the ported games get a computer with a screen of their own color, the
+  collections a neon `sign` with a symbol. `on_base` puts a console on its CD or disk unit.
+- `put("names", model)` gives systems a drawing; without a mood, each takes one of the four by
+  its name, so a family doesn't look the same everywhere. A new system is one line, or one
+  function and one line.
 - The script writes an SVG and a headless Chrome or Chromium turns it into the JPEG (about
   90 KB each). Everything is drawn there: no photo, no logo, no art from a game or a maker.
-- A system without its own picture uses Carbon's photo (`art/background/<name>.jpg`, 323
-  systems), read in place, never copied, and tinted by `artTint`; else the waves.
+- A system the theme doesn't know yet uses Carbon's photo (`art/background/<name>.jpg`), read in
+  place, never copied, and tinted by `artTint`; else the waves.
 
 ## Options in Batocera's menu
 
@@ -457,8 +478,10 @@ unpacking it into `/userdata/themes`.
 5. **Artwork**: a background for each of Batocera's other systems; the logos still to review.
 6. **Release 1.0** (done): screenshots, README, changelog, the ZIP from CI
    ([PUBLISHING.md](PUBLISHING.md)).
-7. **Next**: the loading screen, small screens and 4:3, more systems' pictures, and asking for a
-   place in Batocera's theme list.
+7. **Loading screen** (done, 1.1.0).
+8. **A picture for every system** (done, 1.1.0).
+9. **Next**: small screens and 4:3, drawings of their own for the machines that share a
+   family's, and asking for a place in Batocera's theme list.
 
 ## Legal
 
@@ -480,7 +503,7 @@ own license (SIL Open Font License 1.1, `_inc/fonts/Inter-LICENSE.txt`).
 
 ## Open decisions
 
-- **More system backgrounds**: 25 systems have their own picture; each of Batocera's other
-  systems needs its machine drawn in `tools/render-system-backgrounds.py`.
+- **The theme's size**: 36 MB with a picture per system (90 to 110 KB each). Lighter JPEGs, or
+  pictures only for the systems a console has, would shrink it; nobody has asked yet.
 - **Font**: Inter is the default proposal; Nunito Sans or Noto Sans would also fit (Noto covers
   more scripts).

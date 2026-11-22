@@ -4,8 +4,9 @@ from behind, on a pier in front of a coastal city at sunset. Saturated pinks, or
 purples over the theme's navy, with the left kept dark for the texts and the very top for the
 top bar; the sky keeps its color behind the home's row of tiles, which are translucent.
 
-    python3 tools/render-system-backgrounds.py            # every system
+    python3 tools/render-system-backgrounds.py            # every system, and the loading screen
     python3 tools/render-system-backgrounds.py snes nes   # only these
+    python3 tools/render-system-backgrounds.py splash     # only the loading screen's picture
     python3 tools/render-system-backgrounds.py --svg snes # also keeps dist/backgrounds/snes.svg
 
 Each picture is an SVG written by this script and turned into a 1920 x 1080 JPEG by a headless
@@ -314,8 +315,8 @@ def draw_box(page, view, box, mood, glows):
     page.add(*out)
 
 
-def draw_machine(page, boxes, mood):
-    view = View(boxes, 1390, 940, 940, 540)
+def draw_machine(page, boxes, mood, center_x=1390, base_y=940):
+    view = View(boxes, center_x, base_y, 940, 540)
     # The pier it stands on, running out of the picture to the right and to the viewer
     ground = [b for b in boxes if b.z == 0]
     xs = [c[0] for b in ground for c in b.corners()]
@@ -378,8 +379,10 @@ def palm(page, x, y, height, lean, color, rnd):
     page.add("".join(out))
 
 
-def scene(page, mood, rnd):
-    sun_x = rnd.uniform(1380, 1560)
+def scene(page, mood, rnd, centered=False):
+    """The sky, the city, the palms and the water. The sun and the city sit to the right, where
+    the machine is; centered, for the loading screen, they take the whole width."""
+    sun_x = 960 if centered else rnd.uniform(1380, 1560)
     # Sky, brushed
     sky = page.gradient([(o / .64, c) for o, c in mood["sky"]], 0, 0, 0, HORIZON, user=True)
     page.add(f'<rect width="{W}" height="{H}" fill="{mood["sky"][-1][1]}"/>')
@@ -394,7 +397,7 @@ def scene(page, mood, rnd):
     cloud = page.gradient([(0, shade), (.55, mix(shade, lit, .55)), (1, lit)])
     clouds = []
     for _ in range(7):
-        cx, cy = rnd.uniform(720, 1900), rnd.uniform(HORIZON - 440, HORIZON - 70)
+        cx, cy = rnd.uniform(40 if centered else 720, 1900), rnd.uniform(HORIZON - 440, HORIZON - 70)
         w = rnd.uniform(220, 520)
         for i in range(9):
             t = i / 8 - .5
@@ -402,14 +405,14 @@ def scene(page, mood, rnd):
                           f'rx="{w * rnd.uniform(.13, .2):.0f}" ry="{w * rnd.uniform(.035, .06) + 6:.0f}"/>')
     page.add(f'<g fill="{cloud}" opacity=".82" filter="url(#ragged)">{"".join(clouds)}</g>')
     for _ in range(9):
-        cx, cy = rnd.uniform(800, 1920), rnd.uniform(HORIZON - 120, HORIZON - 22)
+        cx, cy = rnd.uniform(0 if centered else 800, 1920), rnd.uniform(HORIZON - 120, HORIZON - 22)
         page.add(f'<ellipse cx="{cx:.0f}" cy="{cy:.0f}" rx="{rnd.uniform(140, 380):.0f}" ry="{rnd.uniform(3, 7):.1f}" '
                  f'fill="{lit}" opacity="{rnd.uniform(.35, .7):.2f}" filter="url(#blur3)"/>')
     # The city across the water: a hazy far row, then a darker near one with lit windows
     for layer, (base, height, fog) in enumerate(((HORIZON + 2, 120, .50), (HORIZON + 6, 185, .16))):
         color = mix(mood["city"], mood["glow"], fog)
         tower = page.gradient([(0, color), (1, mix(color, mood["glow"], .30))])
-        x, out, windows = 640.0, [], []
+        x, out, windows = (-40.0 if centered else 640.0), [], []
         while x < W + 40:
             bw = rnd.uniform(26, 84)
             bh = rnd.uniform(.18, 1) ** 1.6 * height + 16
@@ -430,7 +433,11 @@ def scene(page, mood, rnd):
     page.add(f'<ellipse cx="1800" cy="{HORIZON + 14:.0f}" rx="270" ry="20" fill="{dark}"/>')
     for x, hgt, lean in ((1700, 330, -40), (1822, 410, 30), (1895, 280, -20), (1608, 190, 16)):
         palm(page, x, HORIZON + 8, hgt * rnd.uniform(.92, 1.06), lean, dark, rnd)
-    page.add(f'<rect x="600" y="{HORIZON - 26:.0f}" width="{W - 600}" height="34" fill="{mood["glow"]}" opacity=".22" filter="url(#blur8)"/>')
+    if centered:
+        page.add(f'<ellipse cx="130" cy="{HORIZON + 14:.0f}" rx="250" ry="20" fill="{dark}"/>')
+        for x, hgt, lean in ((210, 320, 36), (96, 400, -28), (30, 270, 18), (300, 180, -14)):
+            palm(page, x, HORIZON + 8, hgt * rnd.uniform(.92, 1.06), lean, dark, rnd)
+    page.add(f'<rect x="{0 if centered else 600}" y="{HORIZON - 26:.0f}" width="{W}" height="34" fill="{mood["glow"]}" opacity=".22" filter="url(#blur8)"/>')
     # The water: the sky upside down, darker, with the sun's streak
     w1, w2, w3 = mood["water"]
     water = page.gradient([(0, w1), (.22, w2), (1, w3)])
@@ -443,21 +450,27 @@ def scene(page, mood, rnd):
                        f'ry="{1.6 + (y - HORIZON) * .012:.1f}" fill="{mood["sun"][0]}" opacity="{rnd.uniform(.25, .7) * (1 - i / 60):.2f}"/>')
     for _ in range(60):
         y = HORIZON + rnd.uniform(4, 330)
-        ripples.append(f'<ellipse cx="{rnd.uniform(500, 1920):.0f}" cy="{y:.0f}" rx="{rnd.uniform(30, 150):.0f}" ry="{1.2 + (y - HORIZON) * .008:.1f}" '
+        ripples.append(f'<ellipse cx="{rnd.uniform(0 if centered else 500, 1920):.0f}" cy="{y:.0f}" rx="{rnd.uniform(30, 150):.0f}" ry="{1.2 + (y - HORIZON) * .008:.1f}" '
                        f'fill="{rnd.choice((mood["glow"], w3, mood["rim"]))}" opacity="{rnd.uniform(.12, .4):.2f}"/>')
     page.add("".join(ripples))
 
 
-def finish(page):
-    """Keeps the left, the very top and the bottom dark for the texts, and adds a grain of paint."""
+def finish(page, splash=False):
+    """Keeps the left, the very top and the bottom dark for the texts, and adds a grain of paint.
+    The loading screen has no texts but its bottom line: only its top and bottom are shaded."""
+    grain = f'<rect width="{W}" height="{H}" filter="url(#grain)" opacity=".07" style="mix-blend-mode:overlay"/>'
+    if splash:
+        top = page.gradient([(0, NAVY, .92), (.16, NAVY, .55), (.34, NAVY, 0)])
+        bottom = page.gradient([(.72, "#03040C", 0), (.86, "#03040C", .55), (1, "#03040C", .86)])
+        page.add(f'<rect width="{W}" height="{H}" fill="{top}"/><rect width="{W}" height="{H}" fill="{bottom}"/>{grain}')
+        return
     left = page.gradient([(0, NAVY, .97), (.26, NAVY, .90), (.46, NAVY, .50), (.64, NAVY, 0)], 0, 0, 1, 0)
     top = page.gradient([(0, NAVY, .95), (.11, NAVY, .84), (.19, NAVY, .34), (.30, NAVY, 0)])
     bottom = page.gradient([(.84, "#03040C", 0), (1, "#03040C", .70)])
     # A soft shade behind the system's name, which may run far to the right over the bright sky
     page.add(f'<ellipse cx="960" cy="478" rx="560" ry="84" fill="{NAVY}" opacity=".42" filter="url(#blur45)"/>')
     page.add(f'<rect width="{W}" height="{H}" fill="{left}"/><rect width="{W}" height="{H}" fill="{top}"/>'
-             f'<rect width="{W}" height="{H}" fill="{bottom}"/>'
-             f'<rect width="{W}" height="{H}" filter="url(#grain)" opacity=".07" style="mix-blend-mode:overlay"/>')
+             f'<rect width="{W}" height="{H}" fill="{bottom}"/>{grain}')
 
 
 # --- the machines ------------------------------------------------------------
@@ -623,8 +636,7 @@ def gba(page):
     ]
 
 
-def nds(page):
-    silver = "#DADDE5"
+def nds(page, silver="#DADDE5"):
     return [
         Box(0, -11, 168, 11, 88, silver, r=3,
             front=['<g transform="scale(1 .72)">' + rect(9, 8, 150, 104, "#1D1E26", r=5) + rect(36, 22, 96, 72, screen(page, "#9FE8FF", "#3B5BD9"), r=1.5)
@@ -833,6 +845,391 @@ def lastplayed(page):
                        neon("M40,160h120", "#FFD36E", 2.2)])
 
 
+# --- families: one drawing, many machines ------------------------------------
+
+RAINBOW = ("#D9303A", "#F28C28", "#F2C230", "#3FA65A", "#2E7BD9")
+
+
+def raised(boxes, dz, keep=1):
+    """Lifts a machine onto a base: every box but its last `keep` (its controller) goes up."""
+    for b in boxes[:len(boxes) - keep]:
+        b.z += dz
+    return boxes
+
+
+def on_base(page, machine, color, w, d, h=22, keep=1, tray=True):
+    """A console on the unit sold to sit under it (a CD or disk drive)."""
+    front = [rect(w * .5, h * .3, w * .34, h * .3, mix(color, "#000000", .45), r=1), circ(w * .12, h * .5, 2.6, "#7CFF8A")] if tray else []
+    return [Box(-(w - 200) / 2 - 4, -8, w, d, h, color, r=6, front=front)] + raised(machine, h, keep)
+
+
+def disc_console(page, body, lid, accent, pad_color, pad_buttons, w=200, d=170, h=34, r=8, tray=False, ridges=False,
+                 led="#7CFF8A", pad_face=None, cross="#22222A"):
+    """A console that plays discs: a round lid on top, or a tray at the front."""
+    dark = mix(body, "#000000", .4)
+    top = [lines(14, 14, w - 28, 8, 6, mix(body, "#000000", .3))] if ridges else []
+    front = [rect(w * .08, h * .3, w * .19, h * .38, "#08080A", r=3), rect(w * .31, h * .3, w * .19, h * .38, "#08080A", r=3),
+             circ(w * .92, h * .5, 2.8, led)]
+    if tray:
+        front.append(rect(w * .56, h * .22, w * .3, h * .24, dark, r=1))
+    boxes = [Box(0, 0, w, d, h, body, r=r, top=top, front=front)]
+    if not tray:
+        radius = min(w, d) * .36
+        boxes.append(Box(w / 2 - radius, d * .44 - radius, 2 * radius, 2 * radius, 5, lid, z=h, r=radius,
+                         top=[circ(radius, radius, radius * .3, mix(lid, "#000000", .22))]))
+    boxes += [Box(w * .07, d * .85, 28, 14, 4, accent, z=h, r=5), Box(w * .79, d * .85, 28, 14, 4, accent, z=h, r=5)]
+    boxes.append(pad(-w * .5, d + 26, 112, 50, pad_color, pad_buttons, rot=-12, face=pad_face, cross=cross))
+    return boxes
+
+
+def cart_console(page, body, panel, accent, cart_color="#17171B", labels=("#FF5E8A", "#3B8CFF"), w=210, d=140, h=30, r=5,
+                 wood=False, switches=0, pad_args=None, stick=False):
+    """A console that takes cartridges on top: a dark panel, a slot, a few switches."""
+    top = [rect(10, 10, w - 20, d * .52, panel, r=3), rect(w * .24, d * .2, w * .52, d * .14, "#050506", r=2)]
+    if switches:
+        top += [rect(18 + i * (w - 50) / max(1, switches - 1) - 5, d * .74, 12, 18, accent, r=2) for i in range(switches)]
+    else:
+        top += [rect(18, d * .74, 34, 13, accent, r=2), rect(60, d * .74, 34, 13, mix(accent, "#FFFFFF", .4), r=2)]
+    front = [rect(0, h * .42, w, h * .58, "#7A4E24", stroke="none"), lines(0, h * .56, w, 3, h * .14, "#5E3A18", .6)] if wood \
+        else [rect(18, h * .3, 40, h * .4, "#111114", r=2), rect(66, h * .3, 40, h * .4, "#111114", r=2)]
+    boxes = [Box(0, 0, w, d, h, body, r=r, top=top, front=front)]
+    if cart_color:
+        boxes.append(cart(page, w * .26, d * .21, w * .48, d * .1, 30, cart_color, h, *labels))
+    if stick:
+        boxes += joystick(-112, d + 6)
+    elif pad_args:
+        boxes.append(pad(-100, d + 40, *pad_args, rot=-12))
+    return boxes
+
+
+def docked_console(page, body, panel, pads, w=230, d=150, h=30):
+    """A console of the first years: its two keypad controllers rest in wells on top."""
+    boxes = [Box(0, 0, w, d, h, body, r=4,
+                 top=[rect(10, 10, w - 20, d * .34, panel, r=3), rect(w * .3, d * .14, w * .4, d * .12, "#050506", r=2),
+                      rect(14, d * .5, w * .36, d * .44, "#0B0B0E", r=3), rect(w * .64 - 14, d * .5, w * .36, d * .44, "#0B0B0E", r=3)],
+                 front=[rect(18, h * .3, 44, h * .4, "#111114", r=2)])]
+    for x in (20, w * .64 - 8):
+        boxes.append(Box(x, d * .53, w * .36 - 12, d * .38, 8, pads, z=h - 4, r=4,
+                         top=[circ((w * .36 - 12) / 2, 14, 9, mix(pads, "#000000", .35)),
+                              grid(8, 28, 3, 3, (w * .36 - 34) / 3, 5, 2, mix(pads, "#FFFFFF", .3))]))
+    return boxes
+
+
+def tower(page, body, accent, w=70, d=170, h=200, pad_color=None):
+    """A console that stands upright."""
+    boxes = [Box(-8, -4, w + 16, d + 8, 8, mix(body, "#000000", .2), r=4),
+             Box(0, 0, w, d, h, body, z=8, r=5,
+                 front=[rect(w * .34, h * .1, w * .16, h * .6, "#2A2A30", r=3), rect(w * .36, h * .3, w * .12, h * .3, accent, stroke="none"),
+                        circ(w * .42, h * .84, 5, mix(body, "#000000", .12)), rect(w * .6, h * .14, w * .26, 8, mix(body, "#000000", .12), r=2)],
+                 screens=[("front", w * .34, h * .3, w * .16, h * .3, accent)])]
+    if pad_color:
+        boxes.append(pad(-150, d + 10, 112, 50, pad_color, ("#D9303A", "#3FA65A", "#2E7BD9", "#F2C230"), rot=-12))
+    return boxes
+
+
+def handheld(page, body, lit, w=184, d=102, r=20, h=16, left="dpad", buttons=2, btn="#2A2A32", wide=.36, cart_color="#25252C"):
+    """A handheld held sideways: a control at the left, the screen, buttons at the right."""
+    sw, sh = w * wide, d * .52
+    sx, sy = (w - sw) / 2, d * .2
+    top = [rect(sx - 9, sy - 8, sw + 18, sh + 16, "#18181F", r=5), rect(sx, sy, sw, sh, screen(page, *lit), r=1.5)]
+    if left == "dpad":
+        top.append(dpad(w * .14, d * .5, d * .3, d * .1, "#1E1E25"))
+    elif left == "two":
+        top += [dpad(w * .1, d * .34, d * .2, d * .07, "#1E1E25"), dpad(w * .17, d * .68, d * .2, d * .07, "#1E1E25")]
+    else:
+        top.append(circ(w * .14, d * .5, d * .17, mix(body, "#000000", .3)))
+    spots = ((.82, .6), (.91, .46), (.79, .34), (.88, .2))
+    top += [circ(w * x, d * y, d * .085, btn) for x, y in spots[:buttons]]
+    boxes = [Box(0, 0, w, d, h, body, r=r, top=top, screens=[("top", sx, sy, sw, sh, lit[0])])]
+    if left == "stick":
+        boxes += [Box(w * .14 - 10, d * .5 - 10, 20, 20, 6, "#25252C", z=h, r=10), Box(w * .14 - 14, d * .5 - 14, 28, 28, 5, "#34343E", z=h + 6, r=14)]
+    if cart_color:
+        boxes.append(game_cart(page, w + 48, 22, cart_color, "#FFC25E", "#F03C72", 18))
+    return boxes
+
+
+def linked(page, body, buttons, lit):
+    """Two handhelds joined by a cable, for two players."""
+    first = gameboy(page, body, buttons, "#8E8E98", lit)[:1]
+    second = gameboy(page, mix(body, "#FFFFFF", .25), buttons, "#8E8E98", lit)[:1]
+    second[0].x, second[0].y, second[0].rot = 150, 30, math.radians(14)
+    return first + [Box(96, 60, 60, 6, 4, "#1A1A1E", r=3, rot=10)] + second
+
+
+def game_watch(page, body, plate):
+    """A pocket game with an LCD: a wide screen between two round buttons."""
+    return [Box(0, 0, 190, 104, 10, body, r=10,
+                top=[rect(10, 10, 170, 84, plate, r=6), rect(52, 20, 86, 58, "#C9D2B8", r=2),
+                     path("M64,66h62M72,66v-10h8v10M96,66v-18h8v18M112,56a6,6 0 1 0 0.1,0Z", fill="none", stroke="#3A4032", sw=2),
+                     circ(28, 62, 11, "#D9303A"), circ(162, 62, 11, "#D9303A"), rect(18, 20, 20, 7, mix(plate, "#000000", .3), r=3),
+                     rect(152, 20, 20, 7, mix(plate, "#000000", .3), r=3)])]
+
+
+def keyboard(page, body, well, keys, fkeys=None, w=236, d=136, h=26, r=7, stripe=False, deck=None, led="#FF4650", stick=True):
+    """A home computer in its keyboard. deck: a "tape" recorder beside the keys, a "floppy" slot
+    in its right side, or a "cart" slot behind them."""
+    cols = 12 if deck == "tape" else 15
+    kw, kh = (w - 60) / 15 - 2, (d - 70) / 4 - 2
+    edge = mix(keys, "#000000", .5)
+    top = [rect(13, 40, w - 54, d - 58, well, r=2), grid(18, 45, cols, 4, kw, kh, 2, keys, stroke=edge),
+           rect(w * .25, d - 27, w * .36, 10, keys, r=1.5, stroke=edge, sw=.3), circ(w - 22, 24, 2.6, led),
+           lines(14, 12, 90, 4, 6, mix(body, "#000000", .18))]
+    if fkeys:
+        top.append(grid(w - 34, 45, 1, 4, 22, kh, 2, fkeys))
+    if stripe:
+        top.append("".join(rect(w - 86 + i * 5, 14, 4, 12, c, stroke="none") for i, c in enumerate(RAINBOW)))
+    if deck == "tape":
+        top += [rect(w - 92, 44, 50, d - 66, mix(body, "#000000", .3), r=2), rect(w - 86, 52, 38, 24, "#111114", r=2),
+                grid(w - 86, d - 44, 5, 1, 6, 10, 2, keys, stroke=edge)]
+    if deck == "cart":
+        top.append(rect(w - 96, 10, 78, 16, "#08080A", r=2))
+    right = [rect(22, 9, 64, 5, "#111114", r=1), rect(92, 8, 10, 7, mix(body, "#000000", .3), r=1)] if deck == "floppy" else []
+    boxes = [Box(0, 0, w, d, h, body, r=r, top=top, front=[rect(0, 0, w, 6, mix(body, "#000000", .1), stroke="none")], right=right)]
+    if deck == "cart":
+        boxes.append(cart(page, w - 88, 12, 62, 11, 28, "#EDEDF2", h, "#F03C72", "#3B8CFF"))
+    return boxes + (joystick(-120, d - 16) if stick else [])
+
+
+def allinone(page, case, glass, keys=None, w=150, d=150, h=170):
+    """A computer with its monitor in the same case, and its keyboard in front."""
+    return [
+        Box(0, 0, w, d, h, case, r=6,
+            front=[rect(w * .1, h * .08, w * .8, h * .52, "#22222A", r=6), rect(w * .16, h * .13, w * .68, h * .42, screen(page, *glass), r=4),
+                   rect(w * .58, h * .74, w * .28, 5, "#2E2E36", r=1), lines(w * .14, h * .72, w * .3, 4, 5, mix(case, "#000000", .25))],
+            screens=[("front", w * .16, h * .13, w * .68, h * .42, glass[0])]),
+        Box(-8, d + 16, w + 16, 56, 8, case, r=3, top=[grid(6, 6, 13, 4, (w + 4) / 13 - 2, 9.6, 2, keys or mix(case, "#FFFFFF", .25))]),
+        Box(w + 26, d + 30, 24, 34, 8, case, r=10),
+    ]
+
+
+def text_screen(*colors):
+    """Lines of text on a monitor, for a system that has no picture of its own."""
+    return ["".join(rect(26, 24 + i * 9, w, 4, c, stroke="none", op=.9) for i, (w, c) in enumerate(colors))]
+
+
+def pinball(page, body, glass, sign):
+    """A pinball table: the slanted playfield on four legs, the lit backbox behind."""
+    legs = [Box(x, y, 8, 8, 64, "#C9C9D2", r=2) for x, y in ((4, 6), (88, 6), (4, 186), (88, 186))]
+    return legs + [
+        Box(0, 0, 100, 60, 150, body, z=64, r=3,
+            front=[rect(8, 10, 84, 78, "#08080E", r=3), rect(13, 15, 74, 68, label(page, *sign), r=2),
+                   circ(50, 49, 17, "#FFFFFF", stroke="none", op=.85), rect(20, 100, 60, 22, mix(body, "#000000", .3), r=2)],
+            screens=[("front", 13, 15, 74, 68, sign[0])]),
+        Box(0, 50, 100, 150, 46, body, z=64, r=3,
+            top=[rect(8, 6, 84, 136, screen(page, *glass), r=3), circ(34, 44, 9, "#FFE27A"), circ(64, 36, 9, "#F03C72"), circ(52, 72, 9, "#7BE0FF"),
+                 path("M30,128l16,-10M70,128l-16,-10", stroke="#FFFFFF", sw=4), rect(84, 90, 5, 46, "#C9C9D2", r=2)],
+            front=[rect(36, 14, 28, 16, mix(body, "#000000", .35), r=2), circ(16, 22, 4, "#D9303A"), circ(84, 22, 4, "#FFE27A")],
+            screens=[("top", 8, 6, 84, 136, glass[0])]),
+    ]
+
+
+# --- machines of their own ----------------------------------------------------
+
+def psx(page):
+    return disc_console(page, "#BDBEC6", "#C9CAD2", "#A9AAB3", "#BDBEC6", ("#3FA65A", "#D9303A", "#2E7BD9", "#F06AA8"))
+
+
+def ps2(page):
+    return disc_console(page, "#17171B", None, "#2B2B33", "#17171B", ("#3FA65A", "#D9303A", "#2E7BD9", "#F06AA8"),
+                        w=220, d=170, h=38, r=3, tray=True, ridges=True, led="#3B8CFF", cross="#3A3A44")
+
+
+def ps3(page):
+    return disc_console(page, "#101014", None, "#C9C9D2", "#101014", ("#3FA65A", "#D9303A", "#2E7BD9", "#F06AA8"),
+                        w=226, d=176, h=44, r=22, tray=True, led="#D9303A", cross="#3A3A44")
+
+
+def ps4(page):
+    boxes = disc_console(page, "#15151A", None, "#2B2B33", "#15151A", ("#3FA65A", "#D9303A", "#2E7BD9", "#F06AA8"),
+                         w=220, d=180, h=30, r=2, tray=True, led="#FFFFFF", cross="#3A3A44")
+    boxes[0].top = [rect(0, 84, 220, 5, "#5FC8FF", stroke="none")]
+    boxes[0].screens = [("top", 0, 82, 220, 9, "#5FC8FF")]
+    return boxes
+
+
+def saturn(page):
+    return disc_console(page, "#2A2A30", "#34343C", "#3B5BD9", "#2A2A30", ("#3FA65A", "#F2C230", "#2E7BD9"), w=210, d=176, h=38, r=10,
+                        cross="#55565F")
+
+
+def dreamcast(page):
+    boxes = disc_console(page, "#EDEDF0", "#E2E2E8", "#D5D5DC", "#EDEDF0", ("#D9303A", "#F2C230", "#3FA65A", "#2E7BD9"), w=190, d=190, h=38,
+                         r=14, led="#F28C28", cross="#8E8E98")
+    boxes[0].front = [rect(14 + i * 42, 12, 30, 14, "#C4C4CC", r=3) for i in range(4)] + [circ(176, 19, 2.8, "#F28C28")]
+    return boxes
+
+
+def threedo(page):
+    return disc_console(page, "#1B1B20", None, "#3A3A44", "#1B1B20", ("#D9303A", "#3FA65A", "#2E7BD9"), w=230, d=170, h=40, r=4, tray=True,
+                        cross="#55565F")
+
+
+def gamecube(page):
+    purple = "#5B4FB0"
+    return [
+        Box(30, -10, 70, 12, 26, "#3A3A44", z=30, r=5),
+        Box(0, 0, 130, 130, 100, purple, r=9,
+            top=[circ(65, 60, 46, mix(purple, "#000000", .18)), circ(65, 60, 12, mix(purple, "#000000", .35)),
+                 rect(16, 110, 26, 10, "#B9B7C6", r=4), rect(88, 110, 26, 10, "#B9B7C6", r=4)],
+            front=[rect(8, 52, 114, 30, "#8E8AA8", r=4)] + [circ(26 + i * 26, 67, 9, "#3A3A44") for i in range(4)]),
+        pad(-140, 150, 112, 54, purple, ("#3FA65A", "#D9303A", "#B9B7C6", "#F2C230"), rot=-12),
+    ]
+
+
+def wii(page):
+    white = "#F2F2F5"
+    return tower(page, white, "#5FC8FF", w=56, d=170, h=190) + [
+        Box(-130, 150, 36, 124, 12, white, r=8, rot=-20,
+            top=[dpad(18, 24, 16, 5.5, "#D8D8DE"), circ(18, 52, 7, "#D8D8DE"), circ(18, 98, 4, "#D8D8DE"), circ(18, 110, 4, "#D8D8DE")])]
+
+
+def wiiu(page):
+    return [Box(0, 0, 250, 118, 14, "#16161B", r=24,
+                top=[rect(60, 14, 130, 84, "#08080A", r=4), rect(66, 20, 118, 72, screen(page, "#7BE0FF", "#3B5BD9"), r=2),
+                     circ(30, 34, 11, "#2A2A32"), circ(220, 34, 11, "#2A2A32"), dpad(30, 76, 24, 8, "#2A2A32"),
+                     circ(212, 70, 6, "#2A2A32"), circ(228, 70, 6, "#2A2A32"), circ(220, 60, 6, "#2A2A32"), circ(220, 80, 6, "#2A2A32")],
+                screens=[("top", 66, 20, 118, 72, "#7BE0FF")])]
+
+
+def switch(page):
+    def joycon(x, color, stick_y, left):
+        dots = [circ(18, 62, 3.6, "#17171B"), circ(18, 78, 3.6, "#17171B"), circ(10, 70, 3.6, "#17171B"), circ(26, 70, 3.6, "#17171B")]
+        return Box(x, 0, 36, 100, 10, color, r=14, top=[circ(18, stick_y, 8, "#17171B")] + [d if left else d for d in dots])
+    return [joycon(-38, "#00B7EB", 28, True),
+            Box(0, 0, 170, 100, 9, "#1B1B20", r=4, top=[rect(8, 8, 154, 84, screen(page, "#FF8FB1", "#6A55B8"), r=2)],
+                screens=[("top", 8, 8, 154, 84, "#FF8FB1")]),
+            joycon(172, "#FF4554", 60, False)]
+
+
+def xbox(page):
+    return [Box(0, 0, 230, 180, 62, "#16161A", r=6,
+                top=[path("M20,16L210,164M210,16L20,164", stroke="#0A0A0C", sw=14), circ(115, 90, 34, "#0A0A0C"), circ(115, 90, 24, "#6FD93A"),
+                     lines(20, 16, 40, 5, 7, "#0A0A0C", 2)],
+                front=[rect(60, 10, 110, 14, "#0A0A0C", r=2), circ(30, 46, 6, "#2A2A30"), circ(48, 46, 3, "#6FD93A")]
+                + [rect(98 + i * 30, 38, 22, 14, "#0A0A0C", r=3) for i in range(4)],
+                screens=[("top", 91, 66, 48, 48, "#6FD93A")]),
+            pad(-150, 196, 124, 58, "#16161A", ("#3FA65A", "#D9303A", "#2E7BD9", "#F2C230"), rot=-12, cross="#3A3A44")]
+
+
+def xbox360(page):
+    return [Box(0, 0, 230, 170, 52, "#EDEDF0", r=14,
+                top=[lines(18, 20, 194, 6, 9, "#D5D5DC", 1.2)],
+                front=[rect(22, 12, 120, 12, "#C9C9D2", r=3), circ(196, 26, 13, "#C9C9D2"), circ(196, 26, 8, "#6FD93A"), rect(22, 32, 44, 10, "#D5D5DC", r=3)],
+                screens=[("front", 186, 16, 20, 20, "#6FD93A")]),
+            pad(-150, 186, 124, 58, "#EDEDF0", ("#3FA65A", "#D9303A", "#2E7BD9", "#F2C230"), rot=-12, cross="#8E8E98")]
+
+
+def virtualboy(page):
+    red, black = "#B8242B", "#17171B"
+    return [Box(46, 60, 8, 8, 72, black, r=3, rot=20), Box(118, 60, 8, 8, 72, black, r=3, rot=-20), Box(30, 40, 112, 60, 8, black, r=6),
+            Box(0, 0, 172, 116, 74, red, z=70, r=16,
+                front=[rect(14, 12, 144, 50, black, r=12), circ(56, 37, 14, "#2A0A0C"), circ(116, 37, 14, "#2A0A0C"),
+                       circ(56, 37, 8, "#FF3B3B", stroke="none"), circ(116, 37, 8, "#FF3B3B", stroke="none")],
+                screens=[("front", 44, 25, 84, 24, "#FF3B3B")]),
+            pad(-130, 150, 112, 54, black, ("#B8242B", "#B8242B"), rot=-12, cross="#B8242B")]
+
+
+def atari2600(page):
+    return cart_console(page, "#1C1A1A", "#141212", "#C9C9D2", "#3A2A1A", ("#F28C28", "#F2C230"), w=230, d=150, h=32, wood=True,
+                        switches=6, stick=True)
+
+
+def neogeo(page):
+    black = "#17171B"
+    return [Box(0, 0, 250, 150, 28, black, r=4,
+                top=[rect(40, 14, 170, 56, "#0A0A0C", r=3), rect(60, 30, 130, 22, "#050506", r=2), rect(20, 112, 36, 12, "#C9C9D2", r=2),
+                     rect(64, 112, 36, 12, "#C9C9D2", r=2), line(120, 118, 230, 118, "#C9A227", 1.4)],
+                front=[rect(20, 8, 44, 13, "#08080A", r=2), rect(72, 8, 44, 13, "#08080A", r=2)]),
+            cart(page, 64, 32, 122, 18, 40, "#101014", 28, "#F2C230", "#D9303A"),
+            Box(-190, 150, 170, 86, 18, black, r=6, rot=-12,
+                top=[circ(40, 44, 16, "#2A2A32")] + [circ(84 + i * 22, 50 - i * 6, 9, c) for i, c in enumerate(("#D9303A", "#F2C230", "#3FA65A", "#2E7BD9"))]),
+            Box(-162, 184, 12, 12, 26, "#C9C9D2", z=18, r=6),
+            Box(-170, 176, 28, 28, 18, "#D9303A", z=44, r=14)]
+
+
+def vectrex(page):
+    return [Box(0, 0, 120, 130, 180, "#17171B", r=6,
+                front=[rect(12, 12, 96, 118, "#050506", r=6),
+                       path("M30,96L60,36L90,96ZM44,70h32M24,112h72", stroke="#B8F27A", sw=1.6, extra='filter="url(#blur3)"'),
+                       path("M30,96L60,36L90,96ZM44,70h32M24,112h72", stroke="#EFFFD0", sw=.8), rect(16, 144, 88, 26, "#2A2A32", r=3),
+                       circ(34, 157, 6, "#17171B")] + [circ(60 + i * 12, 157, 4, "#17171B") for i in range(4)],
+                screens=[("front", 20, 30, 80, 90, "#B8F27A")])]
+
+
+def famicom(page):
+    white, red = "#EFEDE6", "#8E1F2B"
+    side = lambda x: Box(x, 34, 22, 96, 10, red, z=22, r=3, top=[dpad(11, 22, 14, 5, "#17171B"), circ(11, 62, 4, "#17171B"), circ(11, 76, 4, "#17171B")])
+    return [Box(0, 0, 200, 150, 30, white, r=5,
+                top=[rect(34, 16, 132, 110, red, r=4), rect(50, 30, 100, 20, "#17171B", r=2), rect(46, 100, 30, 12, "#D8D6D0", r=2),
+                     rect(124, 100, 30, 12, "#D8D6D0", r=2), rect(84, 98, 32, 16, "#C92A36", r=2)],
+                front=[rect(60, 10, 80, 12, "#17171B", r=2)]),
+            cart(page, 58, 32, 84, 16, 34, "#F2C230", 30, "#D9303A", "#FFFFFF"), side(4), side(174)]
+
+
+def fds(page):
+    boxes = famicom(page)
+    return [Box(-6, -6, 212, 162, 34, "#B8242B", r=5, front=[rect(40, 10, 132, 10, "#17171B", r=2), rect(86, 22, 40, 6, "#F2C230", stroke="none")])] \
+        + raised(boxes, 34, keep=0)
+
+
+def sega32x(page):
+    boxes = megadrive(page)
+    boxes[2] = Box(62, 40, 90, 56, 30, "#1C1C21", z=34, r=18, top=[rect(14, 20, 62, 16, "#08080A", r=3), circ(45, 46, 3, "#D12B33")])
+    return boxes
+
+
+def nintendo3ds(page):
+    return nds(page, "#17171B")
+
+
+def psp(page):
+    return handheld(page, "#101014", ("#7BE0FF", "#3B5BD9"), w=240, d=102, r=42, h=14, buttons=4, btn="#2A2A32", wide=.5, cart_color=None)
+
+
+def psvita(page):
+    return handheld(page, "#101014", ("#FF8FB1", "#3B5BD9"), w=250, d=110, r=46, h=12, left="stick", buttons=4, btn="#2A2A32", wide=.54,
+                    cart_color=None)
+
+
+# --- signs for the collections --------------------------------------------------
+
+def person(x, y):
+    return f"M{x - 14},{y + 34}a14,16 0 0 1 28,0M{x},{y - 6}a9,9 0 1 0 0.1,0Z"
+
+
+SIGNS = {
+    "players2": lambda: [neon(person(74, 70) + person(126, 70), "#5FE0FF", 3), neon("M40,150h120", "#FFD36E", 2.2)],
+    "players4": lambda: [neon(person(46, 66) + person(82, 66) + person(118, 66) + person(154, 66), "#FF4F9A", 2.6), neon("M30,150h140", "#FFD36E", 2.2)],
+    "gun": lambda: [neon("M100,34a50,50 0 1 0 0.1,0ZM100,18v36M100,114v36M34,84h36M130,84h36", "#FF4F9A", 3), neon("M100,84h0.1", "#FFD36E", 5)],
+    "new": lambda: [neon("M100,24l14,46l46,14l-46,14l-14,46l-14,-46l-46,-14l46,-14Z", "#FFD36E", 3), neon("M40,152h120", "#5FE0FF", 2.2)],
+    "trophy": lambda: [neon("M66,28h68v36a34,34 0 0 1 -68,0ZM66,40h-22a22,22 0 0 0 22,26M134,40h22a22,22 0 0 1 -22,26M100,98v26M74,136h52", "#FFD36E", 3)],
+    "vertical": lambda: [neon("M62,20h76v130h-76Z", "#5FE0FF", 3), neon("M100,120v-70M82,68l18,-20l18,20", "#FF4F9A", 3)],
+    "wheel": lambda: [neon("M100,22a62,62 0 1 0 0.1,0ZM100,70a14,14 0 1 0 0.1,0Z", "#5FE0FF", 3), neon("M42,76l44,6M158,76l-44,6M100,98v46", "#FF4F9A", 3)],
+    "folder": lambda: [neon("M30,44h50l14,16h76v84h-140Z", "#FFD36E", 3), neon("M56,96h88M56,118h60", "#5FE0FF", 2.4)],
+    "book": lambda: [neon("M100,40c-20,-12 -44,-12 -64,-4v96c20,-8 44,-8 64,4c20,-12 44,-12 64,-4v-96c-20,-8 -44,-8 -64,4Zv96", "#5FE0FF", 3)],
+    "moon": lambda: [neon("M124,26a60,60 0 1 0 30,96a50,50 0 0 1 -30,-96Z", "#FFD36E", 3), neon("M52,44h0.1M40,96h0.1M70,140h0.1", "#5FE0FF", 4)],
+    "record": lambda: [neon("M100,30a54,54 0 1 0 0.1,0Z", "#FF4F9A", 3), neon("M100,62a22,22 0 1 0 0.1,0Z", "#FF4F9A", 8)],
+    "camera": lambda: [neon("M30,54h36l10,-16h48l10,16h36v86h-140Z", "#5FE0FF", 3), neon("M100,70a26,26 0 1 0 0.1,0Z", "#FF4F9A", 3)],
+    "picture": lambda: [neon("M30,30h140v110h-140Z", "#5FE0FF", 3), neon("M44,124l34,-40l22,24l18,-16l38,32", "#FF4F9A", 3), neon("M136,58h0.1", "#FFD36E", 8)],
+    "globe": lambda: [neon("M100,24a60,60 0 1 0 0.1,0ZM40,84h120M100,24c-34,36 -34,84 0,120M100,24c34,36 34,84 0,120", "#5FE0FF", 2.6)],
+    "pad": lambda: [neon("M52,54h96a30,30 0 0 1 0,60h-96a30,30 0 0 1 0,-60Z", "#FF4F9A", 3), neon("M62,84h24M74,72v24", "#5FE0FF", 3),
+                    neon("M126,76h0.1M142,92h0.1", "#FFD36E", 6)],
+    "store": lambda: [neon("M36,62h128l-12,62h-104ZM36,62l-10,-28h-12", "#FFD36E", 3), neon("M66,142h0.1M134,142h0.1", "#5FE0FF", 7)],
+}
+
+
+def neon_sign(symbol):
+    return lambda page: sign(page, SIGNS[symbol]())
+
+
+def loading(page):
+    """The loading screen's picture: cartridges and a controller, for no system in particular."""
+    return allgames(page) + [pad(-150, 210, 124, 54, "#C9C7D0", ("#F03C72", "#FFC25E", "#3B8CFF", "#7BE0C3"), rot=-14)]
+
+
+# The loading screen's picture goes to _inc/backgrounds/splash.jpg (splash.xml)
+SPLASH = "splash"
+
 # Each system's machine and the mood of its sky
 SYSTEMS = {
     "snes": (snes, "vice"), "snes-msu1": (snes, "miami"), "nes": (nes, "gold"), "n64": (n64, "miami"),
@@ -844,6 +1241,191 @@ SYSTEMS = {
     "ports": (ports, "vice"), "pygame": (pygame, "miami"),
     "auto-allgames": (allgames, "vice"), "auto-favorites": (favorites, "night"), "auto-lastplayed": (lastplayed, "night"),
 }
+
+
+def put(names, model, mood=None):
+    """Gives these systems (their theme names, separated by spaces) a drawing; without a mood,
+    each takes one of the four by its name, so a family doesn't look the same everywhere."""
+    for name in names.split():
+        SYSTEMS.setdefault(name, (model, mood))
+
+
+BEIGE, CREAM, GRAY, DARK, BLACK, WHITE = "#C9B99B", "#DDD6C2", "#B9BAC2", "#3A3B44", "#1B1B20", "#EDEDF0"
+PADS = ("#D9303A", "#3FA65A", "#2E7BD9", "#F2C230")
+GREEN_LIT, BLUE_LIT, AMBER_LIT, GRAY_LIT = ("#B8F27A", "#2E9E6B"), ("#7BE0FF", "#3B5BD9"), ("#FFD36E", "#F03C72"), ("#D4DEC0", "#7F8F74")
+
+# Nintendo
+put("snesh snes-msu snesmsu1 snesmini sfc sufami sgb sgb-msu1", snes)
+put("satellaview snescd", lambda p: on_base(p, snes(p), "#B9B7C3", 216, 166))
+put("nesh", nes)
+put("famicom", famicom)
+put("fds", fds)
+put("64dd n64dd", lambda p: on_base(p, n64(p), "#34353B", 226, 166, tray=False))
+put("gbh", gb)
+put("gbch", gbc)
+put("gbah", gba)
+put("gb2players", lambda p: linked(p, "#C6C4BA", "#A6245C", ("#B5C96A", "#5E7A32")))
+put("gbc2players", lambda p: linked(p, "#6A4FB0", "#2A2A32", GREEN_LIT))
+put("3ds 3dsen", nintendo3ds)
+put("gc", gamecube)
+put("wii", wii)
+put("wiiu", wiiu)
+put("switch", switch)
+put("virtualboy", virtualboy)
+put("gameandwatch gw", lambda p: game_watch(p, "#C9A227", "#8E1F2B"))
+put("lcdgames", lambda p: game_watch(p, "#C9C9D2", "#2743B8"))
+put("pokemini", lambda p: gameboy(p, "#2E7BD9", "#F2C230", "#8E8E98", GRAY_LIT))
+
+# Sega
+put("genesis megadrive-japan megadrive-msu msu-md genh", megadrive)
+put("megacd segacd", lambda p: on_base(p, megadrive(p), "#1C1C21", 240, 170))
+put("sega32x", sega32x)
+put("saturn", saturn)
+put("dreamcast", dreamcast)
+put("ggh", gamegear)
+put("sc-3000", lambda p: keyboard(p, BLACK, "#0B0B0E", "#C9C9D2", fkeys="#C4161C", deck="cart"))
+put("pico beena", lambda p: cart_console(p, "#F2C230", "#2E7BD9", "#D9303A", "#D9303A", ("#FFFFFF", "#7BE0C3"), pad_args=None))
+put("segaai", lambda p: keyboard(p, WHITE, "#D5D5DC", "#8E8E98", fkeys="#2E7BD9"))
+
+# Sony, Microsoft
+put("psx psxmini", psx)
+put("ps2", ps2)
+put("ps3", ps3)
+put("ps4", ps4)
+put("psp pspminis", psp)
+put("psvita", psvita)
+put("xbox chihiro", xbox)
+put("xbox360", xbox360)
+
+# NEC, SNK, Atari, others with discs
+put("tg16", pcengine)
+put("pce-cd pcenginecd tg16cd", lambda p: on_base(p, pcengine(p), "#EFEDE6", 190, 180))
+put("supergrafx", lambda p: cart_console(p, "#3A3B44", "#2A2A30", "#8E8E98", "#EFEDE6", ("#FF7F4F", "#6A55B8"), w=220, d=160, h=44,
+                                         pad_args=(104, 48, "#3A3B44", ("#8E8E98", "#8E8E98"))))
+put("pcfx", lambda p: tower(p, WHITE, "#7CFF8A", pad_color=WHITE))
+put("neogeo neogeox neogeomini", neogeo)
+put("neogeocd", lambda p: disc_console(p, BLACK, "#25252B", "#C9A227", BLACK, PADS, w=220, d=180, cross="#3A3A44"))
+put("3do", threedo)
+put("cdi", lambda p: disc_console(p, "#2A2A30", None, "#55565F", "#2A2A30", PADS[:2], w=240, d=170, h=38, r=4, tray=True))
+put("amigacd32", lambda p: disc_console(p, "#3A3B44", "#2A2A30", "#8E8E98", "#3A3B44", PADS, w=200, d=180, r=6))
+put("amigacdtv vis fmtownsmarty", lambda p: disc_console(p, "#17171B", None, "#3A3A44", "#17171B", PADS[:2], w=250, d=180, h=40, r=3, tray=True))
+put("atari2600", atari2600)
+put("atari5200", lambda p: cart_console(p, BLACK, "#101014", "#C9C9D2", BLACK, ("#F28C28", "#D9303A"), w=250, d=170, h=34, stick=True))
+put("atari7800", lambda p: cart_console(p, BLACK, "#C9C9D2", "#D9303A", BLACK, ("#F2C230", "#2E7BD9"), w=220, d=140, h=28, stick=True))
+put("atarijaguar", lambda p: cart_console(p, BLACK, "#101014", "#D9303A", BLACK, ("#D9303A", "#F2C230"), w=220, d=160, h=34,
+                                           pad_args=(118, 62, BLACK, ("#D9303A", "#D9303A", "#D9303A"))))
+put("atarijaguarcd", lambda p: on_base(p, cart_console(p, BLACK, "#101014", "#D9303A", None, w=200, d=150, h=30, pad_args=(118, 62, BLACK, ("#D9303A",) * 3)),
+                                       BLACK, 220, 170))
+put("atarilynx", lambda p: handheld(p, "#3A3B44", AMBER_LIT, w=240, d=100, r=18, buttons=4, wide=.3, cart_color=BLACK))
+put("colecovision", lambda p: docked_console(p, BLACK, "#C9C9D2", "#17171B"))
+put("intellivision", lambda p: docked_console(p, "#6B4426", "#C9A227", "#2A2118"))
+put("vectrex", vectrex)
+
+# Consoles with cartridges, most of them from the first years
+put("channelf", lambda p: cart_console(p, "#3A2A1A", "#C9A227", "#F2C230", "#F2C230", stick=True, wood=True))
+put("odyssey2 videopac videopacplus", lambda p: keyboard(p, "#C9C9D2", BLACK, "#3A3B44", fkeys="#D9303A", w=220, d=130, deck="cart"))
+put("astrocade", lambda p: cart_console(p, "#3A2A1A", BLACK, "#C9A227", BLACK, wood=True, switches=4, stick=True))
+put("arcadia apfm1000 vc4000 sv8000 pv1000 pv2000", lambda p: docked_console(p, "#D8D6D1", BLACK, "#3A3B44"))
+put("cassettevision scv multivision ctvboy", lambda p: cart_console(p, "#D8D6D1", "#C4161C", "#2E7BD9", BLACK, ("#F2C230", "#D9303A"), switches=4))
+put("creativision", lambda p: docked_console(p, "#EFEDE6", "#6B4426", "#D9303A"))
+put("advision", lambda p: allinone(p, BLACK, ("#FF3B3B", "#2A0A0C"), keys="#D9303A", w=130, d=120, h=130))
+put("gx4000", lambda p: cart_console(p, "#D8D6D1", "#B9BAC2", "#3A3B44", "#D8D6D1", ("#3FA65A", "#2E7BD9"), r=30,
+                                      pad_args=(104, 48, "#D8D6D1", ("#3A3B44", "#3A3B44"))))
+put("supracan loopy", lambda p: cart_console(p, "#D5D5DC", "#8E8E98", "#D9303A", "#3A3B44", pad_args=(104, 48, "#D5D5DC", PADS)))
+put("vsmile socrates", lambda p: cart_console(p, "#F28C28", "#6A55B8", "#3FA65A", "#F2C230", ("#D9303A", "#FFFFFF"), r=24,
+                                              pad_args=(110, 56, "#6A55B8", ("#F2C230", "#3FA65A"))))
+put("tvgames plugnplay", lambda p: [pad(0, 0, 220, 96, "#D9303A", ("#F2C230", "#3FA65A", "#2E7BD9", "#FFFFFF"), face="#17171B", r=30),
+                                    game_cart(p, 260, 30, "#17171B", "#FFC25E", "#F03C72", 16)])
+put("uzebox actionmax", lambda p: cart_console(p, BLACK, "#2A2A30", "#3FA65A", None, pad_args=(104, 48, "#C9C7D0", ("#6A4FB0",) * 2)))
+
+# Handhelds
+put("wonderswan", lambda p: handheld(p, "#E8E6E0", GRAY_LIT, left="two", cart_color="#E8E6E0"))
+put("wonderswancolor", lambda p: handheld(p, "#2E7BD9", BLUE_LIT, left="two", cart_color="#2E7BD9"))
+put("gamate megaduck supervision gmaster", lambda p: gameboy(p, "#3A3B44", "#D9303A", "#8E8E98", GREEN_LIT))
+put("gamepock arduboy", lambda p: gameboy(p, "#EDEDF0", "#3A3B44", "#8E8E98", GRAY_LIT))
+put("gamecom", lambda p: handheld(p, "#2A2A30", GRAY_LIT, w=220, d=110, buttons=4, wide=.4))
+put("gp32 ngage", lambda p: handheld(p, "#EDEDF0", BLUE_LIT, left="stick", buttons=2, btn="#8E8E98", wide=.4, cart_color=None))
+
+# Arcade
+put("arcade hbmame mess projectarcade zinc", mame)
+put("fba fba_libretro fbn", fbneo)
+put("naomi2 atomiswave systemsp hikaru triforce lindbergh namco2x6 teknoparrot", naomi)
+put("cps1 cps2 cps3 capcom", lambda p: cabinet(p, "#16224F", "#F2C230", ("#3B2A8C", "#0B0B2A"), ("#F2C230", "#D9303A"), ((20, 14, "#F2C230"), (40, 8, "#D9303A"))))
+put("model2 model3 segastv", lambda p: cabinet(p, "#EDEDF0", "#2743B8", ("#3B5BD9", "#0B0B2A"), ("#2743B8", "#7BE0FF"), ((20, 14, "#2743B8"), (40, 8, "#7BE0FF"))))
+put("namco22 gaelco igs irem cave", lambda p: cabinet(p, "#2A1A3A", "#F03C72", ("#5A1680", "#12071F"), ("#F03C72", "#FFC25E"), ((18, 12, "#F03C72"), (36, 8, "#7BE0FF"))))
+put("neogeo64 mugen ikemen", lambda p: cabinet(p, "#8E1F2B", "#F2C230", ("#3B2A8C", "#0B0B2A"), ("#D9303A", "#F2C230"), ((20, 14, "#F2C230"),)))
+put("daphne singe dice", lambda p: cabinet(p, "#1B2A1B", "#3FA65A", ("#2E9E6B", "#06120A"), ("#3FA65A", "#B8F27A"), ((20, 14, "#3FA65A"), (40, 8, "#B8F27A"))))
+put("lightgun", lambda p: cabinet(p, "#3A1014", "#F28C28", ("#5A1680", "#12071F"), ("#F28C28", "#FFC25E"), ((20, 14, "#F28C28"),)))
+put("fpinball vpinball pinballfx pinballfx2 pinballfx3 pinballm zaccariapinball", lambda p: pinball(p, "#16224F", ("#3B2A8C", "#0B0B2A"), ("#F03C72", "#FFC25E")))
+
+# Home computers in their keyboard
+put("c128", lambda p: keyboard(p, CREAM, "#B9B29E", "#55504A", fkeys="#8F8473", w=260, d=140, h=22))
+put("c20 vic20", lambda p: keyboard(p, "#E6DEC8", "#4A3C34", "#3A2E28", fkeys="#C98A3A", stripe=True))
+put("c16 cplus4", lambda p: keyboard(p, DARK, "#25252B", "#D8D6D1", fkeys="#8E8E98"))
+put("msx msx1 msx2+ msxturbor", msx2)
+put("zxspectrum", lambda p: keyboard(p, BLACK, "#101014", "#55565F", w=200, d=120, h=16, stripe=True, led="#17171B"))
+put("zx81", lambda p: keyboard(p, BLACK, "#101014", "#2A2A30", w=170, d=120, h=14, led="#17171B", stick=False))
+put("amstradcpc", lambda p: keyboard(p, "#3A3B44", "#25252B", "#55565F", w=280, d=136, deck="tape"))
+put("atari800 atari8bit", lambda p: keyboard(p, "#C9B99B", "#3A2E28", "#6B5A4A", fkeys="#F2C230", deck="cart"))
+put("xegs", lambda p: keyboard(p, "#D8D6D1", "#B9BAC2", "#EDEDF0", fkeys="#F0A6B8", deck="cart"))
+put("atarist", lambda p: keyboard(p, "#C4C4C0", "#A9A9A6", "#EDEDEA", fkeys="#8E8E98", w=260, d=150, deck="floppy"))
+put("amiga amiga500 amiga1200 amiga4000", lambda p: keyboard(p, "#D8D2C0", "#B9B29E", "#EDE8DA", fkeys="#8F8A7A", w=260, d=150, deck="floppy"))
+put("apple2 apple2gs", lambda p: keyboard(p, "#D5CDB6", "#3A2E28", "#55504A", w=230, d=160, h=40, led="#3FA65A"))
+put("bbcmicro electron atom", lambda p: keyboard(p, "#DDD6C2", "#17171B", "#2A2A30", fkeys="#C4161C"))
+put("oric", lambda p: keyboard(p, "#17171B", "#101014", "#D8D6D1", fkeys="#C4161C", w=210, d=124, h=18))
+put("coco dragon32 dragon64 mc10", lambda p: keyboard(p, "#C9C9D2", "#17171B", "#2A2A30", fkeys="#D9303A", deck="cart"))
+put("ti99", lambda p: keyboard(p, "#C9C9D2", "#17171B", "#2A2A30", deck="cart", w=250))
+put("trs80 tandy1k", lambda p: keyboard(p, "#B9BAC2", "#17171B", "#2A2A30", fkeys="#8E8E98"))
+put("spectravideo", lambda p: keyboard(p, "#EDEDF0", "#D5D5DC", "#8E8E98", fkeys="#D9303A", deck="cart"))
+put("thomson", lambda p: keyboard(p, "#8E8E98", "#3A3B44", "#D8D6D1", fkeys="#2E7BD9"))
+put("laser310 cgenie camplynx tutor tvc bk rx78 p2000t vg5k", lambda p: keyboard(p, "#D8D6D1", "#3A3B44", "#EDEDF0", fkeys="#F28C28"))
+put("enterprise", lambda p: keyboard(p, "#17171B", "#101014", "#3A3B44", fkeys="#3FA65A", stripe=True))
+put("samcoupe", lambda p: keyboard(p, "#EDEDF0", "#D5D5DC", "#8E8E98", fkeys="#2E7BD9", deck="floppy"))
+put("fm7 pc60 pc80 mz700 mz800 adam", lambda p: keyboard(p, "#D8D2C0", "#3A3B44", "#EDE8DA", fkeys="#3FA65A", w=260, d=146))
+put("commanderx16", lambda p: keyboard(p, "#EDEDF0", "#3A3B44", "#D8D6D1", fkeys="#6A4FB0", stripe=True))
+
+# Computers with a monitor
+put("pc", lambda p: computer(p, "#D5D0C2", ("#2743B8", "#0B0F24"), text_screen((40, "#FFFFFF"), (70, "#FFFFFF"), (24, "#FFFFFF"), (56, "#FFD36E"), (30, "#FFFFFF"))))
+put("pc88 pc98 x1 fmtowns archimedes pcw", lambda p: computer(p, "#D8D2C0", ("#0B0F24", "#050816"), text_screen((60, "#B8F27A"), (36, "#B8F27A"), (70, "#B8F27A"), (22, "#B8F27A"))))
+put("x68000", lambda p: computer(p, "#3A3B44", ("#3B2A8C", "#0B0B2A"), [rect(34, 28, 22, 22, "#F03C72", r=1, sw=.4), rect(70, 46, 22, 22, "#7BE0FF", r=1, sw=.4)]))
+put("macintosh", lambda p: allinone(p, "#DDD6C2", ("#F4F4F0", "#B9BAC2")))
+put("pet mz80k mz2000 mz2500", lambda p: allinone(p, "#EDEDF0", GREEN_LIT, keys="#3A3B44", w=160, d=160, h=180))
+put("pdp1", lambda p: allinone(p, "#8E9AA8", ("#B8F27A", "#06120A"), keys="#D8D6D1", w=170, d=150, h=200))
+put("scummvm residualvm", lambda p: computer(p, "#D5D0C2", ("#3FA65A", "#0B2A1A"), [path("M30,70l20,-30l16,18l12,-10l22,22Z", fill="#0B2A1A", stroke="none"), circ(96, 34, 6, "#FFD36E", stroke="none")]))
+put("windows windows_installers steam gog epic eagames amazon heroic lutris flatpak linux android j2me",
+    lambda p: computer(p, "#3A3B44", ("#3B8CFF", "#1B3F8C"), [rect(26, 24, 56, 40, "#E9ECF2", r=1.5, sw=.4), rect(26, 24, 56, 7, "#17171B", r=1.5, sw=.4), rect(88, 30, 24, 24, "#FFD36E", r=2, sw=.4)]))
+put("flash bennugd lutro solarus easyrpg vgmplay", pygame)
+put("pico8 tic80 lowresnx vircon32 wasm4 pyxel", lambda p: computer(p, "#F03C72", ("#1D2B53", "#0B0F24"),
+    ["".join(rect(x, y, 9, 9, c, r=1, sw=.4) for x, y, c in ((34, 34, "#FFEC27"), (44, 34, "#FFEC27"), (44, 44, "#FF77A8"), (54, 44, "#FF77A8"), (64, 54, "#29ADFF"), (74, 54, "#29ADFF"), (84, 44, "#00E436")))]))
+
+# Games ported to Batocera: a computer of their time, the screen in a color of their own
+for i, names in enumerate(("abuse bstone cannonball cavestory cdogs cgenius corsixth devilutionx dxx-rebirth ecwolf eduke32 etlegacy",
+                           "fallout1-ce fallout2-ce fury gzdoom halflife hcl hurrican jazz2 odcommander openbor openjazz prboom mrboom",
+                           "quake quake2 quake3 raze reminiscence rott rtcw sdlpop sonic-mania sonic3-air sonicretro superbroswar",
+                           "thextech traider1 traider2 tyrian xrick zeldac boom3 dinothawr gemrb iortcw opengoal openlara pdark",
+                           "powerbomberman starship theforceengine tyrquake vitaquake2 xash3d_fwgs retrobat")):
+    glass = (("#F2542C", "#3A1014"), ("#3FB8C9", "#1B3F8C"), ("#F03C72", "#3B2A8C"), ("#B8F27A", "#0B2A1A"), ("#FFD36E", "#5A1E55"))[i]
+    put(names, lambda p, glass=glass: computer(p, "#D5D0C2", glass, [path("M30,74l18,-34l14,20l12,-12l26,26Z", fill="#0B0F24", stroke="none", op=.75)]))
+
+# Collections and Batocera's own entries: a neon sign
+put("auto-at2players", neon_sign("players2"), "night")
+put("auto-at4players", neon_sign("players4"), "night")
+put("auto-lightgun", neon_sign("gun"), "night")
+put("auto-neverplayed", neon_sign("new"), "night")
+put("auto-retroachievements", neon_sign("trophy"), "night")
+put("auto-verticalarcade", neon_sign("vertical"), "night")
+put("auto-wheel", neon_sign("wheel"), "night")
+put("collections custom-collections", neon_sign("folder"), "night")
+put("favorites", favorites, "night")
+put("library", neon_sign("book"), "night")
+put("moonlight", neon_sign("moon"), "night")
+put("recordings", neon_sign("record"), "night")
+put("screenshots", neon_sign("camera"), "night")
+put("imageviewer", neon_sign("picture"), "night")
+put("internet", neon_sign("globe"), "night")
+put("openbor mugen", neon_sign("pad"), "night")
+
+MOOD_NAMES = sorted(MOODS)
 
 
 # --- output ------------------------------------------------------------------
@@ -858,13 +1440,15 @@ def chrome():
 
 
 def render(name, keep_svg, browser, work):
-    model, mood_name = SYSTEMS[name]
-    mood = MOODS[mood_name]
+    splash = name == SPLASH
+    model, mood_name = (loading, "vice") if splash else SYSTEMS[name]
+    mood = MOODS[mood_name or MOOD_NAMES[zlib.crc32(name.encode()) % len(MOOD_NAMES)]]
     rnd = random.Random(zlib.crc32(name.encode()))
     page = Page()
-    scene(page, mood, rnd)
-    draw_machine(page, model(page), mood)
-    finish(page)
+    scene(page, mood, rnd, centered=splash)
+    # On the loading screen, the picture's subject stays clear of the progress line (at 945)
+    draw_machine(page, model(page), mood, *((960, 890) if splash else (1390, 940)))
+    finish(page, splash)
     svg = page.svg()
     if keep_svg:
         os.makedirs(os.path.join(ROOT, "dist", "backgrounds"), exist_ok=True)
@@ -873,9 +1457,9 @@ def render(name, keep_svg, browser, work):
     html = os.path.join(work, name + ".html")
     with open(html, "w") as f:
         f.write(f'<!doctype html><meta charset="utf-8"><body style="margin:0;background:{NAVY};overflow:hidden">{svg}')
-    folder = os.path.join(ROOT, "systems", name)
+    folder = os.path.join(ROOT, "_inc", "backgrounds") if splash else os.path.join(ROOT, "systems", name)
     os.makedirs(folder, exist_ok=True)
-    out = os.path.join(folder, "background.jpg")
+    out = os.path.join(folder, "splash.jpg" if splash else "background.jpg")
     subprocess.run([browser, "--headless=new", "--disable-gpu", "--hide-scrollbars", f"--user-data-dir={work}/profile",
                     f"--window-size={W},{H}", "--force-device-scale-factor=1", f"--screenshot={out}", "file://" + html],
                    check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
@@ -886,12 +1470,12 @@ def render(name, keep_svg, browser, work):
 
 def main():
     args = [a for a in sys.argv[1:] if a != "--svg"]
-    unknown = [a for a in args if a not in SYSTEMS]
+    unknown = [a for a in args if a not in SYSTEMS and a != SPLASH]
     if unknown:
-        sys.exit(f"unknown system: {' '.join(unknown)} (known: {' '.join(sorted(SYSTEMS))})")
+        sys.exit(f"unknown system: {' '.join(unknown)} (known: {' '.join(sorted(SYSTEMS))}, {SPLASH})")
     browser = chrome()
     with tempfile.TemporaryDirectory() as work:
-        for name in args or sorted(SYSTEMS):
+        for name in args or sorted(SYSTEMS) + [SPLASH]:
             render(name, "--svg" in sys.argv, browser, work)
 
 

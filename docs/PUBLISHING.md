@@ -13,9 +13,11 @@ known is said so.
    without covers and videos, open the main menu and a settings menu, and switch the accent
    color (see [STYLE.md](STYLE.md#before-a-screen-is-done)).
 4. The screenshots in `docs/screenshots/` still show the theme as it is (`home.jpg`,
-   `game-list.jpg`, `menu.jpg`, and `batocera-list.jpg`, 569 x 320, the size Batocera's list
+   `game-list.jpg`, `menu.jpg`, `loading.jpg`, and `batocera-list.jpg`, 569 x 320, the size Batocera's list
    uses). Take them with `batocera-screenshot`; an "update available" notice spoils them, and
    goes away with `batocera-settings-set updates.enabled 0` (set it back to 1 afterwards).
+   The loading screen lasts under a second: restart EmulationStation and take several
+   screenshots in a row, a second later.
 5. `CHANGELOG.md`: move what is under "Unreleased" to a new version with today's date, and add
    its link at the bottom.
 
@@ -68,7 +70,7 @@ repository's URL, the entry above and the screenshot. This step has not been don
 right channel is not confirmed.
 
 What the wiki does recommend to theme authors: keep the theme small, for weak hardware's video
-memory (this one ships about 4 MB), and compress its images.
+memory (this one ships about 36 MB, nearly all of it the systems' pictures), and compress its images.
 
 ### Until it is listed
 

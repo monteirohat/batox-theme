@@ -6,6 +6,25 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [1.1.0] - 2026-11-22
+
+### Added
+
+- **A picture for every system**: 354 names, every system of Batocera 43 and those of other
+  boards (PlayStation 2 and 3, GameCube, Wii, Switch, Xbox...). About forty machines have a
+  drawing of their own; the others share one with their family (a home computer in its keyboard,
+  a computer with its monitor, a console with cartridges or discs, a handheld, an arcade
+  cabinet, a pinball table) in their own colors; ported games get a computer, collections a
+  neon sign. The theme grows from 4 to about 36 MB.
+- **Loading screen** (`splash.xml`), shown while EmulationStation starts: a picture of the
+  theme's own for no system in particular (cartridges and a controller on the pier, the sun in
+  the middle), with the bottom line of every other screen as the progress bar and the engine's
+  message where the help prompts are. `tools/render-system-backgrounds.py splash` draws it.
+
+### Changed
+
+- Carbon's photos are now only a fallback, for a system the theme doesn't know.
+
 ## [1.0.0] - 2026-11-21
 
 The first version: the home, the game list, the menus and the top bar, for Batocera 43.
@@ -42,5 +61,6 @@ The first version: the home, the game list, the menus and the top bar, for Batoc
   push, and a `v*` tag publishes the release ZIP.
 - The Inter font (SIL Open Font License); the theme itself is under the MIT license.
 
-[Unreleased]: https://github.com/monteirohat/batox-theme/compare/v1.0.0...HEAD
+[Unreleased]: https://github.com/monteirohat/batox-theme/compare/v1.1.0...HEAD
+[1.1.0]: https://github.com/monteirohat/batox-theme/compare/v1.0.0...v1.1.0
 [1.0.0]: https://github.com/monteirohat/batox-theme/releases/tag/v1.0.0

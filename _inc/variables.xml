@@ -152,6 +152,11 @@
     <fontMenu>0.026</fontMenu>
     <fontMenuSmall>0.018</fontMenuSmall>
 
+    <!-- The loading screen (splash.xml): its progress bar is the bottom line, a little thicker -->
+    <splashColor>050B1AFF</splashColor>
+    <splashBarSize>0.91 0.004</splashBarSize>
+
+
     <!-- Bottom bar: a thin line, then the help prompts -->
     <separatorY>0.875</separatorY>
     <separatorColor>FFFFFF30</separatorColor>

@@ -101,6 +101,14 @@ The engine lays its menus out itself; the theme gives them the same surfaces and
 - **The picture is never covered whole.** Surfaces are translucent or leave it room.
 - **The very top stays dark** for the top bar; a soft shade sits behind a name over the sky.
 
+## Loading
+
+- **The same bottom bar.** The loading screen keeps the line and the text of every other
+  screen's bottom: the line is the progress bar, filling in white, and the engine's message is
+  where the help prompts will be.
+- **A picture of no system**: cartridges and a controller, the sun in the middle, nothing
+  shaded but the top and the bottom. No logo, no brand, no spinner.
+
 ## Motion
 
 - **Moving is immediate.** The selection answers at once; a carousel slides in 250 ms.
